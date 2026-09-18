@@ -1,74 +1,3 @@
-create table public.categories (
-  id uuid primary key default extensions.gen_random_uuid(),
-  code varchar(50) not null unique,
-  name varchar(150) not null,
-  description text,
-  is_active boolean not null default true,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create table public.units (
-  id uuid primary key default extensions.gen_random_uuid(),
-  code varchar(30) not null unique,
-  name varchar(100) not null,
-  precision smallint not null default 0 check (precision between 0 and 3),
-  is_active boolean not null default true,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create table public.materials (
-  id uuid primary key default extensions.gen_random_uuid(),
-  sku varchar(80) not null unique,
-  name varchar(200) not null,
-  category_id uuid not null references public.categories(id),
-  unit_id uuid not null references public.units(id),
-  description text,
-  default_purchase_price bigint not null default 0 check (default_purchase_price >= 0),
-  default_sale_price bigint not null default 0 check (default_sale_price >= 0),
-  minimum_stock numeric(18,3) not null default 0 check (minimum_stock >= 0),
-  current_stock numeric(18,3) not null default 0 check (current_stock >= 0),
-  is_active boolean not null default true,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create table public.customers (
-  id uuid primary key default extensions.gen_random_uuid(),
-  code varchar(50) not null unique,
-  name varchar(200) not null,
-  phone varchar(30),
-  email varchar(255),
-  address text,
-  tax_code varchar(50),
-  note text,
-  is_active boolean not null default true,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint customers_walk_in_active check (code <> 'WALK_IN_CUSTOMER' or is_active = true)
-);
-
-create table public.suppliers (
-  id uuid primary key default extensions.gen_random_uuid(),
-  code varchar(50) not null unique,
-  name varchar(200) not null,
-  contact_name varchar(150),
-  phone varchar(30),
-  email varchar(255),
-  address text,
-  tax_code varchar(50),
-  note text,
-  is_active boolean not null default true,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
 create table public.purchase_receipts (
   id uuid primary key default extensions.gen_random_uuid(),
   code varchar(50) not null unique,
@@ -93,13 +22,13 @@ create table public.purchase_receipts (
   cancellation_reason text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint purchase_receipts_total_amount_check
+  constraint purchase_receipts_total_amount_formula_check
     check (total_amount = subtotal - discount_amount + shipping_fee + tax_amount),
   constraint purchase_receipts_paid_debt_sum_check
     check (paid_amount + debt_amount <= total_amount),
-  constraint purchase_receipts_debt_amount_check
+  constraint purchase_receipts_debt_not_over_total_check
     check (debt_amount <= total_amount),
-  constraint purchase_receipts_paid_amount_check
+  constraint purchase_receipts_paid_not_over_total_check
     check (paid_amount <= total_amount),
   constraint purchase_receipts_no_overpaid_mvp_check
     check (payment_status <> 'OVERPAID'),
@@ -119,7 +48,7 @@ create table public.purchase_receipt_items (
   line_total bigint not null check (line_total >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint purchase_receipt_items_line_total_check
+  constraint purchase_receipt_items_line_total_formula_check
     check (line_total = (quantity * unit_price) - discount_amount),
   unique (purchase_receipt_id, material_id),
   unique (id, material_id)
@@ -149,13 +78,13 @@ create table public.sales_orders (
   cancellation_reason text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint sales_orders_total_amount_check
+  constraint sales_orders_total_amount_formula_check
     check (total_amount = subtotal - discount_amount + shipping_fee + tax_amount),
   constraint sales_orders_paid_debt_sum_check
     check (paid_amount + debt_amount <= total_amount),
-  constraint sales_orders_debt_amount_check
+  constraint sales_orders_debt_not_over_total_check
     check (debt_amount <= total_amount),
-  constraint sales_orders_paid_amount_check
+  constraint sales_orders_paid_not_over_total_check
     check (paid_amount <= total_amount),
   constraint sales_orders_no_overpaid_mvp_check
     check (payment_status <> 'OVERPAID'),
@@ -175,7 +104,7 @@ create table public.sales_order_items (
   line_total bigint not null check (line_total >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint sales_order_items_line_total_check
+  constraint sales_order_items_line_total_formula_check
     check (line_total = (quantity * unit_price) - discount_amount),
   unique (sales_order_id, material_id),
   unique (id, material_id)
@@ -291,7 +220,7 @@ create table public.sales_returns (
   cancellation_reason text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint sales_returns_refund_amount_check check (refund_amount <= total_amount),
+  constraint sales_returns_refund_not_over_total_check check (refund_amount <= total_amount),
   constraint sales_returns_order_customer_fk
     foreign key (sales_order_id, customer_id) references public.sales_orders(id, customer_id)
 );
@@ -306,7 +235,7 @@ create table public.sales_return_items (
   line_total bigint not null check (line_total >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint sales_return_items_line_total_check
+  constraint sales_return_items_line_total_formula_check
     check (line_total = quantity * unit_price),
   constraint sales_return_items_order_item_material_fk
     foreign key (sales_order_item_id, material_id) references public.sales_order_items(id, material_id),
@@ -331,7 +260,7 @@ create table public.purchase_returns (
   cancellation_reason text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint purchase_returns_refund_amount_check check (refund_amount <= total_amount),
+  constraint purchase_returns_refund_not_over_total_check check (refund_amount <= total_amount),
   constraint purchase_returns_receipt_supplier_fk
     foreign key (purchase_receipt_id, supplier_id) references public.purchase_receipts(id, supplier_id)
 );
@@ -346,7 +275,7 @@ create table public.purchase_return_items (
   line_total bigint not null check (line_total >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint purchase_return_items_line_total_check
+  constraint purchase_return_items_line_total_formula_check
     check (line_total = quantity * unit_price),
   constraint purchase_return_items_receipt_item_material_fk
     foreign key (purchase_receipt_item_id, material_id) references public.purchase_receipt_items(id, material_id),
