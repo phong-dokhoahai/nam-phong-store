@@ -1,5 +1,4 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import PageMeta from "@/components/common/PageMeta";
 import CheckboxComponents from "@/components/form/form-elements/CheckboxComponents";
 import DefaultInputs from "@/components/form/form-elements/DefaultInputs";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
@@ -15,10 +14,6 @@ import { cn } from "@/utils";
 export default function FormElements() {
   return (
     <div>
-      <PageMeta
-        title="React.js Form Elements Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Form Elements  Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
-      />
       <PageBreadcrumb pageTitle="Form Elements" />
       <div className={cn("grid grid-cols-1 gap-6 xl:grid-cols-2")}>
         <div className={cn("space-y-6")}>

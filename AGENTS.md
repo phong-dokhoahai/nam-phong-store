@@ -28,7 +28,7 @@ src/
 │   │                          #   carousel/, dropdown/, modal/, pagination/, table/, tabs/,
 │   │                          #   tooltip/, popover/, progressbar/, spinner/, ribbons/…
 │   ├── form/                  # Form, Label, Select, MultiSelect, date-picker + input/, switch/
-│   ├── common/                # shared widgets: PageBreadCrumb, ComponentCard, PageMeta,
+│   ├── common/                # shared widgets: PageBreadCrumb, ComponentCard,
 │   │                          #   ThemeToggleButton, ScrollToTop, TableDropdown, ChartTab…
 │   ├── header/                # AppHeader dropdowns (notifications, user menu, language…)
 │   └── <feature>/             # one folder per domain: ecommerce/, crm/, analytics/,
@@ -51,7 +51,6 @@ src/
 - **react-i18next v17** + **i18next v26** for internationalization and RTL support.
 - **Tailwind CSS v4** — configured entirely through `src/index.css`; **no `tailwind.config` file exists**.
 - **react-apexcharts** for charts, **@fullcalendar/react** for the calendar, **Swiper** for carousels.
-- **react-helmet-async** (`PageMeta`) for per-page `<title>` and `<meta description>`.
 - Path alias: `@/*` → `src/*` (configured in `tsconfig.app.json` + `vite.config.ts`).
 - Scripts: `npm run dev` (Vite dev server), `npm run build` (tsc + Vite), `npm run lint`.
 - Node >= 20.19.0 || >= 22.12.0 required (Vite 8 requirement).
@@ -73,7 +72,6 @@ src/
 - **Hook files**: camelCase (`useModal.ts`).
 - **New reusable component** → `src/components/<feature>/` if domain-specific, else `src/components/common/` or `src/components/ui/`.
 - **New icon** → drop the `.svg` into `src/icons/`, add a named export to `src/icons/index.ts` using a PascalCase name (e.g., `export { ReactComponent as MyIcon } from "./my-icon.svg"`). Never inline SVG markup in components.
-- **Page meta (SEO)** → every page must render `<PageMeta title="…" description="…" />` (from `src/components/common/PageMeta.tsx`) as the first child.
 - **Breadcrumbs** → add `<PageBreadCrumb pageTitle="…" />` at the top of admin pages, matching existing pages.
 - **Demo sections** → wrap in `<ComponentCard title="…">` to match the UI element demo pages pattern.
 - Modals use the `useModal` hook (`isOpen`, `openModal`, `closeModal`, `toggleModal`).
@@ -129,7 +127,6 @@ src/
 - **Charts** (`react-apexcharts`): import lazily with `React.lazy` + `Suspense`, or guard with `if (typeof window === "undefined") return null`. Follow the pattern used in existing chart components before choosing an approach.
 - **FullCalendar** and **Swiper**: these are also browser-only — follow the existing pattern in `src/pages/Calendar.tsx` and carousel components respectively before importing directly.
 - **Icons**: always import from `@/icons` using the named export (e.g., `import { CalendarIcon } from "@/icons"`). SVGs are compiled to React components via `vite-plugin-svgr`. Never inline raw SVG markup in components.
-- **Page SEO**: always add `<PageMeta title="Page Title | TailAdmin" description="…" />` as the first element in every page component.
 - **Modals**: use `useModal` hook from `src/hooks/useModal.ts` and the `<Modal>` primitive from `src/components/ui/modal/`.
 - **Global state**: consume only via existing hooks — `useSidebar()`, `useTheme()`, `useLanguage()`.
 

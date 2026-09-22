@@ -31,6 +31,8 @@
       "ai": "AI",
       "sales": "Sales",
       "finance": "Finance",
+      "inventory": "Inventory",
+      "materials": "Materials",
       "aiAssistant": "AI Assistant",
       "textGenerator": "Text Generator",
       "imageGenerator": "Image Generator",
@@ -146,6 +148,82 @@
     "support": "Support",
     "language": "Language",
     "signOut": "Sign out"
+  },
+  "materials": {
+    "title": "Materials",
+    "listTitle": "Materials Management",
+    "loading": "Loading materials...",
+    "stats": {
+      "total": "Total materials",
+      "active": "Active materials",
+      "lowStock": "Low stock",
+      "outOfStock": "Out of stock"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Search by name or SKU...",
+      "allCategories": "All categories",
+      "allStatuses": "All statuses",
+      "liveSource": "Supabase data",
+      "demoSource": "Demo data"
+    },
+    "table": {
+      "material": "Material",
+      "category": "Category",
+      "stock": "Stock",
+      "prices": "Prices",
+      "status": "Status",
+      "actions": "Actions",
+      "minimum": "Min {value}",
+      "purchase": "Buy {value}"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of Stock"
+    },
+    "actions": {
+      "add": "Add Material",
+      "edit": "Edit material",
+      "deactivate": "Deactivate"
+    },
+    "empty": {
+      "title": "No materials found",
+      "description": "Adjust your filters or add a new material."
+    },
+    "form": {
+      "createTitle": "Add material",
+      "editTitle": "Edit material",
+      "subtitle": "Manage master data only. Stock changes still belong to inventory transactions.",
+      "sku": "SKU",
+      "skuPlaceholder": "XM-PCB40",
+      "name": "Name",
+      "namePlaceholder": "PCB40 Cement",
+      "category": "Category",
+      "categoryPlaceholder": "Select category",
+      "unit": "Unit",
+      "unitPlaceholder": "Select unit",
+      "purchasePrice": "Default purchase price",
+      "salePrice": "Default sale price",
+      "minimumStock": "Minimum stock",
+      "active": "Active",
+      "description": "Description",
+      "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
+      "requiredError": "SKU and name are required.",
+      "lookupError": "Category and unit are required.",
+      "saving": "Saving..."
+    },
+    "delete": {
+      "title": "Deactivate material",
+      "description": "Deactivate {name}? Existing history remains intact, but it will no longer be available for new transactions.",
+      "deactivating": "Deactivating..."
+    },
+    "errors": {
+      "load": "Unable to load materials.",
+      "save": "Unable to save material.",
+      "deactivate": "Unable to deactivate material.",
+      "duplicateSku": "Another material already uses this SKU."
+    }
   },
   "ecommerce": {
     "title": "E-commerce Dashboard",

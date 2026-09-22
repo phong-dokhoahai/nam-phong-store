@@ -1,5 +1,4 @@
 import GridShape from "@/components/common/GridShape";
-import PageMeta from "@/components/common/PageMeta";
 import { cn } from "@/utils";
 import { Link } from "react-router";
 
@@ -10,10 +9,6 @@ interface NotFoundProps {
 export default function NotFound({ className }: NotFoundProps) {
   return (
     <>
-      <PageMeta
-        title="React.js 404 Page | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js 404  page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
-      />
       <div
         className={cn(
           "relative z-1 flex min-h-screen flex-col items-center justify-center overflow-hidden p-6",

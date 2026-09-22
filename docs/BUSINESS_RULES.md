@@ -1761,7 +1761,6 @@ Các role MVP:
 ```txt
 ADMIN
 WAREHOUSE_STAFF
-SALES
 ```
 
 ---
@@ -1804,27 +1803,6 @@ Không mặc định được:
 * quản lý công nợ
 * xem lợi nhuận
 * quản lý user
-
----
-
-# 88. SALES
-
-Có thể:
-
-* quản lý khách hàng
-* xem vật liệu
-* xem tồn kho
-* tạo đơn bán
-* ghi nhận thanh toán nếu được cấp quyền
-* xem công nợ khách hàng
-
-Không mặc định được:
-
-* điều chỉnh tồn kho
-* xem giá vốn
-* nhập kho
-* quản lý supplier
-* kiểm kê
 
 ---
 
