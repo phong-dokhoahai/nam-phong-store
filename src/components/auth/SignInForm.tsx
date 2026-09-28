@@ -1,14 +1,58 @@
+import { useAuth, type AuthErrorCode } from "@/auth";
 import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
-import { useState } from "react";
-import { Link } from "react-router";
+import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useLocation, useNavigate } from "react-router";
+
+type SignInLocationState = {
+  from?: {
+    pathname?: string;
+    search?: string;
+  };
+};
+
+const authErrorTranslationKeys: Record<AuthErrorCode, string> = {
+  AUTH_CONFIG_MISSING: "auth.errors.configMissing",
+  AUTH_INVALID_CREDENTIALS: "auth.errors.invalidCredentials",
+  AUTH_INACTIVE_ACCOUNT: "auth.errors.inactive",
+  AUTH_PROFILE_MISSING: "auth.errors.profileMissing",
+  AUTH_UNKNOWN: "auth.errors.unknown",
+};
 
 export default function SignInForm() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn, isLoading, error, isConfigured, clearError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const locationState = location.state as SignInLocationState | null;
+  const destinationPath = locationState?.from?.pathname || "/";
+  const destinationSearch = locationState?.from?.search || "";
+  const authErrorMessage = error
+    ? t(authErrorTranslationKeys[error.code])
+    : null;
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    clearError();
+
+    try {
+      await signIn({ email: email.trim(), password });
+    } catch {
+      return;
+    }
+
+    navigate(`${destinationPath}${destinationSearch}`, { replace: true });
+  };
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="mx-auto w-full max-w-md pt-10">
@@ -17,17 +61,17 @@ export default function SignInForm() {
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeftIcon className="size-5 rtl:rotate-180" />
-          Back to dashboard
+          {t("auth.signIn.backToDashboard")}
         </Link>
       </div>
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 text-title-sm font-semibold text-gray-800 sm:text-title-md dark:text-white/90">
-              Sign In
+              {t("auth.signIn.title")}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              {t("auth.signIn.subtitle")}
             </p>
           </div>
           <div>
@@ -57,7 +101,7 @@ export default function SignInForm() {
                     fill="#EB4335"
                   />
                 </svg>
-                Sign in with Google
+                {t("auth.signIn.google")}
               </button>
               <button className="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
@@ -70,7 +114,7 @@ export default function SignInForm() {
                 >
                   <path d="M15.6705 1.875H18.4272L12.4047 8.75833L19.4897 18.125H13.9422L9.59717 12.4442L4.62554 18.125H1.86721L8.30887 10.7625L1.51221 1.875H7.20054L11.128 7.0675L15.6705 1.875ZM14.703 16.475H16.2305L6.37054 3.43833H4.73137L14.703 16.475Z" />
                 </svg>
-                Sign in with X
+                {t("auth.signIn.x")}
               </button>
             </div>
             <div className="relative py-3 sm:py-5">
@@ -79,56 +123,97 @@ export default function SignInForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="bg-white p-2 text-gray-400 sm:px-5 sm:py-2 dark:bg-gray-900">
-                  Or
+                  {t("auth.signIn.or")}
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-6">
+                {authErrorMessage && (
+                  <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/30 dark:bg-error-500/15 dark:text-error-400">
+                    {authErrorMessage}
+                  </div>
+                )}
+                {!isConfigured && (
+                  <div className="rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 dark:border-warning-500/30 dark:bg-warning-500/15 dark:text-warning-400">
+                    {t("auth.errors.configMissing")}
+                  </div>
+                )}
                 <div>
                   <Label>
-                    Email <span className="text-error-500">*</span>{" "}
+                    {t("auth.signIn.email")}{" "}
+                    <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder={t("auth.signIn.emailPlaceholder")}
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    disabled={isLoading || !isConfigured}
+                    required
+                    autoComplete="email"
+                  />
                 </div>
                 <div>
                   <Label>
-                    Password <span className="text-error-500">*</span>{" "}
+                    {t("auth.signIn.password")}{" "}
+                    <span className="text-error-500">*</span>{" "}
                   </Label>
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
+                      name="password"
+                      placeholder={t("auth.signIn.passwordPlaceholder")}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      disabled={isLoading || !isConfigured}
+                      required
+                      autoComplete="current-password"
                     />
-                    <span
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-e-4 top-1/2 z-30 -translate-y-1/2 cursor-pointer"
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute inset-e-4 top-1/2 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                      aria-label={
+                        showPassword
+                          ? t("auth.signIn.hidePassword")
+                          : t("auth.signIn.showPassword")
+                      }
+                      disabled={isLoading || !isConfigured}
                     >
                       {showPassword ? (
                         <EyeIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
                       ) : (
                         <EyeCloseIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
                       )}
-                    </span>
+                    </button>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Checkbox checked={isChecked} onChange={setIsChecked} />
                     <span className="block text-theme-sm font-normal text-gray-700 dark:text-gray-400">
-                      Keep me logged in
+                      {t("auth.signIn.keepLoggedIn")}
                     </span>
                   </div>
                   <Link
                     to="/reset-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
-                    Forgot password?
+                    {t("auth.signIn.forgotPassword")}
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
-                    Sign in
+                  <Button
+                    className="w-full"
+                    size="sm"
+                    type="submit"
+                    disabled={isLoading || !isConfigured}
+                  >
+                    {isLoading
+                      ? t("auth.signIn.signingIn")
+                      : t("auth.signIn.submit")}
                   </Button>
                 </div>
               </div>
@@ -136,12 +221,12 @@ export default function SignInForm() {
 
             <div className="mt-5">
               <p className="text-center text-sm font-normal text-gray-700 sm:text-start dark:text-gray-400">
-                Don&apos;t have an account? {""}
+                {t("auth.signIn.noAccount")} {""}
                 <Link
                   to="/signup"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                 >
-                  Sign Up
+                  {t("auth.signIn.signUp")}
                 </Link>
               </p>
             </div>

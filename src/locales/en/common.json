@@ -147,7 +147,42 @@
     "accountSettings": "Account settings",
     "support": "Support",
     "language": "Language",
+    "account": "Account",
+    "noEmail": "No email available",
     "signOut": "Sign out"
+  },
+  "auth": {
+    "signIn": {
+      "backToDashboard": "Back to dashboard",
+      "title": "Sign In",
+      "subtitle": "Enter your email and password to sign in.",
+      "google": "Sign in with Google",
+      "x": "Sign in with X",
+      "or": "Or",
+      "email": "Email",
+      "emailPlaceholder": "info@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "keepLoggedIn": "Keep me logged in",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up"
+    },
+    "errors": {
+      "configMissing": "Supabase authentication is not configured. Add the public URL and anon key before signing in.",
+      "invalidCredentials": "The email or password is incorrect.",
+      "inactive": "Your account is inactive or pending approval. Please contact an administrator.",
+      "profileMissing": "Your sign-in succeeded, but no application profile was found.",
+      "unknown": "Unable to sign in right now. Please try again."
+    },
+    "protected": {
+      "loading": "Checking your session...",
+      "inactive": "Your account cannot access dashboard routes right now."
+    }
   },
   "materials": {
     "title": "Materials",

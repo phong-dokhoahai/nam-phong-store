@@ -1,6 +1,18 @@
 # AGENTS.md — TailAdmin React Pro
 
 > React 19 admin dashboard template · Vite · Tailwind CSS v4 · react-i18next · ApexCharts · FullCalendar · Swiper
+## Required Context
+
+Trước khi thực hiện task, đọc tài liệu theo mức độ cần thiết:
+
+PROJECT.md
+BUSINESS_RULES.md nếu task liên quan nghiệp vụ
+DATABASE.md nếu task liên quan dữ liệu, Supabase hoặc migration
+ARCHITECTURE.md nếu task ảnh hưởng structure, dependency hoặc data flow
+CODING_RULES.md trước khi viết hoặc sửa code
+File/module liên quan trực tiếp đến task
+
+Không cần đọc toàn bộ repository nếu task chỉ ảnh hưởng một phạm vi nhỏ.
 
 ## Repo Map
 
