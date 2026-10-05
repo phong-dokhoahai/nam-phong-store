@@ -63,3 +63,20 @@ is_active_user() -> boolean
 ```
 
 Các function phải tránh RLS recursion khi đọc `profiles`. Nếu dùng `SECURITY DEFINER`, phải giới hạn `EXECUTE`, cố định `search_path` và chỉ trả thông tin cần thiết.
+
+### 5.5. First ADMIN bootstrap
+
+The first active ADMIN account is created with the local operator script:
+
+```text
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_PASSWORD=
+npm run admin:bootstrap
+```
+
+`ADMIN_EMAIL` is optional and defaults to `dokhoahaiphong@gmail.com`. The script creates or updates the Supabase Auth user, then ensures `public.profiles.role = 'ADMIN'` and `public.profiles.is_active = true`.
+
+The `service_role` database role requires `SELECT`, `INSERT`, and `UPDATE` on `public.profiles` for this bootstrap upsert, plus `EXECUTE` on `public.is_admin()` for the profile trigger. These privileges are granted by the `grant_service_role_profiles_bootstrap` and `grant_service_role_is_admin` migrations; the trigger permits service-role changes to `role` and `is_active`.
+
+Never write a real password or `SUPABASE_SERVICE_ROLE_KEY` into migrations, seed data, source files, frontend `VITE_*` variables, or logs. `ADMIN_PASSWORD` must come from the local shell environment or the script's interactive prompt.
