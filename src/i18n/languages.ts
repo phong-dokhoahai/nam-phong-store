@@ -1,7 +1,13 @@
-import { UsFlagIcon } from "@/icons";
+import {
+  DeFlagIcon,
+  EsFlagIcon,
+  SaFlagIcon,
+  UsFlagIcon,
+  VnFlagIcon,
+} from "@/icons";
 import type React from "react";
 
-export const locales = ["en"] as const;
+export const locales = ["en", "ar", "es", "de", "vi"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
@@ -22,28 +28,35 @@ export const languages: Language[] = [
     dir: "ltr",
     FlagIcon: UsFlagIcon,
   },
-  // {
-  //   id: "ar",
-  //   name: "Arabic (Saudi)",
-  //   shortName: "Arabic",
-  //   dir: "rtl",
-  //   FlagIcon: SaFlagIcon,
-  //   badge: "RTL",
-  // },
-  // {
-  //   id: "es",
-  //   name: "Español",
-  //   shortName: "Español",
-  //   dir: "ltr",
-  //   FlagIcon: EsFlagIcon,
-  // },
-  // {
-  //   id: "de",
-  //   name: "Deutsch",
-  //   shortName: "Deutsch",
-  //   dir: "ltr",
-  //   FlagIcon: DeFlagIcon,
-  // },
+  {
+    id: "ar",
+    name: "Arabic (Saudi)",
+    shortName: "Arabic",
+    dir: "rtl",
+    FlagIcon: SaFlagIcon,
+    badge: "RTL",
+  },
+  {
+    id: "es",
+    name: "Español",
+    shortName: "Español",
+    dir: "ltr",
+    FlagIcon: EsFlagIcon,
+  },
+  {
+    id: "de",
+    name: "Deutsch",
+    shortName: "Deutsch",
+    dir: "ltr",
+    FlagIcon: DeFlagIcon,
+  },
+  {
+    id: "vi",
+    name: "Tiếng Việt",
+    shortName: "Tiếng Việt",
+    dir: "ltr",
+    FlagIcon: VnFlagIcon,
+  },
 ];
 
 export function getLanguage(locale: Locale): Language {

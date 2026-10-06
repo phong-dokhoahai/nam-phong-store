@@ -9,9 +9,14 @@ import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
 import Home from "./pages/Dashboard/Ecommerce";
 import FormElements from "./pages/Forms/FormElements";
+import Categories from "./pages/MasterData/Categories";
+import Customers from "./pages/MasterData/Customers";
+import Suppliers from "./pages/MasterData/Suppliers";
+import Units from "./pages/MasterData/Units";
 import Materials from "./pages/Materials/Materials";
 import Blank from "./pages/OtherPage/Blank";
 import NotFound from "./pages/OtherPage/NotFound";
+import StockReceipts from "./pages/StockReceipts/StockReceipts";
 import BasicTables from "./pages/Tables/BasicTables";
 import Alerts from "./pages/UiElements/Alerts";
 import Avatars from "./pages/UiElements/Avatars";
@@ -39,6 +44,11 @@ export default function App() {
 
               {/* Inventory */}
               <Route path="/materials" element={<Materials />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/units" element={<Units />} />
+              <Route path="/suppliers" element={<Suppliers />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/stock-receipts" element={<StockReceipts />} />
 
               {/* Forms */}
               <Route path="/form-elements" element={<FormElements />} />

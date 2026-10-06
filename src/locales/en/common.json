@@ -33,6 +33,10 @@
       "finance": "Finance",
       "inventory": "Inventory",
       "materials": "Materials",
+      "categories": "Categories",
+      "units": "Units",
+      "suppliers": "Suppliers",
+      "customers": "Customers",
       "aiAssistant": "AI Assistant",
       "textGenerator": "Text Generator",
       "imageGenerator": "Image Generator",
@@ -122,7 +126,8 @@
       "supportReply": "Ticket Reply",
       "email": "Email",
       "inbox": "Inbox",
-      "inboxDetails": "Details"
+      "inboxDetails": "Details",
+      "stockReceipts": "Stock Receipts"
     },
     "widget": {
       "title": "#1 Tailwind CSS Dashboard",
@@ -258,6 +263,218 @@
       "save": "Unable to save material.",
       "deactivate": "Unable to deactivate material.",
       "duplicateSku": "Another material already uses this SKU."
+    }
+  },
+  "masterData": {
+    "common": {
+      "stats": {
+        "total": "Total records",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "toolbar": {
+        "allStatuses": "All statuses",
+        "liveSource": "Supabase data",
+        "demoSource": "Demo data"
+      },
+      "table": {
+        "record": "Record",
+        "status": "Status",
+        "actions": "Actions",
+        "noPhone": "No phone",
+        "noEmail": "No email"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "form": {
+        "code": "Code",
+        "name": "Name",
+        "phone": "Phone",
+        "email": "Email",
+        "address": "Address",
+        "taxCode": "Tax code",
+        "note": "Note",
+        "active": "Active",
+        "requiredError": "Code and name are required.",
+        "saving": "Saving..."
+      },
+      "deactivate": {
+        "deactivating": "Deactivating..."
+      }
+    },
+    "categories": {
+      "title": "Categories",
+      "listTitle": "Category Management",
+      "loading": "Loading categories...",
+      "toolbar": {
+        "searchPlaceholder": "Search by name or code..."
+      },
+      "table": {
+        "details": "Description",
+        "noDescription": "No description"
+      },
+      "actions": {
+        "add": "Add Category",
+        "edit": "Edit category",
+        "deactivate": "Deactivate"
+      },
+      "empty": {
+        "title": "No categories found",
+        "description": "Adjust your filters or add a new category."
+      },
+      "form": {
+        "createTitle": "Add category",
+        "editTitle": "Edit category",
+        "subtitle": "Group materials for filtering, reports, and transaction entry.",
+        "codePlaceholder": "CEMENT",
+        "namePlaceholder": "Cement",
+        "description": "Description",
+        "descriptionPlaceholder": "Notes about when this category should be used..."
+      },
+      "deactivate": {
+        "title": "Deactivate category",
+        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+      },
+      "errors": {
+        "load": "Unable to load categories.",
+        "save": "Unable to save category.",
+        "deactivate": "Unable to deactivate category.",
+        "duplicateCode": "Another category already uses this code.",
+        "protectedRecord": "This category is protected."
+      }
+    },
+    "units": {
+      "title": "Units",
+      "listTitle": "Unit Management",
+      "loading": "Loading units...",
+      "toolbar": {
+        "searchPlaceholder": "Search by name or code..."
+      },
+      "table": {
+        "details": "Precision",
+        "precision": "{value} decimal places"
+      },
+      "actions": {
+        "add": "Add Unit",
+        "edit": "Edit unit",
+        "deactivate": "Deactivate"
+      },
+      "empty": {
+        "title": "No units found",
+        "description": "Adjust your filters or add a new unit."
+      },
+      "form": {
+        "createTitle": "Add unit",
+        "editTitle": "Edit unit",
+        "subtitle": "Units define how material quantities are entered and displayed.",
+        "codePlaceholder": "M3",
+        "namePlaceholder": "Cubic meter",
+        "precision": "Quantity precision",
+        "precisionOption": "{value} decimal places",
+        "precisionError": "Precision must be between 0 and 3."
+      },
+      "deactivate": {
+        "title": "Deactivate unit",
+        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+      },
+      "errors": {
+        "load": "Unable to load units.",
+        "save": "Unable to save unit.",
+        "deactivate": "Unable to deactivate unit.",
+        "duplicateCode": "Another unit already uses this code.",
+        "protectedRecord": "This unit is protected."
+      }
+    },
+    "customers": {
+      "title": "Customers",
+      "listTitle": "Customer Management",
+      "loading": "Loading customers...",
+      "toolbar": {
+        "searchPlaceholder": "Search by name, code, phone, or email..."
+      },
+      "table": {
+        "details": "Contact"
+      },
+      "actions": {
+        "add": "Add Customer",
+        "edit": "Edit customer",
+        "deactivate": "Deactivate"
+      },
+      "empty": {
+        "title": "No customers found",
+        "description": "Adjust your filters or add a new customer."
+      },
+      "form": {
+        "createTitle": "Add customer",
+        "editTitle": "Edit customer",
+        "subtitle": "Manage customer contact details used for sales and receivables.",
+        "codePlaceholder": "KH-MINH-LONG",
+        "namePlaceholder": "Minh Long Construction",
+        "phonePlaceholder": "0901 234 567",
+        "emailPlaceholder": "accounting@example.com",
+        "addressPlaceholder": "Billing or delivery address...",
+        "taxCodePlaceholder": "0312345678",
+        "notePlaceholder": "Credit terms, contact notes, or delivery preferences..."
+      },
+      "deactivate": {
+        "title": "Deactivate customer",
+        "description": "Deactivate {name}? Existing sales and debt history remains intact, but it will no longer be available for new transactions."
+      },
+      "errors": {
+        "load": "Unable to load customers.",
+        "save": "Unable to save customer.",
+        "deactivate": "Unable to deactivate customer.",
+        "duplicateCode": "Another customer already uses this code.",
+        "protectedRecord": "The walk-in customer is a protected system record and cannot be deactivated."
+      }
+    },
+    "suppliers": {
+      "title": "Suppliers",
+      "listTitle": "Supplier Management",
+      "loading": "Loading suppliers...",
+      "toolbar": {
+        "searchPlaceholder": "Search by name, code, phone, or email..."
+      },
+      "table": {
+        "details": "Contact",
+        "contact": "Contact: {name}"
+      },
+      "actions": {
+        "add": "Add Supplier",
+        "edit": "Edit supplier",
+        "deactivate": "Deactivate"
+      },
+      "empty": {
+        "title": "No suppliers found",
+        "description": "Adjust your filters or add a new supplier."
+      },
+      "form": {
+        "createTitle": "Add supplier",
+        "editTitle": "Edit supplier",
+        "subtitle": "Manage supplier contact details used for purchasing and payables.",
+        "codePlaceholder": "NCC-XM-VIET",
+        "namePlaceholder": "Viet Cement Supply",
+        "contactName": "Contact name",
+        "contactNamePlaceholder": "Nguyen Van Minh",
+        "phonePlaceholder": "028 3456 7890",
+        "emailPlaceholder": "sales@example.com",
+        "addressPlaceholder": "Supplier address...",
+        "taxCodePlaceholder": "0300001111",
+        "notePlaceholder": "Lead time, purchasing notes, or payment terms..."
+      },
+      "deactivate": {
+        "title": "Deactivate supplier",
+        "description": "Deactivate {name}? Existing purchase and debt history remains intact, but it will no longer be available for new transactions."
+      },
+      "errors": {
+        "load": "Unable to load suppliers.",
+        "save": "Unable to save supplier.",
+        "deactivate": "Unable to deactivate supplier.",
+        "duplicateCode": "Another supplier already uses this code.",
+        "protectedRecord": "This supplier is protected."
+      }
     }
   },
   "ecommerce": {
@@ -988,6 +1205,97 @@
         "completed": "Completed",
         "inProgress": "In Progress"
       }
+    }
+  },
+  "stockReceipts": {
+    "title": "Stock Receipts",
+    "listTitle": "Stock Receipt Management",
+    "loading": "Loading stock receipts...",
+    "toolbar": {
+      "searchLabel": "Search stock receipts",
+      "statusLabel": "Filter stock receipts by status",
+      "searchPlaceholder": "Search by receipt, supplier, or invoice...",
+      "allStatuses": "All statuses",
+      "liveSource": "Supabase data",
+      "demoSource": "Demo data"
+    },
+    "table": {
+      "receipt": "Receipt",
+      "supplier": "Supplier",
+      "lines": "Lines",
+      "lineSummary": "{count} lines / {quantity}",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    },
+    "actions": {
+      "create": "New Receipt",
+      "edit": "Edit receipt",
+      "view": "View receipt",
+      "confirm": "Confirm receipt",
+      "saveDraft": "Save Draft",
+      "saving": "Saving..."
+    },
+    "empty": {
+      "title": "No stock receipts found",
+      "description": "Create a draft receipt to start receiving materials."
+    },
+    "editor": {
+      "createTitle": "New stock receipt",
+      "editTitle": "Edit {code}",
+      "subtitle": "Drafts can be edited. Confirmation runs the database transaction that increases stock."
+    },
+    "form": {
+      "supplier": "Supplier",
+      "supplierPlaceholder": "Select supplier",
+      "receiptDate": "Receipt date",
+      "supplierInvoiceNumber": "Supplier invoice",
+      "supplierInvoicePlaceholder": "Invoice number",
+      "note": "Note",
+      "notePlaceholder": "Internal receiving notes..."
+    },
+    "lines": {
+      "title": "Material lines",
+      "add": "Add material line",
+      "empty": "Add at least one material line before saving or confirming.",
+      "material": "Material",
+      "unit": "Unit",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price",
+      "discount": "Discount",
+      "remove": "Remove line"
+    },
+    "summary": {
+      "subtotal": "Subtotal",
+      "receiptDiscount": "Receipt discount",
+      "shippingFee": "Shipping fee",
+      "taxAmount": "Tax amount",
+      "total": "Total"
+    },
+    "confirm": {
+      "title": "Confirm stock receipt",
+      "description": "Confirm {code} for {total}? This will increase inventory and create payable debt.",
+      "confirming": "Confirming..."
+    },
+    "errors": {
+      "load": "Unable to load stock receipts.",
+      "retry": "Try again",
+      "save": "Unable to save stock receipt.",
+      "confirm": "Unable to confirm stock receipt.",
+      "requiredHeader": "Supplier and receipt date are required.",
+      "requiredLines": "Add at least one material line.",
+      "invalidLine": "Each line requires a material, quantity greater than 0, valid price, and valid discount.",
+      "lineMaterial": "Select a material for this line.",
+      "lineQuantity": "Quantity must be greater than 0.",
+      "lineUnitPrice": "Unit price must be 0 or higher.",
+      "lineDiscount": "Discount must be 0 or higher.",
+      "lineDiscountTooHigh": "Discount cannot exceed this line total.",
+      "duplicateMaterial": "Each material can only appear once on a receipt."
     }
   }
 }

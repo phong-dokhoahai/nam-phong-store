@@ -1,0 +1,1301 @@
+{
+  "common": {
+    "home": "Trang chủ",
+    "edit": "Sửa",
+    "close": "Đóng",
+    "saveChanges": "Lưu thay đổi",
+    "viewMore": "Xem thêm",
+    "delete": "Xóa",
+    "filter": "Lọc",
+    "seeAll": "Xem tất cả"
+  },
+  "sidebar": {
+    "groups": {
+      "menu": "Menu",
+      "support": "Hỗ trợ",
+      "others": "Khác"
+    },
+    "badges": {
+      "new": "mới",
+      "pro": "pro"
+    },
+    "items": {
+      "dashboard": "Bảng điều khiển",
+      "ecommerceHome": "Thương mại",
+      "analytics": "Phân tích",
+      "marketing": "Marketing",
+      "crm": "CRM",
+      "stocks": "Cổ phiếu",
+      "saas": "SaaS",
+      "logistics": "Logistics",
+      "ai": "AI",
+      "sales": "Bán hàng",
+      "finance": "Tài chính",
+      "inventory": "Kho",
+      "materials": "Vật liệu",
+      "categories": "Danh mục",
+      "units": "Đơn vị",
+      "suppliers": "Nhà cung cấp",
+      "customers": "Khách hàng",
+      "aiAssistant": "Trợ lý AI",
+      "textGenerator": "Tạo văn bản",
+      "imageGenerator": "Tạo hình ảnh",
+      "codeGenerator": "Tạo mã",
+      "videoGenerator": "Tạo video",
+      "aiSettings": "Cài đặt AI",
+      "ecommerce": "Thương mại điện tử",
+      "products": "Sản phẩm",
+      "addProduct": "Thêm sản phẩm",
+      "billing": "Thanh toán",
+      "invoices": "Hóa đơn",
+      "singleInvoice": "Chi tiết hóa đơn",
+      "createInvoice": "Tạo hóa đơn",
+      "transactions": "Giao dịch",
+      "singleTransaction": "Chi tiết giao dịch",
+      "calendar": "Lịch",
+      "userProfile": "Hồ sơ người dùng",
+      "task": "Công việc",
+      "taskList": "Danh sách",
+      "kanban": "Kanban",
+      "forms": "Biểu mẫu",
+      "formElements": "Thành phần biểu mẫu",
+      "formLayout": "Bố cục biểu mẫu",
+      "tables": "Bảng",
+      "basicTables": "Bảng cơ bản",
+      "dataTables": "Bảng dữ liệu",
+      "pages": "Trang",
+      "fileManager": "Quản lý tệp",
+      "pricingTables": "Bảng giá",
+      "faq": "FAQ",
+      "apiKeys": "Khóa API",
+      "integrations": "Tích hợp",
+      "blankPage": "Trang trống",
+      "error404": "Lỗi 404",
+      "error500": "Lỗi 500",
+      "error503": "Lỗi 503",
+      "comingSoon": "Sắp ra mắt",
+      "maintenance": "Bảo trì",
+      "successPage": "Thành công",
+      "layouts": "Bố cục",
+      "layoutOne": "Bố cục một",
+      "layoutTwo": "Bố cục hai",
+      "layoutThree": "Bố cục ba",
+      "layoutFour": "Bố cục bốn",
+      "layoutFive": "Bố cục năm",
+      "layoutSix": "Bố cục sáu",
+      "charts": "Biểu đồ",
+      "lineChart": "Biểu đồ đường",
+      "barChart": "Biểu đồ cột",
+      "pieChart": "Biểu đồ tròn",
+      "radarChart": "Biểu đồ radar",
+      "radialChart": "Biểu đồ radial",
+      "maps": "Bản đồ",
+      "mapsGoogle": "Bản đồ",
+      "vectorMap": "Bản đồ vector",
+      "uiElements": "Thành phần UI",
+      "alerts": "Cảnh báo",
+      "avatar": "Ảnh đại diện",
+      "badge": "Nhãn",
+      "breadcrumb": "Breadcrumb",
+      "buttons": "Nút",
+      "buttonsGroup": "Nhóm nút",
+      "cards": "Thẻ",
+      "carousel": "Carousel",
+      "dropdowns": "Dropdown",
+      "images": "Hình ảnh",
+      "links": "Liên kết",
+      "listView": "Danh sách",
+      "modals": "Modal",
+      "notificationUi": "Thông báo",
+      "pagination": "Phân trang",
+      "popovers": "Popover",
+      "progressbar": "Thanh tiến trình",
+      "ribbons": "Ruy băng",
+      "spinners": "Loading",
+      "tabs": "Tab",
+      "tooltips": "Tooltip",
+      "videos": "Video",
+      "authentication": "Xác thực",
+      "signIn": "Đăng nhập",
+      "signUp": "Đăng ký",
+      "resetPassword": "Đặt lại mật khẩu",
+      "twoStepVerification": "Xác minh hai bước",
+      "chat": "Chat",
+      "supportMenu": "Phiếu hỗ trợ",
+      "supportList": "Danh sách phiếu",
+      "supportReply": "Phản hồi phiếu",
+      "email": "Email",
+      "inbox": "Hộp thư",
+      "inboxDetails": "Chi tiết",
+      "stockReceipts": "Phiếu nhập kho"
+    },
+    "widget": {
+      "title": "Dashboard Tailwind CSS #1",
+      "description": "Mẫu admin Tailwind CSS với hơn 500 component và trang giao diện.",
+      "purchasePlan": "Mua gói"
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Tìm kiếm hoặc nhập lệnh...",
+    "toggleSidebar": "Ẩn/hiện thanh bên",
+    "notifications": {
+      "title": "Thông báo",
+      "requestsPermission": "yêu cầu quyền thay đổi",
+      "project": "Dự án",
+      "minAgo": "{count} phút trước",
+      "hrAgo": "{count} giờ trước",
+      "viewAll": "Xem tất cả thông báo"
+    }
+  },
+  "userDropdown": {
+    "editProfile": "Sửa hồ sơ",
+    "accountSettings": "Cài đặt tài khoản",
+    "support": "Hỗ trợ",
+    "language": "Ngôn ngữ",
+    "account": "Tài khoản",
+    "noEmail": "Chưa có email",
+    "signOut": "Đăng xuất"
+  },
+  "auth": {
+    "signIn": {
+      "backToDashboard": "Quay lại dashboard",
+      "title": "Đăng nhập",
+      "subtitle": "Nhập email và mật khẩu để đăng nhập.",
+      "google": "Đăng nhập bằng Google",
+      "x": "Đăng nhập bằng X",
+      "or": "Hoặc",
+      "email": "Email",
+      "emailPlaceholder": "info@example.com",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu",
+      "keepLoggedIn": "Giữ đăng nhập",
+      "forgotPassword": "Quên mật khẩu?",
+      "submit": "Đăng nhập",
+      "signingIn": "Đang đăng nhập...",
+      "noAccount": "Chưa có tài khoản?",
+      "signUp": "Đăng ký"
+    },
+    "errors": {
+      "configMissing": "Chưa cấu hình xác thực Supabase. Hãy thêm public URL và anon key trước khi đăng nhập.",
+      "invalidCredentials": "Email hoặc mật khẩu không đúng.",
+      "inactive": "Tài khoản của bạn đang bị khóa hoặc chờ duyệt. Vui lòng liên hệ quản trị viên.",
+      "profileMissing": "Đăng nhập thành công, nhưng không tìm thấy hồ sơ ứng dụng.",
+      "unknown": "Chưa thể đăng nhập lúc này. Vui lòng thử lại."
+    },
+    "protected": {
+      "loading": "Đang kiểm tra phiên đăng nhập...",
+      "inactive": "Tài khoản của bạn hiện không thể truy cập dashboard."
+    }
+  },
+  "materials": {
+    "title": "Vật liệu",
+    "listTitle": "Quản lý vật liệu",
+    "loading": "Đang tải vật liệu...",
+    "stats": {
+      "total": "Tổng vật liệu",
+      "active": "Vật liệu đang dùng",
+      "lowStock": "Sắp hết hàng",
+      "outOfStock": "Hết hàng"
+    },
+    "toolbar": {
+      "searchPlaceholder": "Tìm theo tên hoặc SKU...",
+      "allCategories": "Tất cả danh mục",
+      "allStatuses": "Tất cả trạng thái",
+      "liveSource": "Dữ liệu Supabase",
+      "demoSource": "Dữ liệu mẫu"
+    },
+    "table": {
+      "material": "Vật liệu",
+      "category": "Danh mục",
+      "stock": "Tồn kho",
+      "prices": "Giá",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "minimum": "Tối thiểu {value}",
+      "purchase": "Mua {value}"
+    },
+    "status": {
+      "active": "Đang dùng",
+      "inactive": "Ngưng dùng",
+      "lowStock": "Sắp hết hàng",
+      "outOfStock": "Hết hàng"
+    },
+    "actions": {
+      "add": "Thêm vật liệu",
+      "edit": "Sửa vật liệu",
+      "deactivate": "Ngưng dùng"
+    },
+    "empty": {
+      "title": "Không tìm thấy vật liệu",
+      "description": "Điều chỉnh bộ lọc hoặc thêm vật liệu mới."
+    },
+    "form": {
+      "createTitle": "Thêm vật liệu",
+      "editTitle": "Sửa vật liệu",
+      "subtitle": "Chỉ quản lý dữ liệu danh mục. Thay đổi tồn kho vẫn thuộc phiếu nhập/xuất.",
+      "sku": "SKU",
+      "skuPlaceholder": "XM-PCB40",
+      "name": "Tên",
+      "namePlaceholder": "Xi măng PCB40",
+      "category": "Danh mục",
+      "categoryPlaceholder": "Chọn danh mục",
+      "unit": "Đơn vị",
+      "unitPlaceholder": "Chọn đơn vị",
+      "purchasePrice": "Giá mua mặc định",
+      "salePrice": "Giá bán mặc định",
+      "minimumStock": "Tồn kho tối thiểu",
+      "active": "Đang dùng",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Ghi chú mua hàng, lưu kho hoặc sử dụng...",
+      "requiredError": "SKU và tên là bắt buộc.",
+      "lookupError": "Danh mục và đơn vị là bắt buộc.",
+      "saving": "Đang lưu..."
+    },
+    "delete": {
+      "title": "Ngưng dùng vật liệu",
+      "description": "Ngưng dùng {name}? Lịch sử hiện có vẫn được giữ, nhưng vật liệu này sẽ không còn dùng cho giao dịch mới.",
+      "deactivating": "Đang ngưng dùng..."
+    },
+    "errors": {
+      "load": "Không thể tải vật liệu.",
+      "save": "Không thể lưu vật liệu.",
+      "deactivate": "Không thể ngưng dùng vật liệu.",
+      "duplicateSku": "Đã có vật liệu khác dùng SKU này."
+    }
+  },
+  "masterData": {
+    "common": {
+      "stats": {
+        "total": "Tổng bản ghi",
+        "active": "Đang dùng",
+        "inactive": "Ngưng dùng"
+      },
+      "toolbar": {
+        "allStatuses": "Tất cả trạng thái",
+        "liveSource": "Dữ liệu Supabase",
+        "demoSource": "Dữ liệu mẫu"
+      },
+      "table": {
+        "record": "Bản ghi",
+        "status": "Trạng thái",
+        "actions": "Thao tác",
+        "noPhone": "Chưa có số điện thoại",
+        "noEmail": "Chưa có email"
+      },
+      "status": {
+        "active": "Đang dùng",
+        "inactive": "Ngưng dùng"
+      },
+      "form": {
+        "code": "Mã",
+        "name": "Tên",
+        "phone": "Điện thoại",
+        "email": "Email",
+        "address": "Địa chỉ",
+        "taxCode": "Mã số thuế",
+        "note": "Ghi chú",
+        "active": "Đang dùng",
+        "requiredError": "Mã và tên là bắt buộc.",
+        "saving": "Đang lưu..."
+      },
+      "deactivate": {
+        "deactivating": "Đang ngưng dùng..."
+      }
+    },
+    "categories": {
+      "title": "Danh mục",
+      "listTitle": "Quản lý danh mục",
+      "loading": "Đang tải danh mục...",
+      "toolbar": {
+        "searchPlaceholder": "Tìm theo tên hoặc mã..."
+      },
+      "table": {
+        "details": "Mô tả",
+        "noDescription": "Chưa có mô tả"
+      },
+      "actions": {
+        "add": "Thêm danh mục",
+        "edit": "Sửa danh mục",
+        "deactivate": "Ngưng dùng"
+      },
+      "empty": {
+        "title": "Không tìm thấy danh mục",
+        "description": "Điều chỉnh bộ lọc hoặc thêm danh mục mới."
+      },
+      "form": {
+        "createTitle": "Thêm danh mục",
+        "editTitle": "Sửa danh mục",
+        "subtitle": "Nhóm vật liệu để lọc, báo cáo và nhập giao dịch.",
+        "codePlaceholder": "XI_MANG",
+        "namePlaceholder": "Xi măng",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Ghi chú khi nào nên dùng danh mục này..."
+      },
+      "deactivate": {
+        "title": "Ngưng dùng danh mục",
+        "description": "Ngưng dùng {name}? Lịch sử vật liệu vẫn được giữ, nhưng danh mục này sẽ không còn dùng cho thiết lập mới."
+      },
+      "errors": {
+        "load": "Không thể tải danh mục.",
+        "save": "Không thể lưu danh mục.",
+        "deactivate": "Không thể ngưng dùng danh mục.",
+        "duplicateCode": "Đã có danh mục khác dùng mã này.",
+        "protectedRecord": "Danh mục này được hệ thống bảo vệ."
+      }
+    },
+    "units": {
+      "title": "Đơn vị",
+      "listTitle": "Quản lý đơn vị",
+      "loading": "Đang tải đơn vị...",
+      "toolbar": {
+        "searchPlaceholder": "Tìm theo tên hoặc mã..."
+      },
+      "table": {
+        "details": "Độ chính xác",
+        "precision": "{value} chữ số thập phân"
+      },
+      "actions": {
+        "add": "Thêm đơn vị",
+        "edit": "Sửa đơn vị",
+        "deactivate": "Ngưng dùng"
+      },
+      "empty": {
+        "title": "Không tìm thấy đơn vị",
+        "description": "Điều chỉnh bộ lọc hoặc thêm đơn vị mới."
+      },
+      "form": {
+        "createTitle": "Thêm đơn vị",
+        "editTitle": "Sửa đơn vị",
+        "subtitle": "Đơn vị quy định cách nhập và hiển thị số lượng vật liệu.",
+        "codePlaceholder": "M3",
+        "namePlaceholder": "Mét khối",
+        "precision": "Độ chính xác số lượng",
+        "precisionOption": "{value} chữ số thập phân",
+        "precisionError": "Độ chính xác phải từ 0 đến 3."
+      },
+      "deactivate": {
+        "title": "Ngưng dùng đơn vị",
+        "description": "Ngưng dùng {name}? Lịch sử vật liệu vẫn được giữ, nhưng đơn vị này sẽ không còn dùng cho thiết lập mới."
+      },
+      "errors": {
+        "load": "Không thể tải đơn vị.",
+        "save": "Không thể lưu đơn vị.",
+        "deactivate": "Không thể ngưng dùng đơn vị.",
+        "duplicateCode": "Đã có đơn vị khác dùng mã này.",
+        "protectedRecord": "Đơn vị này được hệ thống bảo vệ."
+      }
+    },
+    "customers": {
+      "title": "Khách hàng",
+      "listTitle": "Quản lý khách hàng",
+      "loading": "Đang tải khách hàng...",
+      "toolbar": {
+        "searchPlaceholder": "Tìm theo tên, mã, điện thoại hoặc email..."
+      },
+      "table": {
+        "details": "Liên hệ"
+      },
+      "actions": {
+        "add": "Thêm khách hàng",
+        "edit": "Sửa khách hàng",
+        "deactivate": "Ngưng dùng"
+      },
+      "empty": {
+        "title": "Không tìm thấy khách hàng",
+        "description": "Điều chỉnh bộ lọc hoặc thêm khách hàng mới."
+      },
+      "form": {
+        "createTitle": "Thêm khách hàng",
+        "editTitle": "Sửa khách hàng",
+        "subtitle": "Quản lý thông tin liên hệ khách hàng dùng cho bán hàng và công nợ phải thu.",
+        "codePlaceholder": "KH-MINH-LONG",
+        "namePlaceholder": "Xây dựng Minh Long",
+        "phonePlaceholder": "0901 234 567",
+        "emailPlaceholder": "ketoan@example.com",
+        "addressPlaceholder": "Địa chỉ xuất hóa đơn hoặc giao hàng...",
+        "taxCodePlaceholder": "0312345678",
+        "notePlaceholder": "Điều khoản công nợ, ghi chú liên hệ hoặc yêu cầu giao hàng..."
+      },
+      "deactivate": {
+        "title": "Ngưng dùng khách hàng",
+        "description": "Ngưng dùng {name}? Lịch sử bán hàng và công nợ vẫn được giữ, nhưng khách hàng này sẽ không còn dùng cho giao dịch mới."
+      },
+      "errors": {
+        "load": "Không thể tải khách hàng.",
+        "save": "Không thể lưu khách hàng.",
+        "deactivate": "Không thể ngưng dùng khách hàng.",
+        "duplicateCode": "Đã có khách hàng khác dùng mã này.",
+        "protectedRecord": "Khách lẻ là bản ghi hệ thống được bảo vệ và không thể ngưng dùng."
+      }
+    },
+    "suppliers": {
+      "title": "Nhà cung cấp",
+      "listTitle": "Quản lý nhà cung cấp",
+      "loading": "Đang tải nhà cung cấp...",
+      "toolbar": {
+        "searchPlaceholder": "Tìm theo tên, mã, điện thoại hoặc email..."
+      },
+      "table": {
+        "details": "Liên hệ",
+        "contact": "Liên hệ: {name}"
+      },
+      "actions": {
+        "add": "Thêm nhà cung cấp",
+        "edit": "Sửa nhà cung cấp",
+        "deactivate": "Ngưng dùng"
+      },
+      "empty": {
+        "title": "Không tìm thấy nhà cung cấp",
+        "description": "Điều chỉnh bộ lọc hoặc thêm nhà cung cấp mới."
+      },
+      "form": {
+        "createTitle": "Thêm nhà cung cấp",
+        "editTitle": "Sửa nhà cung cấp",
+        "subtitle": "Quản lý thông tin liên hệ nhà cung cấp dùng cho mua hàng và công nợ phải trả.",
+        "codePlaceholder": "NCC-XM-VIET",
+        "namePlaceholder": "Xi măng Việt",
+        "contactName": "Người liên hệ",
+        "contactNamePlaceholder": "Nguyễn Văn Minh",
+        "phonePlaceholder": "028 3456 7890",
+        "emailPlaceholder": "sales@example.com",
+        "addressPlaceholder": "Địa chỉ nhà cung cấp...",
+        "taxCodePlaceholder": "0300001111",
+        "notePlaceholder": "Thời gian giao hàng, ghi chú mua hàng hoặc điều khoản thanh toán..."
+      },
+      "deactivate": {
+        "title": "Ngưng dùng nhà cung cấp",
+        "description": "Ngưng dùng {name}? Lịch sử mua hàng và công nợ vẫn được giữ, nhưng nhà cung cấp này sẽ không còn dùng cho giao dịch mới."
+      },
+      "errors": {
+        "load": "Không thể tải nhà cung cấp.",
+        "save": "Không thể lưu nhà cung cấp.",
+        "deactivate": "Không thể ngưng dùng nhà cung cấp.",
+        "duplicateCode": "Đã có nhà cung cấp khác dùng mã này.",
+        "protectedRecord": "Nhà cung cấp này được hệ thống bảo vệ."
+      }
+    }
+  },
+  "ecommerce": {
+    "title": "E-commerce Dashboard",
+    "metrics": {
+      "customers": "Customers",
+      "orders": "Orders"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "monthlySales": {
+      "title": "Monthly Sales",
+      "series": "Sales"
+    },
+    "monthlyTarget": {
+      "title": "Monthly Target",
+      "subtitle": "Target you’ve set for each month",
+      "earned": "You earn {amount} today, it's higher than last month. Keep up your good work!",
+      "target": "Target",
+      "revenue": "Revenue",
+      "today": "Today"
+    },
+    "statistics": {
+      "title": "Statistics",
+      "subtitle": "Target you've set for each month",
+      "sales": "Sales",
+      "revenue": "Revenue",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annually": "Annually",
+      "selectDateRange": "Select date range"
+    },
+    "recentOrders": {
+      "title": "Recent Orders",
+      "products": "Products",
+      "category": "Category",
+      "price": "Price",
+      "status": "Status",
+      "variants": "{count, plural, one {# Variant} other {# Variants}}",
+      "categories": {
+        "laptop": "Laptop",
+        "watch": "Watch",
+        "smartphone": "SmartPhone",
+        "electronics": "Electronics",
+        "accessories": "Accessories"
+      },
+      "statuses": {
+        "delivered": "Delivered",
+        "pending": "Pending",
+        "canceled": "Canceled"
+      }
+    },
+    "demographic": {
+      "title": "Customers Demographic",
+      "subtitle": "Number of customer based on country",
+      "customers": "{count} Customers",
+      "usa": "USA",
+      "france": "France"
+    }
+  },
+  "analytics": {
+    "metrics": {
+      "uniqueVisitors": "Unique Visitors",
+      "totalPageviews": "Total Pageviews",
+      "bounceRate": "Bounce Rate",
+      "visitDuration": "Visit Duration",
+      "vsLastMonth": "Vs last month"
+    },
+    "barChart": {
+      "title": "Analytics",
+      "subtitle": "Visitor analytics of last 30 days"
+    },
+    "topChannels": {
+      "title": "Top Channels",
+      "source": "Source",
+      "visitors": "Visitors",
+      "channelsReport": "Channels Report"
+    },
+    "topPages": {
+      "title": "Top Pages",
+      "source": "Source",
+      "pageview": "Pageview",
+      "channelsReport": "Channels Report"
+    },
+    "activeUsers": {
+      "title": "Active Users",
+      "liveVisitors": "Live visitors",
+      "avgDaily": "Avg, Daily",
+      "avgWeekly": "Avg, Weekly",
+      "avgMonthly": "Avg, Monthly"
+    },
+    "acquisitionChannels": {
+      "title": "Acquisition Channels",
+      "direct": "Direct",
+      "referral": "Referral",
+      "organicSearch": "Organic Search",
+      "social": "Social"
+    },
+    "session": {
+      "title": "Sessions By Device",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "tablet": "Tablet"
+    },
+    "recentOrders": {
+      "title": "Recent Orders",
+      "products": "Products",
+      "category": "Category",
+      "country": "Country",
+      "cr": "CR",
+      "value": "Value",
+      "categories": {
+        "uiKits": "UI Kits",
+        "templates": "Templates",
+        "saas": "SaaS"
+      },
+      "crDashboard": "Dashboard"
+    }
+  },
+  "notFound": {
+    "error": "LỖI",
+    "message": "Không tìm thấy trang bạn đang tìm.",
+    "backHome": "Quay về trang chủ"
+  },
+  "marketing": {
+    "metrics": {
+      "avgClientRating": "Avg. Client Rating",
+      "instagramFollowers": "Instagram Followers",
+      "totalRevenue": "Total Revenue",
+      "vsLastMonth": "Vs last month"
+    },
+    "impressionChart": {
+      "title": "Impression & Data Traffic",
+      "totalRevenue": "Total Revenue",
+      "sales": "Sales",
+      "revenue": "Revenue"
+    },
+    "featuredCampaign": {
+      "title": "Featured Campaigns",
+      "viewMore": "View More",
+      "delete": "Delete",
+      "products": "Products",
+      "campaign": "Campaign",
+      "status": "Status",
+      "adsCampaign": "Ads campaign",
+      "campaigns": {
+        "growBrand": "Grow your brand by...",
+        "betterIdeas": "Make Better Ideas...",
+        "increaseTraffic": "Increase your website tra..."
+      },
+      "statuses": {
+        "success": "Success",
+        "pending": "Pending",
+        "failed": "Failed"
+      }
+    },
+    "trafficStats": {
+      "title": "Traffic Stats",
+      "viewMore": "View More",
+      "delete": "Delete",
+      "newSubscribers": "New Subscribers",
+      "conversionRate": "Conversion Rate",
+      "pageBounceRate": "Page Bounce Rate",
+      "thenLastWeek": "then last Week",
+      "newSales": "New Sales"
+    },
+    "trafficSource": {
+      "title": "Top Traffic Source",
+      "viewMore": "View More",
+      "delete": "Delete",
+      "viewAll": "View All"
+    }
+  },
+  "crm": {
+    "metrics": {
+      "activeDeal": "Active Deal",
+      "revenueTotal": "Revenue Total",
+      "closedDeals": "Closed Deals",
+      "lastMonth": "last month"
+    },
+    "statistics": {
+      "title": "Statistics",
+      "subtitle": "Target you’ve set for each month",
+      "avgYearlyProfit": "Avg. Yearly Profit",
+      "sales": "Sales",
+      "revenue": "Revenue"
+    },
+    "estimatedRevenue": {
+      "title": "Estimated Revenue",
+      "subtitle": "Target you’ve set for each month",
+      "goals": "June Goals",
+      "marketing": "Marketing",
+      "sales": "Sales"
+    },
+    "salesCategory": {
+      "title": "Sales Category",
+      "affiliate": "Affiliate",
+      "direct": "Direct",
+      "adsense": "Adsense",
+      "affiliateProgram": "Affiliate Program",
+      "directBuy": "Direct Buy",
+      "products": "Products",
+      "total": "Total",
+      "usedOf": "Used of"
+    },
+    "upcomingSchedule": {
+      "title": "Upcoming Schedule",
+      "schedules": {
+        "item1": {
+          "title": "Business Analytics Press",
+          "description": "Exploring the Future of Data-Driven +6 more"
+        },
+        "item2": {
+          "title": "Business Sprint",
+          "description": "Techniques from Business Sprint +2 more"
+        },
+        "item3": {
+          "title": "Customer Review Meeting",
+          "description": "Insights from the Customer Review Meeting +8 more"
+        }
+      }
+    },
+    "recentOrders": {
+      "title": "Recent Orders",
+      "dealId": "Deal ID",
+      "customer": "Customer",
+      "productService": "Product/Service",
+      "dealValue": "Deal Value",
+      "closeDate": "Close Date",
+      "status": "Status",
+      "action": "Action",
+      "products": {
+        "softwareLicense": "Software License",
+        "cloudHosting": "Cloud Hosting",
+        "webDomain": "Web Domain",
+        "sslCertificate": "SSL Certificate",
+        "premiumSupport": "Premium Support"
+      },
+      "statuses": {
+        "complete": "Complete",
+        "pending": "Pending",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "stocks": {
+    "title": "Stocks",
+    "dividend": {
+      "title": "Dividend",
+      "viewMore": "View More",
+      "delete": "Delete"
+    },
+    "portfolioPerformance": {
+      "title": "Portfolio Performance",
+      "subtitle": "Here is your performance stats of each month",
+      "series": "Portfolio Performance"
+    },
+    "trendingStocks": {
+      "title": "Trending Stocks",
+      "shortStock": "Short Stock",
+      "buyStock": "Buy Stock"
+    },
+    "watchlist": {
+      "title": "My Watchlist",
+      "viewMore": "View More",
+      "delete": "Delete"
+    },
+    "latestTransactions": {
+      "title": "Latest Transactions",
+      "searchPlaceholder": "Search...",
+      "table": {
+        "name": "Name",
+        "date": "Date",
+        "price": "Price",
+        "category": "Category",
+        "status": "Status"
+      },
+      "actions": {
+        "bought": "Bought {symbol}",
+        "sell": "Sell {symbol}"
+      },
+      "categories": {
+        "finance": "Finance"
+      },
+      "statuses": {
+        "success": "Success",
+        "pending": "Pending",
+        "failed": "Failed"
+      }
+    }
+  },
+  "saas": {
+    "title": "SaaS",
+    "metrics": {
+      "overview": "Overview",
+      "totalRevenue": "Total Revenue",
+      "activeUsers": "Active Users",
+      "clv": "Customer Lifetime Value",
+      "cac": "Customer Acquisition Cost"
+    },
+    "churnRate": {
+      "title": "Churn Rate",
+      "subtitle": "Downgrade to Free plan",
+      "thanLastWeek": "than last Week",
+      "series": "Churn Rate",
+      "viewMore": "View More",
+      "delete": "Delete"
+    },
+    "userGrowth": {
+      "title": "User Growth",
+      "subtitle": "New signups website + mobile",
+      "thanLastWeek": "than last Week",
+      "series": "Revenue",
+      "viewMore": "View More",
+      "delete": "Delete"
+    },
+    "conversionFunnel": {
+      "title": "Conversion Funnel",
+      "viewMore": "View More",
+      "delete": "Delete",
+      "series": {
+        "adImpressions": "Ad Impressions",
+        "websiteSession": "Website Session",
+        "appDownload": "App Download",
+        "newUsers": "New Users"
+      }
+    },
+    "recentInvoices": {
+      "title": "Recent Invoices",
+      "table": {
+        "serialNo": "Serial No:",
+        "closeDate": "Close Date",
+        "user": "User",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "statuses": {
+        "complete": "Complete",
+        "pending": "Pending",
+        "cancelled": "Cancelled"
+      }
+    },
+    "productPerformance": {
+      "title": "Product Performance",
+      "viewMore": "View More",
+      "delete": "Delete",
+      "tabs": {
+        "dailySales": "Daily Sales",
+        "onlineSales": "Online Sales",
+        "newUsers": "New Users"
+      },
+      "digitalProduct": "Digital Product",
+      "physicalProduct": "Physical Product",
+      "avgDailySales": "Average Daily Sales",
+      "totalOnlineSales": "Total Online Sales",
+      "addedLastMonth": "Added last month",
+      "totalNewUsers": "Total New Users",
+      "series": {
+        "sales": "Sales",
+        "revenue": "Revenue"
+      }
+    },
+    "activities": {
+      "title": "Activities",
+      "viewMore": "View More",
+      "delete": "Delete",
+      "newInvoice": "New invoice",
+      "createdInvoice": "created invoice",
+      "justNow": "Just Now",
+      "fifteenMinAgo": "15 minutes ago",
+      "fiveMonthsAgo": "5 months ago",
+      "twoWeeksAgo": "2 weeks ago"
+    }
+  },
+  "logistics": {
+    "title": "Logistics",
+    "metrics": {
+      "totalOrders": "Total Orders",
+      "ordersInTransit": "Orders in Transit"
+    },
+    "deliveryStatistics": {
+      "title": "Delivery Statistics",
+      "subtitle": "Total number of deliveries 70.5K",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "shipment": "Shipment",
+      "delivery": "Delivery"
+    },
+    "revenueEarned": {
+      "totalRevenue": "Total revenue earned",
+      "shippedQuantities": "Shipped quantities",
+      "newSales": "New Sales"
+    },
+    "deliveryVehicle": {
+      "title": "Delivery Vehicles",
+      "subtitle": "Vehicles operating on the road",
+      "thanLastWeek": "than last Week",
+      "onRoute": "On-route"
+    },
+    "trackingDelivery": {
+      "title": "Tracking Delivery",
+      "subtitle": "Last viewed delivery history"
+    },
+    "trackingProgress": {
+      "trackingId": "Tracking ID",
+      "inTransit": "In Transit",
+      "pickedUp": "Picked up",
+      "delivered": "Delivered"
+    },
+    "deliveryMan": {
+      "courier": "Courier"
+    },
+    "deliveriesActivity": {
+      "title": "Delivery Activities",
+      "subtitle": "Track your recent shipping activities",
+      "tabs": {
+        "all": "All",
+        "delivered": "Delivered",
+        "inTransit": "In-Transit",
+        "pending": "Pending",
+        "processing": "Processing"
+      },
+      "filter": {
+        "button": "Filter",
+        "category": "Category",
+        "searchCategory": "Search category...",
+        "company": "Company",
+        "searchCompany": "Search company...",
+        "apply": "Apply"
+      },
+      "table": {
+        "orderId": "Order ID",
+        "category": "Category",
+        "company": "Company",
+        "arrivalTime": "Arrival Time",
+        "route": "Route",
+        "price": "Price",
+        "status": "Status"
+      },
+      "categories": {
+        "furniture": "Furniture",
+        "clothing": "Clothing",
+        "books": "Books",
+        "automotive": "Automotive",
+        "electronics": "Electronics",
+        "health": "Health",
+        "toys": "Toys",
+        "kitchen": "Kitchen",
+        "beauty": "Beauty",
+        "sports": "Sports"
+      },
+      "statuses": {
+        "delivered": "Delivered",
+        "inTransit": "In Transit",
+        "canceled": "Canceled"
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "to",
+        "of": "of",
+        "page": "Page"
+      }
+    }
+  },
+  "aiDashboard": {
+    "stats": {
+      "users": "Users",
+      "projects": "Projects",
+      "revenue": "Revenue",
+      "paidUsers": "Paid Users",
+      "last30Days": "Last 30 Days"
+    },
+    "userRevenue": {
+      "title": "Users & Revenue Statistics",
+      "subtitle": "Visualize month-to-month progress and engagement.",
+      "users": "Users",
+      "revenue": "Revenue",
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "annually": "Annually"
+    },
+    "apiToken": {
+      "title": "API Token Usages",
+      "totalApiTokenUsed": "Total API Token Used",
+      "tokenUsed": "Token used",
+      "configuredKey": "{count, plural, one {# API key configured} other {# API keys configured}}",
+      "viewAllUsageDetails": "View All Usage Details"
+    },
+    "userAnalytics": {
+      "title": "User Analytics",
+      "subtitle": "Platform user insights",
+      "totalUsers": "Total Users",
+      "freeUsers": "Free Users",
+      "paidUsers": "Paid Users",
+      "ofTotalUser": "of total user",
+      "thisMonth": "This Month",
+      "fromLastMonth": "from last month",
+      "thisYear": "This Year",
+      "fromLastYear": "from last year"
+    },
+    "projectAnalytics": {
+      "title": "Projects Analytics",
+      "subtitle": "View detailed project insights",
+      "totalProjects": "Total Projects",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "projectCreated": "Project created",
+      "thisMonth": "This Month",
+      "fromLastMonth": "from last month",
+      "thisYear": "This Year",
+      "fromLastYear": "from last year"
+    },
+    "recentTransactions": {
+      "title": "Recent Transactions",
+      "searchPlaceholder": "Search...",
+      "filter": "Filter",
+      "table": {
+        "paidBy": "Paid By",
+        "packageName": "Package Name",
+        "price": "Price",
+        "paidDate": "Paid Date",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "packages": {
+        "starterMonthly": "Starter - Monthly",
+        "growthYearly": "Growth - Yearly",
+        "premiumMonthly": "Premium - Monthly"
+      },
+      "statuses": {
+        "active": "Active",
+        "expired": "Expired"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "pageOf": "Page {current} of {total}"
+      },
+      "noResults": "No results found"
+    }
+  },
+  "sales": {
+    "salesStats": {
+      "title": "Sales Dashboard",
+      "subtitle": "Track revenue, performance, and sales growth in real-time",
+      "selectDateRange": "Select date range",
+      "export": "Export",
+      "totalRevenue": "Total Revenue",
+      "totalSales": "Total Sales",
+      "conversionRate": "Conversion Rate",
+      "refundRate": "Refund Rate",
+      "vsLastMonth": "vs last month",
+      "newSales": "New Sales"
+    },
+    "userRevenueStats": {
+      "title": "Users & Revenue Statistics",
+      "subtitle": "Visualize month-to-month progress and engagement.",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "onlineSales": "Online Sales",
+      "offlineSales": "Offline Sales"
+    },
+    "userRetention": {
+      "title": "User Retention",
+      "subtitle": "User engagement over time",
+      "increasedVsLastWeek": "Increased vs last week"
+    },
+    "salesByChannel": {
+      "title": "Sales by Channel",
+      "subtitle": "Channel performance overview",
+      "increasedVsLastWeek": "Increased vs last week",
+      "channels": {
+        "website": "Website",
+        "email": "Email",
+        "socialMedia": "Social Media"
+      },
+      "table": {
+        "channels": "Channels",
+        "metric": "Metric",
+        "total": "Total"
+      }
+    },
+    "salesByCountry": {
+      "title": "Sales by Country",
+      "subtitle": "Country-wise sales overview",
+      "countries": {
+        "usa": "USA",
+        "france": "France",
+        "japan": "Japan",
+        "germany": "Germany"
+      }
+    },
+    "topProducts": {
+      "title": "Top Products",
+      "table": {
+        "productName": "Product Name",
+        "category": "Category",
+        "sales": "Sales",
+        "earnings": "Earnings",
+        "stocks": "Stocks",
+        "status": "Status"
+      },
+      "products": {
+        "classicDenimJacket": "Classic Denim Jacket",
+        "slimFitChinos": "Slim Fit Chinos",
+        "organicCottonTShirt": "Organic Cotton T-Shirt",
+        "leatherAnkleBoots": "Leather Ankle Boots"
+      },
+      "variants": {
+        "threeSizes": "3 Sizes",
+        "fourColors": "4 Colors",
+        "fiveColors": "5 Colors",
+        "sixSizes": "6 Sizes"
+      },
+      "categories": {
+        "jacket": "Jacket",
+        "pants": "Pants",
+        "tShirt": "T-Shirt",
+        "footwear": "Footwear"
+      },
+      "statuses": {
+        "inStock": "In Stock",
+        "lowStock": "Low Stock",
+        "outOfStock": "Out of Stock"
+      }
+    }
+  },
+  "finance": {
+    "totalBalanceOverview": {
+      "title": "Total Balance",
+      "overview": "Overview of your current funds",
+      "thanLastMonth": "than last month",
+      "primaryAccount": "Primary Account:",
+      "seeDetails": "See Details",
+      "transfer": "Transfer",
+      "received": "Received",
+      "balance": "Balance"
+    },
+    "stats": {
+      "totalBalance": "Total Balance",
+      "monthlyIncome": "Monthly Income",
+      "totalSpent": "Total Spent",
+      "savingRate": "Saving Rate",
+      "thanLastMonth": "than last month",
+      "goalProgress": "Goal: 30% - 3.9% to go"
+    },
+    "cashflow": {
+      "title": "Cashflow Overview",
+      "totalRevenue": "Total Revenue",
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "spending": {
+      "title": "Spending",
+      "yearly": "Yearly",
+      "monthly": "Monthly",
+      "total": "Total",
+      "categories": {
+        "activity": "Activity",
+        "onlinePurchases": "Online Purchases",
+        "groceries": "Groceries",
+        "digitalGoods": "Digital Goods",
+        "stationery": "Stationery",
+        "others": "Others"
+      }
+    },
+    "quickSend": {
+      "title": "Quick send",
+      "sendFrom": "Send From",
+      "currency": "Currency",
+      "amount": "Amount",
+      "sendMoney": "Send Money"
+    },
+    "myCards": {
+      "title": "My Cards",
+      "addCard": "Add Card",
+      "virtualCard": "Virtual Card",
+      "recentTransactions": "Recent Transactions",
+      "seeAllTransactions": "See All Transactions",
+      "cardNumber": "Card Number",
+      "exp": "EXP",
+      "cvc": "CVC",
+      "active": "Active",
+      "inactive": "Inactive",
+      "transactions": {
+        "paymentReceived": "Payment Received",
+        "cashbackDesc": "Cashback from Stellar Rewards",
+        "netflixSubscription": "Netflix Subscription",
+        "netflixDesc": "September subscription charge",
+        "moneyReceived": "Money received",
+        "paypalDesc": "Payment received via PayPal",
+        "googleAds": "Google Ads",
+        "googleAdsDesc": "Payment received form google ads"
+      }
+    },
+    "transactionsTable": {
+      "title": "Recent Transactions",
+      "searchPlaceholder": "Search...",
+      "filter": "Filter",
+      "table": {
+        "orderId": "Order ID",
+        "activity": "Activity",
+        "price": "Price",
+        "date": "Date",
+        "status": "Status"
+      },
+      "activities": {
+        "hotelBooking": "Hotel Booking",
+        "onlineShopping": "Online Shopping",
+        "gamePurchase": "Game Purchase",
+        "utilityBillPayment": "Utility Bill Payment",
+        "onlineCourseEnrollment": "Online Course Enrollment"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "inProgress": "In Progress"
+      }
+    }
+  },
+  "stockReceipts": {
+    "title": "Phiếu nhập kho",
+    "listTitle": "Quản lý phiếu nhập kho",
+    "loading": "Đang tải phiếu nhập kho...",
+    "toolbar": {
+      "searchLabel": "Tìm phiếu nhập kho",
+      "statusLabel": "Lọc phiếu nhập kho theo trạng thái",
+      "searchPlaceholder": "Tìm theo phiếu, nhà cung cấp hoặc hóa đơn...",
+      "allStatuses": "Tất cả trạng thái",
+      "liveSource": "Dữ liệu Supabase",
+      "demoSource": "Dữ liệu mẫu"
+    },
+    "table": {
+      "receipt": "Phiếu",
+      "supplier": "Nhà cung cấp",
+      "lines": "Dòng hàng",
+      "lineSummary": "{count} dòng / {quantity}",
+      "total": "Tổng tiền",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "status": {
+      "DRAFT": "Nháp",
+      "CONFIRMED": "Đã xác nhận",
+      "CANCELLED": "Đã hủy"
+    },
+    "actions": {
+      "create": "Tạo phiếu nhập",
+      "edit": "Sửa phiếu nhập",
+      "view": "Xem phiếu nhập",
+      "confirm": "Xác nhận nhập",
+      "saveDraft": "Lưu nháp",
+      "saving": "Đang lưu..."
+    },
+    "empty": {
+      "title": "Chưa có phiếu nhập kho",
+      "description": "Tạo phiếu nháp để bắt đầu nhập vật liệu."
+    },
+    "editor": {
+      "createTitle": "Tạo phiếu nhập kho",
+      "editTitle": "Sửa {code}",
+      "subtitle": "Phiếu nháp có thể chỉnh sửa. Khi xác nhận, database sẽ tăng tồn kho bằng transaction."
+    },
+    "form": {
+      "supplier": "Nhà cung cấp",
+      "supplierPlaceholder": "Chọn nhà cung cấp",
+      "receiptDate": "Ngày nhập",
+      "supplierInvoiceNumber": "Hóa đơn NCC",
+      "supplierInvoicePlaceholder": "Số hóa đơn",
+      "note": "Ghi chú",
+      "notePlaceholder": "Ghi chú nội bộ khi nhận hàng..."
+    },
+    "lines": {
+      "title": "Dòng vật liệu",
+      "add": "Thêm dòng vật liệu",
+      "empty": "Thêm ít nhất một dòng vật liệu trước khi lưu hoặc xác nhận.",
+      "material": "Vật liệu",
+      "unit": "Đơn vị",
+      "quantity": "Số lượng",
+      "unitPrice": "Đơn giá",
+      "discount": "Chiết khấu",
+      "remove": "Xóa dòng"
+    },
+    "summary": {
+      "subtotal": "Tạm tính",
+      "receiptDiscount": "Chiết khấu phiếu",
+      "shippingFee": "Phí vận chuyển",
+      "taxAmount": "Thuế",
+      "total": "Tổng tiền"
+    },
+    "confirm": {
+      "title": "Xác nhận nhập kho",
+      "description": "Xác nhận {code} với tổng {total}? Thao tác này sẽ tăng tồn kho và ghi công nợ phải trả.",
+      "confirming": "Đang xác nhận..."
+    },
+    "errors": {
+      "load": "Không thể tải phiếu nhập kho.",
+      "retry": "Thử lại",
+      "save": "Không thể lưu phiếu nhập kho.",
+      "confirm": "Không thể xác nhận phiếu nhập kho.",
+      "requiredHeader": "Bắt buộc chọn nhà cung cấp và ngày nhập.",
+      "requiredLines": "Cần ít nhất một dòng vật liệu.",
+      "invalidLine": "Mỗi dòng cần có vật liệu, số lượng lớn hơn 0, đơn giá hợp lệ và chiết khấu hợp lệ.",
+      "lineMaterial": "Chọn vật liệu cho dòng này.",
+      "lineQuantity": "Số lượng phải lớn hơn 0.",
+      "lineUnitPrice": "Đơn giá phải từ 0 trở lên.",
+      "lineDiscount": "Chiết khấu phải từ 0 trở lên.",
+      "lineDiscountTooHigh": "Chiết khấu không được vượt quá thành tiền dòng.",
+      "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần trong phiếu."
+    }
+  }
+}

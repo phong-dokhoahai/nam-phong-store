@@ -38,9 +38,7 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     key: "dashboard",
-    subItems: [
-      { name: "Ecommerce", key: "ecommerceHome", path: "/" },
-    ],
+    subItems: [{ name: "Ecommerce", key: "ecommerceHome", path: "/" }],
   },
   {
     name: "Inventory",
@@ -48,6 +46,11 @@ const navItems: NavItem[] = [
     icon: <BoxCubeIcon />,
     subItems: [
       { name: "Materials", key: "materials", path: "/materials" },
+      { name: "Categories", key: "categories", path: "/categories" },
+      { name: "Units", key: "units", path: "/units" },
+      { name: "Suppliers", key: "suppliers", path: "/suppliers" },
+      { name: "Customers", key: "customers", path: "/customers" },
+      { name: "Stock Receipts", key: "stockReceipts", path: "/stock-receipts" },
     ],
   },
   {
