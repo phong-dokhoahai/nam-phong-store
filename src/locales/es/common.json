@@ -127,7 +127,9 @@
       "email": "Email",
       "inbox": "Inbox",
       "inboxDetails": "Details",
-      "stockReceipts": "Stock Receipts"
+      "stockReceipts": "Stock Receipts",
+      "stockIssues": "Stock Issues",
+      "payments": "Thanh toán & công nợ"
     },
     "widget": {
       "title": "Panel Tailwind CSS #1",
@@ -1296,6 +1298,185 @@
       "lineDiscount": "Discount must be 0 or higher.",
       "lineDiscountTooHigh": "Discount cannot exceed this line total.",
       "duplicateMaterial": "Each material can only appear once on a receipt."
+    }
+  },
+  "stockIssues": {
+    "title": "Stock Issues",
+    "listTitle": "Stock Issue / Sales Order",
+    "loading": "Loading stock issues...",
+    "toolbar": {
+      "searchLabel": "Search stock issues",
+      "statusLabel": "Filter stock issues by status",
+      "searchPlaceholder": "Search by code, customer, or delivery address...",
+      "allStatuses": "All statuses",
+      "liveSource": "Supabase data",
+      "demoSource": "Demo data"
+    },
+    "table": {
+      "issue": "Issue",
+      "customer": "Customer",
+      "lines": "Lines",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions",
+      "lineSummary": "{count} lines · {quantity} total"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    },
+    "actions": {
+      "create": "Create Issue",
+      "saveDraft": "Save Draft",
+      "saving": "Saving...",
+      "confirm": "Confirm Issue",
+      "edit": "Edit issue",
+      "view": "View issue"
+    },
+    "empty": {
+      "title": "No stock issues found",
+      "description": "Create a draft issue to export stock or record a sale."
+    },
+    "editor": {
+      "createTitle": "Create stock issue",
+      "editTitle": "Issue {code}",
+      "subtitle": "Draft first, then confirm. Confirmation checks stock and exports all lines together."
+    },
+    "form": {
+      "customer": "Customer",
+      "customerPlaceholder": "Select customer",
+      "issueDate": "Issue date",
+      "deliveryAddress": "Delivery address",
+      "deliveryAddressPlaceholder": "Delivery or jobsite address...",
+      "note": "Note",
+      "notePlaceholder": "Delivery, sales, or warehouse notes..."
+    },
+    "lines": {
+      "title": "Issue lines",
+      "add": "Add line",
+      "empty": "No materials selected.",
+      "material": "Material",
+      "unit": "Unit",
+      "quantity": "Quantity",
+      "unitPrice": "Sale price",
+      "discount": "Discount",
+      "remove": "Remove line",
+      "available": "Available: {quantity} {unit}"
+    },
+    "summary": {
+      "subtotal": "Subtotal",
+      "issueDiscount": "Order discount",
+      "shippingFee": "Shipping fee",
+      "taxAmount": "Tax amount",
+      "total": "Total"
+    },
+    "confirm": {
+      "title": "Confirm stock issue",
+      "description": "Confirm {code} for {total}? Stock will be reduced only if every line has enough available stock.",
+      "confirming": "Confirming..."
+    },
+    "errors": {
+      "load": "Unable to load stock issues.",
+      "save": "Unable to save stock issue.",
+      "confirm": "Unable to confirm stock issue.",
+      "retry": "Retry",
+      "requiredHeader": "Customer and issue date are required.",
+      "requiredLines": "Add at least one material line.",
+      "invalidLine": "Fix invalid material lines before saving.",
+      "lineMaterial": "Material is required.",
+      "lineQuantity": "Quantity must be greater than 0.",
+      "lineUnitPrice": "Sale price cannot be negative.",
+      "lineDiscount": "Discount cannot be negative.",
+      "lineDiscountTooHigh": "Discount cannot exceed line subtotal.",
+      "duplicateMaterial": "Each material can only appear once.",
+      "insufficientStock": "Not enough stock. Available: {available}."
+    }
+  },
+  "payments": {
+    "title": "Thanh toán & công nợ",
+    "listTitle": "Quản lý thanh toán và công nợ",
+    "loading": "Đang tải thanh toán...",
+    "summary": {
+      "receivable": "Công nợ khách hàng",
+      "payable": "Công nợ nhà cung cấp"
+    },
+    "toolbar": {
+      "searchLabel": "Tìm thanh toán",
+      "directionLabel": "Lọc theo loại công nợ",
+      "searchPlaceholder": "Tìm theo chứng từ hoặc đối tượng...",
+      "allDirections": "Tất cả loại công nợ",
+      "liveSource": "Dữ liệu Supabase",
+      "demoSource": "Dữ liệu mẫu"
+    },
+    "direction": {
+      "customer": "Công nợ khách hàng",
+      "supplier": "Công nợ nhà cung cấp"
+    },
+    "table": {
+      "document": "Chứng từ",
+      "party": "Đối tượng",
+      "direction": "Loại",
+      "total": "Tổng tiền",
+      "paid": "Đã thanh toán",
+      "debt": "Còn nợ",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "status": {
+      "UNPAID": "Chưa thanh toán",
+      "PARTIALLY_PAID": "Thanh toán một phần",
+      "PAID": "Đã thanh toán",
+      "OVERPAID": "Thanh toán vượt"
+    },
+    "method": {
+      "CASH": "Tiền mặt",
+      "BANK_TRANSFER": "Chuyển khoản",
+      "OTHER": "Khác"
+    },
+    "actions": {
+      "record": "Ghi nhận thanh toán",
+      "payDocument": "Ghi nhận thanh toán cho chứng từ này",
+      "save": "Lưu thanh toán",
+      "saving": "Đang lưu..."
+    },
+    "empty": {
+      "title": "Chưa có chứng từ còn nợ",
+      "description": "Đơn bán và phiếu nhập đã xác nhận còn công nợ sẽ hiển thị tại đây."
+    },
+    "form": {
+      "title": "Ghi nhận thanh toán",
+      "subtitle": "Mỗi lần thanh toán được lưu thành một giao dịch và giảm công nợ của chứng từ đã chọn.",
+      "direction": "Loại công nợ",
+      "document": "Chứng từ",
+      "documentPlaceholder": "Chọn chứng từ",
+      "amount": "Số tiền",
+      "remaining": "Còn nợ: {amount}",
+      "paymentDate": "Ngày thanh toán",
+      "method": "Phương thức",
+      "referenceNumber": "Số tham chiếu",
+      "referencePlaceholder": "Số phiếu, mã chuyển khoản hoặc chứng từ",
+      "note": "Ghi chú",
+      "notePlaceholder": "Ghi chú nội bộ về thanh toán..."
+    },
+    "history": {
+      "title": "Lịch sử thanh toán",
+      "empty": "Chưa ghi nhận thanh toán nào.",
+      "payment": "Phiếu thanh toán",
+      "document": "Chứng từ",
+      "party": "Đối tượng",
+      "date": "Ngày",
+      "method": "Phương thức",
+      "amount": "Số tiền"
+    },
+    "errors": {
+      "load": "Không thể tải dữ liệu thanh toán.",
+      "retry": "Thử lại",
+      "save": "Không thể ghi nhận thanh toán.",
+      "required": "Bắt buộc chọn chứng từ và ngày thanh toán.",
+      "documentNotFound": "Không tìm thấy chứng từ đã chọn.",
+      "amountPositive": "Số tiền thanh toán phải lớn hơn 0.",
+      "amountTooHigh": "Số tiền thanh toán không được vượt quá công nợ còn lại ({amount})."
     }
   }
 }

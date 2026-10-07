@@ -1,7 +1,7 @@
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ConfirmStockReceiptModal from "@/components/stock-receipts/ConfirmStockReceiptModal";
-import StockReceiptEditor from "@/components/stock-receipts/StockReceiptEditor";
+import StockReceiptFormModal from "@/components/stock-receipts/StockReceiptFormModal";
 import StockReceiptsTable from "@/components/stock-receipts/StockReceiptsTable";
 import StockReceiptsToolbar from "@/components/stock-receipts/StockReceiptsToolbar";
 import {
@@ -59,6 +59,7 @@ export default function StockReceipts() {
   const [error, setError] = useState("");
 
   const confirmModal = useModal();
+  const editorModal = useModal();
 
   const loadReceipts = useCallback(
     async (isMounted: () => boolean = () => true) => {
@@ -125,12 +126,14 @@ export default function StockReceipts() {
     setSelectedReceipt(null);
     setDraft(getEmptyDraftValues());
     setError("");
+    editorModal.openModal();
   };
 
   const selectReceipt = (receipt: StockReceipt) => {
     setSelectedReceipt(receipt);
     setDraft(getDraftFromReceipt(receipt));
     setError("");
+    editorModal.openModal();
   };
 
   const upsertReceiptInList = (receipt: StockReceipt) => {
@@ -205,6 +208,7 @@ export default function StockReceipts() {
       }
 
       upsertReceiptInList(savedReceipt);
+      editorModal.closeModal();
     } catch (saveError) {
       setError(
         saveError instanceof Error
@@ -238,6 +242,7 @@ export default function StockReceipts() {
       upsertReceiptInList(confirmedReceipt);
       setConfirmingReceipt(null);
       confirmModal.closeModal();
+      editorModal.closeModal();
     } catch (confirmError) {
       setError(
         confirmError instanceof Error
@@ -293,13 +298,15 @@ export default function StockReceipts() {
         </div>
       </ComponentCard>
 
-      <StockReceiptEditor
+      <StockReceiptFormModal
+        isOpen={editorModal.isOpen}
         draft={draft}
         selectedReceipt={selectedReceipt}
         suppliers={suppliers}
         materials={materials}
         isSaving={isSaving}
         error={!confirmModal.isOpen ? error : ""}
+        onClose={editorModal.closeModal}
         onDraftChange={setDraft}
         onSave={handleSave}
         onConfirm={() => openConfirmModal()}

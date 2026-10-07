@@ -16,6 +16,8 @@ import Units from "./pages/MasterData/Units";
 import Materials from "./pages/Materials/Materials";
 import Blank from "./pages/OtherPage/Blank";
 import NotFound from "./pages/OtherPage/NotFound";
+import Payments from "./pages/Payments/Payments";
+import StockIssues from "./pages/StockIssues/StockIssues";
 import StockReceipts from "./pages/StockReceipts/StockReceipts";
 import BasicTables from "./pages/Tables/BasicTables";
 import Alerts from "./pages/UiElements/Alerts";
@@ -24,7 +26,6 @@ import Badges from "./pages/UiElements/Badges";
 import Buttons from "./pages/UiElements/Buttons";
 import Images from "./pages/UiElements/Images";
 import Videos from "./pages/UiElements/Videos";
-import UserProfiles from "./pages/UserProfiles";
 
 export default function App() {
   return (
@@ -38,7 +39,6 @@ export default function App() {
               <Route index path="/" element={<Home />} />
 
               {/* Others Page */}
-              <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
 
@@ -49,6 +49,8 @@ export default function App() {
               <Route path="/suppliers" element={<Suppliers />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/stock-receipts" element={<StockReceipts />} />
+              <Route path="/stock-issues" element={<StockIssues />} />
+              <Route path="/payments" element={<Payments />} />
 
               {/* Forms */}
               <Route path="/form-elements" element={<FormElements />} />

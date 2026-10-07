@@ -127,7 +127,9 @@
       "email": "Email",
       "inbox": "Hộp thư",
       "inboxDetails": "Chi tiết",
-      "stockReceipts": "Phiếu nhập kho"
+      "stockReceipts": "Phiếu nhập kho",
+      "stockIssues": "Phiếu xuất kho",
+      "payments": "Thanh toán & công nợ"
     },
     "widget": {
       "title": "Dashboard Tailwind CSS #1",
@@ -1296,6 +1298,185 @@
       "lineDiscount": "Chiết khấu phải từ 0 trở lên.",
       "lineDiscountTooHigh": "Chiết khấu không được vượt quá thành tiền dòng.",
       "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần trong phiếu."
+    }
+  },
+  "stockIssues": {
+    "title": "Xuất kho",
+    "listTitle": "Phiếu xuất / đơn bán hàng",
+    "loading": "Đang tải phiếu xuất...",
+    "toolbar": {
+      "searchLabel": "Tìm phiếu xuất",
+      "statusLabel": "Lọc phiếu xuất theo trạng thái",
+      "searchPlaceholder": "Tìm theo mã, khách hàng hoặc địa chỉ giao...",
+      "allStatuses": "Tất cả trạng thái",
+      "liveSource": "Dữ liệu Supabase",
+      "demoSource": "Dữ liệu mẫu"
+    },
+    "table": {
+      "issue": "Phiếu xuất",
+      "customer": "Khách hàng",
+      "lines": "Dòng",
+      "total": "Tổng tiền",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "lineSummary": "{count} dòng · tổng {quantity}"
+    },
+    "status": {
+      "DRAFT": "Nháp",
+      "CONFIRMED": "Đã xác nhận",
+      "CANCELLED": "Đã hủy"
+    },
+    "actions": {
+      "create": "Tạo phiếu xuất",
+      "saveDraft": "Lưu nháp",
+      "saving": "Đang lưu...",
+      "confirm": "Xác nhận xuất",
+      "edit": "Sửa phiếu xuất",
+      "view": "Xem phiếu xuất"
+    },
+    "empty": {
+      "title": "Chưa có phiếu xuất",
+      "description": "Tạo phiếu nháp để xuất kho hoặc ghi nhận đơn bán."
+    },
+    "editor": {
+      "createTitle": "Tạo phiếu xuất",
+      "editTitle": "Phiếu {code}",
+      "subtitle": "Lưu nháp trước, sau đó xác nhận. Khi xác nhận hệ thống kiểm tra tồn và xuất toàn bộ dòng cùng lúc."
+    },
+    "form": {
+      "customer": "Khách hàng",
+      "customerPlaceholder": "Chọn khách hàng",
+      "issueDate": "Ngày xuất",
+      "deliveryAddress": "Địa chỉ giao hàng",
+      "deliveryAddressPlaceholder": "Địa chỉ giao hàng hoặc công trình...",
+      "note": "Ghi chú",
+      "notePlaceholder": "Ghi chú giao hàng, bán hàng hoặc kho..."
+    },
+    "lines": {
+      "title": "Dòng xuất kho",
+      "add": "Thêm dòng",
+      "empty": "Chưa chọn vật liệu.",
+      "material": "Vật liệu",
+      "unit": "Đơn vị",
+      "quantity": "Số lượng",
+      "unitPrice": "Giá bán",
+      "discount": "Giảm giá",
+      "remove": "Xóa dòng",
+      "available": "Có thể xuất: {quantity} {unit}"
+    },
+    "summary": {
+      "subtotal": "Tạm tính",
+      "issueDiscount": "Giảm giá đơn",
+      "shippingFee": "Phí giao hàng",
+      "taxAmount": "Thuế",
+      "total": "Tổng cộng"
+    },
+    "confirm": {
+      "title": "Xác nhận xuất kho",
+      "description": "Xác nhận {code} với tổng {total}? Tồn kho chỉ bị trừ nếu tất cả dòng đều đủ tồn.",
+      "confirming": "Đang xác nhận..."
+    },
+    "errors": {
+      "load": "Không thể tải phiếu xuất.",
+      "save": "Không thể lưu phiếu xuất.",
+      "confirm": "Không thể xác nhận phiếu xuất.",
+      "retry": "Thử lại",
+      "requiredHeader": "Khách hàng và ngày xuất là bắt buộc.",
+      "requiredLines": "Thêm ít nhất một dòng vật liệu.",
+      "invalidLine": "Sửa các dòng vật liệu chưa hợp lệ trước khi lưu.",
+      "lineMaterial": "Vật liệu là bắt buộc.",
+      "lineQuantity": "Số lượng phải lớn hơn 0.",
+      "lineUnitPrice": "Giá bán không được âm.",
+      "lineDiscount": "Giảm giá không được âm.",
+      "lineDiscountTooHigh": "Giảm giá không được vượt tạm tính dòng.",
+      "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần.",
+      "insufficientStock": "Không đủ tồn. Có thể xuất: {available}."
+    }
+  },
+  "payments": {
+    "title": "Thanh toán & công nợ",
+    "listTitle": "Quản lý thanh toán và công nợ",
+    "loading": "Đang tải thanh toán...",
+    "summary": {
+      "receivable": "Công nợ khách hàng",
+      "payable": "Công nợ nhà cung cấp"
+    },
+    "toolbar": {
+      "searchLabel": "Tìm thanh toán",
+      "directionLabel": "Lọc theo loại công nợ",
+      "searchPlaceholder": "Tìm theo chứng từ hoặc đối tượng...",
+      "allDirections": "Tất cả loại công nợ",
+      "liveSource": "Dữ liệu Supabase",
+      "demoSource": "Dữ liệu mẫu"
+    },
+    "direction": {
+      "customer": "Công nợ khách hàng",
+      "supplier": "Công nợ nhà cung cấp"
+    },
+    "table": {
+      "document": "Chứng từ",
+      "party": "Đối tượng",
+      "direction": "Loại",
+      "total": "Tổng tiền",
+      "paid": "Đã thanh toán",
+      "debt": "Còn nợ",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "status": {
+      "UNPAID": "Chưa thanh toán",
+      "PARTIALLY_PAID": "Thanh toán một phần",
+      "PAID": "Đã thanh toán",
+      "OVERPAID": "Thanh toán vượt"
+    },
+    "method": {
+      "CASH": "Tiền mặt",
+      "BANK_TRANSFER": "Chuyển khoản",
+      "OTHER": "Khác"
+    },
+    "actions": {
+      "record": "Ghi nhận thanh toán",
+      "payDocument": "Ghi nhận thanh toán cho chứng từ này",
+      "save": "Lưu thanh toán",
+      "saving": "Đang lưu..."
+    },
+    "empty": {
+      "title": "Chưa có chứng từ còn nợ",
+      "description": "Đơn bán và phiếu nhập đã xác nhận còn công nợ sẽ hiển thị tại đây."
+    },
+    "form": {
+      "title": "Ghi nhận thanh toán",
+      "subtitle": "Mỗi lần thanh toán được lưu thành một giao dịch và giảm công nợ của chứng từ đã chọn.",
+      "direction": "Loại công nợ",
+      "document": "Chứng từ",
+      "documentPlaceholder": "Chọn chứng từ",
+      "amount": "Số tiền",
+      "remaining": "Còn nợ: {amount}",
+      "paymentDate": "Ngày thanh toán",
+      "method": "Phương thức",
+      "referenceNumber": "Số tham chiếu",
+      "referencePlaceholder": "Số phiếu, mã chuyển khoản hoặc chứng từ",
+      "note": "Ghi chú",
+      "notePlaceholder": "Ghi chú nội bộ về thanh toán..."
+    },
+    "history": {
+      "title": "Lịch sử thanh toán",
+      "empty": "Chưa ghi nhận thanh toán nào.",
+      "payment": "Phiếu thanh toán",
+      "document": "Chứng từ",
+      "party": "Đối tượng",
+      "date": "Ngày",
+      "method": "Phương thức",
+      "amount": "Số tiền"
+    },
+    "errors": {
+      "load": "Không thể tải dữ liệu thanh toán.",
+      "retry": "Thử lại",
+      "save": "Không thể ghi nhận thanh toán.",
+      "required": "Bắt buộc chọn chứng từ và ngày thanh toán.",
+      "documentNotFound": "Không tìm thấy chứng từ đã chọn.",
+      "amountPositive": "Số tiền thanh toán phải lớn hơn 0.",
+      "amountTooHigh": "Số tiền thanh toán không được vượt quá công nợ còn lại ({amount})."
     }
   }
 }

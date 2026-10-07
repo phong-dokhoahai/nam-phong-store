@@ -11,7 +11,6 @@ import {
   ListIcon,
   PieChartIcon,
   TableIcon,
-  UserCircleIcon,
 } from "../icons";
 import { cn } from "../utils";
 import SidebarWidget from "./SidebarWidget";
@@ -51,6 +50,8 @@ const navItems: NavItem[] = [
       { name: "Suppliers", key: "suppliers", path: "/suppliers" },
       { name: "Customers", key: "customers", path: "/customers" },
       { name: "Stock Receipts", key: "stockReceipts", path: "/stock-receipts" },
+      { name: "Stock Issues", key: "stockIssues", path: "/stock-issues" },
+      { name: "Payments", key: "payments", path: "/payments" },
     ],
   },
   {
@@ -58,12 +59,6 @@ const navItems: NavItem[] = [
     name: "Calendar",
     key: "calendar",
     path: "/calendar",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    key: "userProfile",
-    path: "/profile",
   },
   {
     name: "Forms",
