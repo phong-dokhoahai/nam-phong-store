@@ -13,6 +13,7 @@ import Categories from "./pages/MasterData/Categories";
 import Customers from "./pages/MasterData/Customers";
 import Suppliers from "./pages/MasterData/Suppliers";
 import Units from "./pages/MasterData/Units";
+import Inventory from "./pages/Inventory/Inventory";
 import Materials from "./pages/Materials/Materials";
 import Blank from "./pages/OtherPage/Blank";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/blank" element={<Blank />} />
 
               {/* Inventory */}
+              <Route path="/inventory" element={<Inventory />} />
               <Route path="/materials" element={<Materials />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/units" element={<Units />} />

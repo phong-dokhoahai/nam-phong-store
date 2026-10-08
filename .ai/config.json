@@ -1,0 +1,8 @@
+{
+  "runsDir": ".ai/runs",
+  "trackedConfigVersion": 1,
+  "notes": [
+    "Raw run history is local and ignored by Git.",
+    "Codex model request payloads, exact token usage, and internal file-read tool calls are not observable from this repository-level wrapper."
+  ]
+}

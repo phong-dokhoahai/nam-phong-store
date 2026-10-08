@@ -44,6 +44,7 @@ const navItems: NavItem[] = [
     key: "inventory",
     icon: <BoxCubeIcon />,
     subItems: [
+      { name: "Inventory", key: "inventoryOverview", path: "/inventory" },
       { name: "Materials", key: "materials", path: "/materials" },
       { name: "Categories", key: "categories", path: "/categories" },
       { name: "Units", key: "units", path: "/units" },

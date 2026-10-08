@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "admin:bootstrap": "node scripts/bootstrap-admin.mjs"
+    "admin:bootstrap": "node scripts/bootstrap-admin.mjs",
+    "ai-observer": "node ai-observer/cli.mjs",
+    "ai-observer:test": "node --test ai-observer/*.test.mjs"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.20",

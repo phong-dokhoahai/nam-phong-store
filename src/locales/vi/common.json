@@ -32,6 +32,7 @@
       "sales": "Bán hàng",
       "finance": "Tài chính",
       "inventory": "Kho",
+      "inventoryOverview": "Tổng quan tồn kho",
       "materials": "Vật liệu",
       "categories": "Danh mục",
       "units": "Đơn vị",
@@ -265,6 +266,39 @@
       "save": "Không thể lưu vật liệu.",
       "deactivate": "Không thể ngưng dùng vật liệu.",
       "duplicateSku": "Đã có vật liệu khác dùng SKU này."
+    }
+  },
+  "inventory": {
+    "title": "Tồn kho",
+    "listTitle": "Tồn kho hiện tại",
+    "loading": "Đang tải tồn kho...",
+    "stats": {
+      "total": "Tổng vật liệu",
+      "inStock": "Còn tồn",
+      "lowStock": "Sắp hết hàng",
+      "outOfStock": "Hết hàng"
+    },
+    "toolbar": {
+      "searchLabel": "Tìm tồn kho",
+      "searchPlaceholder": "Tìm theo tên hoặc SKU...",
+      "allCategories": "Tất cả danh mục",
+      "allStatuses": "Tất cả trạng thái",
+      "liveSource": "Dữ liệu Supabase",
+      "demoSource": "Dữ liệu mẫu"
+    },
+    "table": {
+      "material": "Vật liệu",
+      "category": "Danh mục",
+      "currentStock": "Tồn hiện tại",
+      "minimumStock": "Tồn tối thiểu",
+      "status": "Trạng thái"
+    },
+    "empty": {
+      "title": "Không tìm thấy tồn kho",
+      "description": "Điều chỉnh bộ lọc hoặc thêm vật liệu trước."
+    },
+    "errors": {
+      "load": "Không thể tải tồn kho."
     }
   },
   "masterData": {

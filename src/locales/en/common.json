@@ -32,6 +32,7 @@
       "sales": "Sales",
       "finance": "Finance",
       "inventory": "Inventory",
+      "inventoryOverview": "Inventory Overview",
       "materials": "Materials",
       "categories": "Categories",
       "units": "Units",
@@ -265,6 +266,39 @@
       "save": "Unable to save material.",
       "deactivate": "Unable to deactivate material.",
       "duplicateSku": "Another material already uses this SKU."
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "listTitle": "Current Stock",
+    "loading": "Loading inventory...",
+    "stats": {
+      "total": "Total materials",
+      "inStock": "In stock",
+      "lowStock": "Low stock",
+      "outOfStock": "Out of stock"
+    },
+    "toolbar": {
+      "searchLabel": "Search inventory",
+      "searchPlaceholder": "Search by name or SKU...",
+      "allCategories": "All categories",
+      "allStatuses": "All statuses",
+      "liveSource": "Supabase data",
+      "demoSource": "Demo data"
+    },
+    "table": {
+      "material": "Material",
+      "category": "Category",
+      "currentStock": "Current stock",
+      "minimumStock": "Minimum stock",
+      "status": "Status"
+    },
+    "empty": {
+      "title": "No inventory found",
+      "description": "Adjust your filters or add materials first."
+    },
+    "errors": {
+      "load": "Unable to load inventory."
     }
   },
   "masterData": {
