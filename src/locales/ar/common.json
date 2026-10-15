@@ -7,7 +7,14 @@
     "viewMore": "عرض المزيد",
     "delete": "حذف",
     "filter": "تصفية",
-    "seeAll": "عرض الكل"
+    "seeAll": "عرض الكل",
+    "pagination": {
+      "label": "ترقيم الصفحات",
+      "range": "عرض {{from}}–{{to}} من {{total}}",
+      "previous": "السابق",
+      "next": "التالي",
+      "page": "صفحة {{page}} من {{pages}}"
+    }
   },
   "sidebar": {
     "groups": {

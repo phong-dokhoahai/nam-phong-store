@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { DollarLineIcon } from "@/icons";
 import { useTranslation } from "react-i18next";
-import { formatCurrency } from "../stock-receipts/stockReceiptFormat";
+import { formatCurrency } from "@/utils/formatCurrency";
 import type { PaymentDocument } from "./types";
 
 type PaymentsTableProps = {

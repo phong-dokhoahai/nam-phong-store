@@ -7,9 +7,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PencilIcon, TrashBinIcon } from "@/icons";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
 import {
-  formatCurrency,
   formatQuantity,
   getMaterialStatus,
 } from "./materialStatus";

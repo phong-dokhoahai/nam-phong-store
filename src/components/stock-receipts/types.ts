@@ -56,6 +56,7 @@ export type StockReceipt = {
 export type StockReceiptPayload = {
   source: StockReceiptSource;
   receipts: StockReceipt[];
+  totalCount: number;
   suppliers: StockReceiptSupplierLookup[];
   materials: StockReceiptMaterialLookup[];
 };

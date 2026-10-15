@@ -7,7 +7,14 @@
     "viewMore": "View More",
     "delete": "Delete",
     "filter": "Filter",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "pagination": {
+      "label": "Pagination",
+      "range": "Showing {{from}}–{{to}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}} of {{pages}}"
+    }
   },
   "sidebar": {
     "groups": {

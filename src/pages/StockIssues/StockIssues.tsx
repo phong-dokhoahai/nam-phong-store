@@ -1,4 +1,5 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ConfirmStockIssueModal from "@/components/stock-issues/ConfirmStockIssueModal";
 import StockIssueFormModal from "@/components/stock-issues/StockIssueFormModal";
@@ -22,6 +23,7 @@ import type {
   StockIssueStatus,
 } from "@/components/stock-issues/types";
 import { useModal } from "@/hooks/useModal";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -35,6 +37,7 @@ const getDraftFromIssue = (issue: StockIssue): StockIssueDraftValues => ({
   note: issue.note,
   lines: issue.lines,
 });
+const PAGE_SIZE = 20;
 
 export default function StockIssues() {
   const { t } = useTranslation();
@@ -50,6 +53,9 @@ export default function StockIssues() {
     useState<StockIssueDraftValues>(getEmptyDraftValues);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | StockIssueStatus>("all");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const debouncedSearch = useDebouncedValue(search);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -65,9 +71,15 @@ export default function StockIssues() {
       setError("");
 
       try {
-        const payload = await fetchStockIssuesPayload();
+        const payload = await fetchStockIssuesPayload({
+          page,
+          pageSize: PAGE_SIZE,
+          search: debouncedSearch,
+          status,
+        });
         if (!isMounted()) return;
         setIssues(payload.issues);
+        setTotalCount(payload.totalCount);
         setCustomers(payload.customers);
         setMaterials(payload.materials);
         setSource(payload.source);
@@ -91,7 +103,7 @@ export default function StockIssues() {
         if (isMounted()) setIsLoading(false);
       }
     },
-    [t],
+    [debouncedSearch, page, status, t],
   );
 
   useEffect(() => {
@@ -107,6 +119,7 @@ export default function StockIssues() {
   const filteredIssues = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
+    if (source === "supabase") return issues;
     return issues.filter((issue) => {
       const matchesSearch =
         !normalizedSearch ||
@@ -117,7 +130,13 @@ export default function StockIssues() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [issues, search, status]);
+  }, [issues, search, source, status]);
+  const visibleIssues =
+    source === "supabase"
+      ? filteredIssues
+      : filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => setPage(1), [search, status]);
 
   const upsertIssueInList = (issue: StockIssue) => {
     setIssues((current) => {
@@ -282,10 +301,18 @@ export default function StockIssues() {
             </div>
           ) : (
             <StockIssuesTable
-              issues={filteredIssues}
+              issues={visibleIssues}
               selectedIssueId={selectedIssue?.id || ""}
               onSelect={selectIssue}
               onConfirm={openConfirmModal}
+            />
+          )}
+          {!isLoading && !loadError && (
+            <ListPagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalItems={source === "supabase" ? totalCount : filteredIssues.length}
+              onPageChange={setPage}
             />
           )}
         </div>

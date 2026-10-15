@@ -7,8 +7,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CheckLineIcon, EyeIcon, PencilIcon } from "@/icons";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
-import { formatCurrency, formatQuantity } from "./StockIssueFormat";
+import { formatQuantity } from "./StockIssueFormat";
 import type { StockIssue, StockIssueStatus } from "./types";
 
 type StockIssuesTableProps = {

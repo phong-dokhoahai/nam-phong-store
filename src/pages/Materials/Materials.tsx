@@ -1,4 +1,5 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import DeleteMaterialModal from "@/components/materials/DeleteMaterialModal";
 import MaterialFormModal from "@/components/materials/MaterialFormModal";
@@ -25,6 +26,7 @@ import { useTranslation } from "react-i18next";
 
 const newDemoId = () =>
   `demo-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+const PAGE_SIZE = 20;
 
 export default function Materials() {
   const { t } = useTranslation();
@@ -38,6 +40,7 @@ export default function Materials() {
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
   const [status, setStatus] = useState<MaterialFilterStatus>("all");
+  const [page, setPage] = useState(1);
   const [formVersion, setFormVersion] = useState(0);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
     null,
@@ -95,6 +98,12 @@ export default function Materials() {
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [categoryId, materials, search, status]);
+  const visibleMaterials = filteredMaterials.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
+
+  useEffect(() => setPage(1), [categoryId, search, status]);
 
   const openCreateModal = () => {
     setSelectedMaterial(null);
@@ -273,9 +282,17 @@ export default function Materials() {
             </div>
           ) : (
             <MaterialsTable
-              materials={filteredMaterials}
+              materials={visibleMaterials}
               onEdit={openEditModal}
               onDeactivate={openDeleteModal}
+            />
+          )}
+          {!isLoading && (
+            <ListPagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalItems={filteredMaterials.length}
+              onPageChange={setPage}
             />
           )}
         </div>

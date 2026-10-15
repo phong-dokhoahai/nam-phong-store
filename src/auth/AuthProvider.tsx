@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
 import { AuthContext } from "./AuthContext";
@@ -48,6 +48,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [error, setError] = useState<AuthModuleError | null>(
     isSupabaseConfigured ? null : missingConfigError,
   );
+  const sessionStateRef = useRef(sessionState);
+  sessionStateRef.current = sessionState;
 
   const applySession = useCallback(async (nextSession: Session | null) => {
     setIsLoading(true);
@@ -105,7 +107,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
       void reload();
     });
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      const currentSession = sessionStateRef.current.session;
+
+      if (
+        nextSession &&
+        currentSession?.user.id === nextSession.user.id &&
+        (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
+      ) {
+        setSessionState((currentState) => ({
+          ...currentState,
+          session: nextSession,
+        }));
+        return;
+      }
+
       void applySession(nextSession);
     });
 

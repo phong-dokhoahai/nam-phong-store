@@ -1,12 +1,12 @@
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import { TrashBinIcon } from "@/icons";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
 import {
   calculateIssueTotal,
   calculateLineTotal,
   calculateSubtotal,
-  formatCurrency,
   formatQuantity,
 } from "./StockIssueFormat";
 import type {

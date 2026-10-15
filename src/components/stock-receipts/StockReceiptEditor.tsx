@@ -4,8 +4,8 @@ import {
   calculateLineTotal,
   calculateReceiptTotal,
   calculateSubtotal,
-  formatCurrency,
 } from "./stockReceiptFormat";
+import { formatCurrency } from "@/utils/formatCurrency";
 import type {
   StockReceipt,
   StockReceiptDraftValues,

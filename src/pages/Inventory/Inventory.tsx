@@ -1,4 +1,5 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import InventoryStats from "@/components/inventory/InventoryStats";
 import InventoryTable from "@/components/inventory/InventoryTable";
@@ -14,6 +15,8 @@ import type {
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+const PAGE_SIZE = 20;
+
 export default function Inventory() {
   const { t } = useTranslation();
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -24,6 +27,7 @@ export default function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
   const [status, setStatus] = useState<MaterialFilterStatus>("all");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,6 +77,12 @@ export default function Inventory() {
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [categoryId, materials, search, status]);
+  const visibleMaterials = filteredMaterials.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
+
+  useEffect(() => setPage(1), [categoryId, search, status]);
 
   return (
     <div className="space-y-6">
@@ -104,7 +114,15 @@ export default function Inventory() {
               {t("inventory.loading")}
             </div>
           ) : (
-            <InventoryTable materials={filteredMaterials} />
+            <InventoryTable materials={visibleMaterials} />
+          )}
+          {!isLoading && (
+            <ListPagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalItems={filteredMaterials.length}
+              onPageChange={setPage}
+            />
           )}
         </div>
       </ComponentCard>

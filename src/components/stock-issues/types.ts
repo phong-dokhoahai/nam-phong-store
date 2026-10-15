@@ -59,6 +59,7 @@ export type StockIssue = {
 export type StockIssuePayload = {
   source: StockIssueSource;
   issues: StockIssue[];
+  totalCount: number;
   customers: StockIssueCustomerLookup[];
   materials: StockIssueMaterialLookup[];
 };

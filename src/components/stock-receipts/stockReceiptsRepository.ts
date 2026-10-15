@@ -186,15 +186,57 @@ const createDemoId = (prefix: string) =>
 export const isStockReceiptsBackendAvailable = () =>
   isSupabaseConfigured && Boolean(supabase);
 
-export const fetchStockReceiptsPayload =
-  async (): Promise<StockReceiptPayload> => {
+export const fetchStockReceiptsPayload = async (options: {
+  page: number;
+  pageSize: number;
+  search: string;
+  status: "all" | StockReceipt["status"];
+}): Promise<StockReceiptPayload> => {
     if (!isStockReceiptsBackendAvailable() || !supabase) {
       return {
         source: "demo",
         receipts: demoStockReceipts,
+        totalCount: demoStockReceipts.length,
         suppliers: demoStockReceiptSuppliers,
         materials: demoStockReceiptMaterials,
       };
+    }
+
+    const offset = (options.page - 1) * options.pageSize;
+    let receiptsQuery = supabase
+      .from("purchase_receipts")
+      .select(receiptSelect, { count: "exact" })
+      .order("updated_at", { ascending: false })
+      .range(offset, offset + options.pageSize - 1);
+
+    if (options.status !== "all") {
+      receiptsQuery = receiptsQuery.eq("status", options.status);
+    }
+    const search = options.search
+      .trim()
+      .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+      .replace(/\s+/g, " ");
+    if (search) {
+      const pattern = `*${search}*`;
+      const { data: matchingSuppliers, error: supplierSearchError } =
+        await supabase
+          .from("suppliers")
+          .select("id")
+          .ilike("name", pattern);
+      if (supplierSearchError) throw new Error(supplierSearchError.message);
+
+      const filters = [
+        `code.ilike.${pattern}`,
+        `supplier_invoice_number.ilike.${pattern}`,
+      ];
+      if (matchingSuppliers?.length) {
+        filters.push(
+          `supplier_id.in.(${matchingSuppliers.map(({ id }) => id).join(",")})`,
+        );
+      }
+      receiptsQuery = receiptsQuery.or(
+        filters.join(","),
+      );
     }
 
     const [suppliersResult, materialsResult, receiptsResult] =
@@ -209,10 +251,7 @@ export const fetchStockReceiptsPayload =
           .select(materialSelect)
           .eq("is_active", true)
           .order("name", { ascending: true }),
-        supabase
-          .from("purchase_receipts")
-          .select(receiptSelect)
-          .order("updated_at", { ascending: false }),
+        receiptsQuery,
       ]);
 
     if (
@@ -230,6 +269,7 @@ export const fetchStockReceiptsPayload =
 
     return {
       source: "supabase",
+      totalCount: receiptsResult.count || 0,
       suppliers: (suppliersResult.data || []) as StockReceiptSupplierLookup[],
       materials: (
         (materialsResult.data || []) as Parameters<typeof toMaterialLookup>[0][]

@@ -1,4 +1,5 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { useModal } from "@/hooks/useModal";
 import { useEffect, useMemo, useState } from "react";
@@ -26,12 +27,15 @@ type MasterDataPageProps = {
   kind: MasterDataKind;
 };
 
+const PAGE_SIZE = 20;
+
 export default function MasterDataPage({ kind }: MasterDataPageProps) {
   const { t } = useTranslation();
   const [records, setRecords] = useState<MasterDataRecord[]>([]);
   const [source, setSource] = useState<MasterDataSource>("demo");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<MasterDataStatus>("all");
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
@@ -93,6 +97,12 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
       return matchesSearch && matchesStatus;
     });
   }, [records, search, status]);
+  const visibleRecords = filteredRecords.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
+
+  useEffect(() => setPage(1), [kind, search, status]);
 
   const stats = useMemo(
     () => ({
@@ -274,9 +284,17 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
           ) : (
             <MasterDataTable
               kind={kind}
-              records={filteredRecords}
+              records={visibleRecords}
               onEdit={openEditModal}
               onDeactivate={openDeactivateModal}
+            />
+          )}
+          {!isLoading && (
+            <ListPagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalItems={filteredRecords.length}
+              onPageChange={setPage}
             />
           )}
         </div>

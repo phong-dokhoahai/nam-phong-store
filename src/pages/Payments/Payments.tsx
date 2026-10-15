@@ -1,4 +1,5 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PaymentFormModal from "@/components/payments/PaymentFormModal";
 import PaymentHistoryTable from "@/components/payments/PaymentHistoryTable";
@@ -16,7 +17,7 @@ import type {
   PaymentDraftValues,
   PaymentsPayload,
 } from "@/components/payments/types";
-import { formatCurrency } from "@/components/stock-receipts/stockReceiptFormat";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { useModal } from "@/hooks/useModal";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,7 @@ const emptyPayload: PaymentsPayload = {
   documents: [],
   transactions: [],
 };
+const PAGE_SIZE = 20;
 
 export default function Payments() {
   const { t } = useTranslation();
@@ -34,6 +36,8 @@ export default function Payments() {
   const [draft, setDraft] = useState<PaymentDraftValues>(getEmptyPaymentDraft);
   const [search, setSearch] = useState("");
   const [direction, setDirection] = useState<"all" | PaymentDirection>("all");
+  const [documentPage, setDocumentPage] = useState(1);
+  const [historyPage, setHistoryPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -84,6 +88,16 @@ export default function Payments() {
       return matchesDirection && matchesSearch;
     });
   }, [direction, payload.documents, search]);
+  const visibleDocuments = filteredDocuments.slice(
+    (documentPage - 1) * PAGE_SIZE,
+    documentPage * PAGE_SIZE,
+  );
+  const visibleTransactions = payload.transactions.slice(
+    (historyPage - 1) * PAGE_SIZE,
+    historyPage * PAGE_SIZE,
+  );
+
+  useEffect(() => setDocumentPage(1), [direction, search]);
 
   const summary = useMemo(
     () =>
@@ -212,15 +226,29 @@ export default function Payments() {
             </div>
           ) : (
             <PaymentsTable
-              documents={filteredDocuments}
+              documents={visibleDocuments}
               onPay={openCreatePayment}
+            />
+          )}
+          {!isLoading && !loadError && (
+            <ListPagination
+              page={documentPage}
+              pageSize={PAGE_SIZE}
+              totalItems={filteredDocuments.length}
+              onPageChange={setDocumentPage}
             />
           )}
         </div>
       </ComponentCard>
 
       <ComponentCard title={t("payments.history.title")}>
-        <PaymentHistoryTable transactions={payload.transactions} />
+        <PaymentHistoryTable transactions={visibleTransactions} />
+        <ListPagination
+          page={historyPage}
+          pageSize={PAGE_SIZE}
+          totalItems={payload.transactions.length}
+          onPageChange={setHistoryPage}
+        />
       </ComponentCard>
 
       <PaymentFormModal

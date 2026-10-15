@@ -6,7 +6,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslation } from "react-i18next";
-import { formatCurrency } from "../stock-receipts/stockReceiptFormat";
+import { formatCurrency } from "@/utils/formatCurrency";
 import type { PaymentTransaction } from "./types";
 
 type PaymentHistoryTableProps = {

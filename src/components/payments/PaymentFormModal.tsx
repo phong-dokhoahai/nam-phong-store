@@ -1,6 +1,6 @@
 import { Modal } from "@/components/ui/modal";
 import { useTranslation } from "react-i18next";
-import { formatCurrency } from "../stock-receipts/stockReceiptFormat";
+import { formatCurrency } from "@/utils/formatCurrency";
 import type {
   PaymentDirection,
   PaymentDocument,

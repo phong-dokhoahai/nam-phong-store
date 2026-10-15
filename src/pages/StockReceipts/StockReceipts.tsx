@@ -1,4 +1,5 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ConfirmStockReceiptModal from "@/components/stock-receipts/ConfirmStockReceiptModal";
 import StockReceiptFormModal from "@/components/stock-receipts/StockReceiptFormModal";
@@ -22,6 +23,7 @@ import type {
   StockReceiptSupplierLookup,
 } from "@/components/stock-receipts/types";
 import { useModal } from "@/hooks/useModal";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -37,6 +39,7 @@ const getDraftFromReceipt = (
   note: receipt.note,
   lines: receipt.lines,
 });
+const PAGE_SIZE = 20;
 
 export default function StockReceipts() {
   const { t } = useTranslation();
@@ -53,6 +56,9 @@ export default function StockReceipts() {
     useState<StockReceiptDraftValues>(getEmptyDraftValues);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | StockReceiptStatus>("all");
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const debouncedSearch = useDebouncedValue(search);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -68,9 +74,15 @@ export default function StockReceipts() {
       setError("");
 
       try {
-        const payload = await fetchStockReceiptsPayload();
+        const payload = await fetchStockReceiptsPayload({
+          page,
+          pageSize: PAGE_SIZE,
+          search: debouncedSearch,
+          status,
+        });
         if (!isMounted()) return;
         setReceipts(payload.receipts);
+        setTotalCount(payload.totalCount);
         setSuppliers(payload.suppliers);
         setMaterials(payload.materials);
         setSource(payload.source);
@@ -94,7 +106,7 @@ export default function StockReceipts() {
         if (isMounted()) setIsLoading(false);
       }
     },
-    [t],
+    [debouncedSearch, page, status, t],
   );
 
   useEffect(() => {
@@ -110,6 +122,7 @@ export default function StockReceipts() {
   const filteredReceipts = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
+    if (source === "supabase") return receipts;
     return receipts.filter((receipt) => {
       const matchesSearch =
         !normalizedSearch ||
@@ -120,7 +133,13 @@ export default function StockReceipts() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [receipts, search, status]);
+  }, [receipts, search, source, status]);
+  const visibleReceipts =
+    source === "supabase"
+      ? filteredReceipts
+      : filteredReceipts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => setPage(1), [search, status]);
 
   const openCreateDraft = () => {
     setSelectedReceipt(null);
@@ -289,10 +308,18 @@ export default function StockReceipts() {
             </div>
           ) : (
             <StockReceiptsTable
-              receipts={filteredReceipts}
+              receipts={visibleReceipts}
               selectedReceiptId={selectedReceipt?.id || ""}
               onSelect={selectReceipt}
               onConfirm={openConfirmModal}
+            />
+          )}
+          {!isLoading && !loadError && (
+            <ListPagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalItems={source === "supabase" ? totalCount : filteredReceipts.length}
+              onPageChange={setPage}
             />
           )}
         </div>

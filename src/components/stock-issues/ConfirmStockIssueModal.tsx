@@ -1,6 +1,6 @@
 import { Modal } from "@/components/ui/modal";
 import { useTranslation } from "react-i18next";
-import { formatCurrency } from "./StockIssueFormat";
+import { formatCurrency } from "@/utils/formatCurrency";
 import type { StockIssue } from "./types";
 
 type ConfirmStockIssueModalProps = {

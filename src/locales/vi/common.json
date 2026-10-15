@@ -7,7 +7,14 @@
     "viewMore": "Xem thêm",
     "delete": "Xóa",
     "filter": "Lọc",
-    "seeAll": "Xem tất cả"
+    "seeAll": "Xem tất cả",
+    "pagination": {
+      "label": "Phân trang",
+      "range": "Hiển thị {{from}}–{{to}} trên {{total}}",
+      "previous": "Trước",
+      "next": "Sau",
+      "page": "Trang {{page}} / {{pages}}"
+    }
   },
   "sidebar": {
     "groups": {

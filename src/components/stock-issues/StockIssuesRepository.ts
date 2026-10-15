@@ -188,15 +188,52 @@ const createDemoId = (prefix: string) =>
 export const isStockIssuesBackendAvailable = () =>
   isSupabaseConfigured && Boolean(supabase);
 
-export const fetchStockIssuesPayload =
-  async (): Promise<StockIssuePayload> => {
+export const fetchStockIssuesPayload = async (options: {
+  page: number;
+  pageSize: number;
+  search: string;
+  status: "all" | StockIssue["status"];
+}): Promise<StockIssuePayload> => {
     if (!isStockIssuesBackendAvailable() || !supabase) {
       return {
         source: "demo",
         issues: demoStockIssues,
+        totalCount: demoStockIssues.length,
         customers: demoStockIssueCustomers,
         materials: demoStockIssueMaterials,
       };
+    }
+
+    const offset = (options.page - 1) * options.pageSize;
+    let issuesQuery = supabase
+      .from("sales_orders")
+      .select(issueSelect, { count: "exact" })
+      .order("updated_at", { ascending: false })
+      .range(offset, offset + options.pageSize - 1);
+
+    if (options.status !== "all") {
+      issuesQuery = issuesQuery.eq("status", options.status);
+    }
+    const search = options.search
+      .trim()
+      .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+      .replace(/\s+/g, " ");
+    if (search) {
+      const pattern = `*${search}*`;
+      const { data: matchingCustomers, error: customerSearchError } =
+        await supabase
+          .from("customers")
+          .select("id")
+          .ilike("name", pattern);
+      if (customerSearchError) throw new Error(customerSearchError.message);
+
+      const filters = [`code.ilike.${pattern}`, `delivery_address.ilike.${pattern}`];
+      if (matchingCustomers?.length) {
+        filters.push(
+          `customer_id.in.(${matchingCustomers.map(({ id }) => id).join(",")})`,
+        );
+      }
+      issuesQuery = issuesQuery.or(filters.join(","));
     }
 
     const [customersResult, materialsResult, issuesResult] = await Promise.all([
@@ -210,10 +247,7 @@ export const fetchStockIssuesPayload =
         .select(materialSelect)
         .eq("is_active", true)
         .order("name", { ascending: true }),
-      supabase
-        .from("sales_orders")
-        .select(issueSelect)
-        .order("updated_at", { ascending: false }),
+      issuesQuery,
     ]);
 
     if (customersResult.error || materialsResult.error || issuesResult.error) {
@@ -227,6 +261,7 @@ export const fetchStockIssuesPayload =
 
     return {
       source: "supabase",
+      totalCount: issuesResult.count || 0,
       customers: (customersResult.data || []) as StockIssueCustomerLookup[],
       materials: (
         (materialsResult.data || []) as Parameters<typeof toMaterialLookup>[0][]
