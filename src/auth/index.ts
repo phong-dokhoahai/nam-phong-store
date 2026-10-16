@@ -1,5 +1,6 @@
 export { AuthContext, useAuth } from "./AuthContext";
 export { AuthProvider } from "./AuthProvider";
+export { AdminRoute } from "./AdminRoute";
 export { ProtectedRoute } from "./ProtectedRoute";
 export {
   getActiveSessionProfile,

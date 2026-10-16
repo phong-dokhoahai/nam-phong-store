@@ -18,6 +18,7 @@ Chi tiết thuộc tài liệu chuyên trách:
 | Schema, RLS, RPC, index, migration và vận hành dữ liệu | [DATABASE.md](DATABASE.md) |
 | Quy tắc triển khai, validation, lỗi và kiểm thử | [CODING_RULES.md](CODING_RULES.md) |
 | Log công việc của AI agent | [LOGGING_RULES.md](LOGGING_RULES.md) |
+| Tiến trình dự án (đã xong / đang làm / tiếp theo) | [PROCESS.md](PROCESS.md) |
 
 Khi có mâu thuẫn, yêu cầu mới nhất của người dùng được ưu tiên; sau đó dùng đúng nguồn chính trong bảng trên. File này chỉ là nguồn chính cho cấu trúc hệ thống, ranh giới trách nhiệm và hướng phụ thuộc.
 
@@ -333,3 +334,4 @@ Chỉ dùng checklist này khi thay đổi ranh giới hoặc data flow:
 - [ ] Quyết định khó đảo ngược đã được ghi thành ADR?
 
 Checklist triển khai feature, kiểm thử và AI logging nằm trong các tài liệu chuyên trách, không lặp lại tại đây.
+

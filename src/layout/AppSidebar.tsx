@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth";
 import { useSidebar } from "@/context/SidebarContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,6 +22,7 @@ type NavItem = {
   icon: React.ReactNode;
   path?: string;
   new?: boolean;
+  adminOnly?: boolean;
   target?: string;
   subItems?: {
     name: string;
@@ -33,60 +35,69 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    key: "dashboard",
-    subItems: [{ name: "Ecommerce", key: "ecommerceHome", path: "/" }],
-  },
-  {
-    name: "Inventory",
-    key: "inventory",
-    icon: <BoxCubeIcon />,
-    subItems: [
-      { name: "Inventory", key: "inventoryOverview", path: "/inventory" },
-      { name: "Materials", key: "materials", path: "/materials" },
-      { name: "Categories", key: "categories", path: "/categories" },
-      { name: "Units", key: "units", path: "/units" },
-      { name: "Suppliers", key: "suppliers", path: "/suppliers" },
-      { name: "Customers", key: "customers", path: "/customers" },
-      { name: "Stock Receipts", key: "stockReceipts", path: "/stock-receipts" },
-      { name: "Stock Issues", key: "stockIssues", path: "/stock-issues" },
-      { name: "Payments", key: "payments", path: "/payments" },
-    ],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    key: "calendar",
-    path: "/calendar",
-  },
-  {
-    name: "Forms",
-    key: "forms",
-    icon: <ListIcon />,
-    subItems: [
-      {
-        name: "Form Elements",
-        key: "formElements",
-        path: "/form-elements",
-        pro: false,
-      },
-    ],
-  },
-  {
-    name: "Tables",
-    key: "tables",
-    icon: <TableIcon />,
-    subItems: [
-      {
-        name: "Basic Tables",
-        key: "basicTables",
-        path: "/basic-tables",
-        pro: false,
-      },
-    ],
-  },
+  // {
+  //   icon: <GridIcon />,
+  //   name: "Dashboard",
+  //   key: "dashboard",
+  //   subItems: [{ name: "Ecommerce", key: "ecommerceHome", path: "/" }],
+  // },
+  // {
+  //   name: "Inventory",
+  //   key: "inventory",
+  //   icon: <BoxCubeIcon />,
+   
+  // },
+    { name: "Inventory", key: "inventoryOverview", path: "/inventory",icon: <BoxCubeIcon /> },
+      { name: "Materials", key: "materials", path: "/materials" ,icon: <BoxCubeIcon />},
+      { name: "Categories", key: "categories", path: "/categories" ,icon: <BoxCubeIcon />},
+      { name: "Units", key: "units", path: "/units" ,icon: <BoxCubeIcon />},
+      { name: "Suppliers", key: "suppliers", path: "/suppliers" ,icon: <BoxCubeIcon />},
+      { name: "Customers", key: "customers", path: "/customers" ,icon: <BoxCubeIcon />},
+      { name: "Stock Receipts", key: "stockReceipts", path: "/stock-receipts" ,icon: <BoxCubeIcon />},
+      { name: "Stock Issues", key: "stockIssues", path: "/stock-issues" ,icon: <BoxCubeIcon />},
+      { name: "Payments", key: "payments", path: "/payments", icon: <BoxCubeIcon /> },
+  // {
+  //   icon: <CalenderIcon />,
+  //   name: "Calendar",
+  //   key: "calendar",
+  //   path: "/calendar",
+  // },
+  // {
+  //   name: "Forms",
+  //   key: "forms",
+  //   icon: <ListIcon />,
+  //   subItems: [
+  //     {
+  //       name: "Form Elements",
+  //       key: "formElements",
+  //       path: "/form-elements",
+  //       pro: false,
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: "Tables",
+  //   key: "tables",
+  //   icon: <TableIcon />,
+  //   subItems: [
+  //     {
+  //       name: "Basic Tables",
+  //       key: "basicTables",
+  //       path: "/basic-tables",
+  //       pro: false,
+  //     },
+  //   ],
+  // },
+];
+
+const reportItems: NavItem[] = [
+  { name: "Inventory Report", key: "reportsInventory", path: "/reports/inventory", icon: <PieChartIcon /> },
+  { name: "Stock Receipt Report", key: "reportsPurchase", path: "/reports/purchases", icon: <PieChartIcon /> },
+  { name: "Stock Issue Report", key: "reportsSales", path: "/reports/sales", icon: <PieChartIcon /> },
+  { name: "Low Stock Report", key: "reportsLowStock", path: "/reports/low-stock", icon: <PieChartIcon /> },
+  { name: "Revenue Report", key: "reportsRevenue", path: "/reports/revenue", icon: <PieChartIcon />, adminOnly: true },
+  { name: "Customer Debt Report", key: "reportsCustomerDebt", path: "/reports/customer-debt", icon: <PieChartIcon />, adminOnly: true },
+  { name: "Supplier Debt Report", key: "reportsSupplierDebt", path: "/reports/supplier-debt", icon: <PieChartIcon />, adminOnly: true },
 ];
 
 const othersItems: NavItem[] = [
@@ -118,12 +129,13 @@ const othersItems: NavItem[] = [
 const supportItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
+  const { profile } = useAuth();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } =
     useSidebar();
   const { t } = useTranslation();
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "support" | "others";
+    type: "main" | "reports" | "support" | "others";
     index: number;
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
@@ -190,7 +202,7 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (
     index: number,
-    menuType: "main" | "support" | "others",
+    menuType: "main" | "reports" | "support" | "others",
   ) => {
     setOpenSubmenu((prevOpenSubmenu) => {
       if (
@@ -204,9 +216,12 @@ const AppSidebar: React.FC = () => {
     });
   };
 
+  const canSee = (item: NavItem) =>
+    !item.adminOnly || profile?.role === "ADMIN";
+
   const renderMenuItems = (
     items: NavItem[],
-    menuType: "main" | "support" | "others",
+    menuType: "main" | "reports" | "support" | "others",
   ) => (
     <ul className="flex flex-col gap-1">
       {items.map((nav, index) => (
@@ -415,7 +430,24 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(navItems.filter(canSee), "main")}
+            </div>
+
+            <div>
+              <h2
+                className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${
+                  !isExpanded && !isHovered
+                    ? "xl:justify-center"
+                    : "justify-start"
+                }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  t("sidebar.groups.reports")
+                ) : (
+                  <HorizontaLDots className="size-6" />
+                )}
+              </h2>
+              {renderMenuItems(reportItems.filter(canSee), "reports")}
             </div>
 
             {supportItems.length > 0 && (
@@ -437,7 +469,7 @@ const AppSidebar: React.FC = () => {
               </div>
             )}
 
-            <div>
+             {/* <div>
               <h2
                 className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${
                   !isExpanded && !isHovered
@@ -452,11 +484,10 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
-            </div>
+            </div>  */}
           </div>
         </nav>
 
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

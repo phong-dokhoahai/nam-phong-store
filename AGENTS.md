@@ -6,6 +6,7 @@
 Trước khi thực hiện task, đọc tài liệu theo mức độ cần thiết:
 
 PROJECT.md
+docs/PROCESS.md — luôn đọc để biết dự án đang ở đâu
 BUSINESS_RULES.md nếu task liên quan nghiệp vụ
 DATABASE.md nếu task liên quan dữ liệu, Supabase hoặc migration
 ARCHITECTURE.md nếu task ảnh hưởng structure, dependency hoặc data flow
@@ -13,6 +14,8 @@ CODING_RULES.md trước khi viết hoặc sửa code
 File/module liên quan trực tiếp đến task
 
 Không cần đọc toàn bộ repository nếu task chỉ ảnh hưởng một phạm vi nhỏ.
+
+**Bắt buộc:** mỗi khi xong một tính năng/task có thay đổi repository, phải cập nhật `docs/PROCESS.md` và `docs/process/` theo [docs/process/04-update-rules.md](docs/process/04-update-rules.md) trước khi báo hoàn thành. Task chưa cập nhật process là chưa hoàn thành.
 
 ## Repo Map
 

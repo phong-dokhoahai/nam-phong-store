@@ -1,5 +1,5 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router";
-import { ProtectedRoute } from "@/auth";
+import { AdminRoute, ProtectedRoute } from "@/auth";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
@@ -18,6 +18,13 @@ import Materials from "./pages/Materials/Materials";
 import Blank from "./pages/OtherPage/Blank";
 import NotFound from "./pages/OtherPage/NotFound";
 import Payments from "./pages/Payments/Payments";
+import LowStockReport from "./pages/Reports/LowStockReport";
+import RevenueReport from "./pages/Reports/RevenueReport";
+import CustomerDebtReport from "./pages/Reports/CustomerDebtReport";
+import SupplierDebtReport from "./pages/Reports/SupplierDebtReport";
+import InventoryPeriodReport from "./pages/Reports/InventoryPeriodReport";
+import PurchaseReport from "./pages/Reports/PurchaseReport";
+import SalesReport from "./pages/Reports/SalesReport";
 import StockIssues from "./pages/StockIssues/StockIssues";
 import StockReceipts from "./pages/StockReceipts/StockReceipts";
 import BasicTables from "./pages/Tables/BasicTables";
@@ -53,6 +60,15 @@ export default function App() {
               <Route path="/stock-receipts" element={<StockReceipts />} />
               <Route path="/stock-issues" element={<StockIssues />} />
               <Route path="/payments" element={<Payments />} />
+              <Route path="/reports/inventory" element={<InventoryPeriodReport />} />
+              <Route path="/reports/low-stock" element={<LowStockReport />} />
+              <Route path="/reports/purchases" element={<PurchaseReport />} />
+              <Route path="/reports/sales" element={<SalesReport />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/reports/revenue" element={<RevenueReport />} />
+                <Route path="/reports/customer-debt" element={<CustomerDebtReport />} />
+                <Route path="/reports/supplier-debt" element={<SupplierDebtReport />} />
+              </Route>
 
               {/* Forms */}
               <Route path="/form-elements" element={<FormElements />} />

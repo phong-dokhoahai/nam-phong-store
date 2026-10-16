@@ -20,7 +20,8 @@
     "groups": {
       "menu": "Menu",
       "support": "Hỗ trợ",
-      "others": "Khác"
+      "others": "Khác",
+      "reports": "Báo cáo"
     },
     "badges": {
       "new": "mới",
@@ -137,7 +138,14 @@
       "inboxDetails": "Chi tiết",
       "stockReceipts": "Phiếu nhập kho",
       "stockIssues": "Phiếu xuất kho",
-      "payments": "Thanh toán & công nợ"
+      "payments": "Thanh toán & công nợ",
+      "reportsLowStock": "Báo cáo hàng sắp hết",
+      "reportsRevenue": "Báo cáo doanh thu",
+      "reportsPurchase": "Báo cáo nhập kho",
+      "reportsSales": "Báo cáo xuất kho",
+      "reportsInventory": "Báo cáo tồn kho",
+      "reportsCustomerDebt": "Báo cáo công nợ khách hàng",
+      "reportsSupplierDebt": "Báo cáo công nợ nhà cung cấp"
     },
     "widget": {
       "title": "Dashboard Tailwind CSS #1",
@@ -1518,6 +1526,196 @@
       "documentNotFound": "Không tìm thấy chứng từ đã chọn.",
       "amountPositive": "Số tiền thanh toán phải lớn hơn 0.",
       "amountTooHigh": "Số tiền thanh toán không được vượt quá công nợ còn lại ({amount})."
+    }
+  },
+  "reports": {
+    "loading": "Đang tải báo cáo...",
+    "lowStock": {
+      "title": "Báo cáo hàng sắp hết",
+      "listTitle": "Vật liệu có tồn kho bằng hoặc dưới mức tối thiểu",
+      "searchLabel": "Tìm hàng sắp hết",
+      "searchPlaceholder": "Tìm theo tên hoặc SKU...",
+      "table": {
+        "material": "Vật liệu",
+        "category": "Nhóm",
+        "currentStock": "Tồn hiện tại",
+        "minimumStock": "Tồn tối thiểu",
+        "shortage": "Thiếu",
+        "status": "Trạng thái"
+      },
+      "status": {
+        "lowStock": "Sắp hết",
+        "outOfStock": "Hết hàng"
+      },
+      "empty": {
+        "title": "Không có vật liệu sắp hết",
+        "description": "Tất cả vật liệu đang hoạt động đều trên mức tồn tối thiểu."
+      },
+      "errors": {
+        "load": "Không thể tải báo cáo hàng sắp hết."
+      }
+    },
+    "pdf": {
+      "export": "Xuất PDF",
+      "exporting": "Đang xuất...",
+      "error": "Không thể xuất file PDF.",
+      "page": "Trang",
+      "generatedAt": "Xuất lúc {{time}}",
+      "companyName": "Kho Nam Phong",
+      "items": "Số mặt hàng: {{count}}",
+      "total": "Tổng"
+    },
+    "revenue": {
+      "title": "Báo cáo doanh thu",
+      "listTitle": "Doanh thu theo thời gian",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "groupByLabel": "Gom nhóm theo",
+      "pdfPeriod": "Kỳ báo cáo: {{from}} đến {{to}}",
+      "note": "Doanh thu thuần = tổng đơn bán đã xác nhận trừ hàng khách trả đã xác nhận. Đây không phải dòng tiền hay công nợ.",
+      "groupBy": {
+        "day": "Ngày",
+        "week": "Tuần",
+        "month": "Tháng"
+      },
+      "summary": {
+        "orders": "Số đơn",
+        "sales": "Doanh số",
+        "returns": "Hàng trả",
+        "netRevenue": "Doanh thu thuần"
+      },
+      "table": {
+        "period": "Kỳ",
+        "orders": "Số đơn",
+        "totalAmount": "Doanh số",
+        "returns": "Hàng trả",
+        "netRevenue": "Doanh thu thuần",
+        "total": "Tổng"
+      },
+      "empty": {
+        "title": "Không có doanh thu trong kỳ này",
+        "description": "Chọn khoảng thời gian khác hoặc xác nhận đơn bán trước."
+      },
+      "errors": {
+        "load": "Không thể tải báo cáo doanh thu.",
+        "range": "Hãy chọn khoảng thời gian hợp lệ."
+      }
+    },
+    "documents": {
+      "purchase": {
+        "title": "Báo cáo nhập kho",
+        "listTitle": "Phiếu nhập theo kỳ",
+        "party": "Nhà cung cấp",
+        "creator": "Người tạo"
+      },
+      "sales": {
+        "title": "Báo cáo xuất kho / bán hàng",
+        "listTitle": "Phiếu xuất theo kỳ",
+        "party": "Khách hàng",
+        "creator": "Người bán"
+      },
+      "filters": {
+        "from": "Từ ngày",
+        "to": "Đến ngày",
+        "material": "Vật liệu",
+        "status": "Trạng thái",
+        "all": "Tất cả"
+      },
+      "status": {
+        "CONFIRMED": "Đã xác nhận",
+        "DRAFT": "Nháp",
+        "CANCELLED": "Đã hủy",
+        "all": "Tất cả trạng thái"
+      },
+      "mode": {
+        "documents": "Theo chứng từ",
+        "materials": "Theo vật liệu"
+      },
+      "summary": {
+        "documents": "Số chứng từ",
+        "materials": "Số vật liệu",
+        "totalValue": "Tổng giá trị chứng từ",
+        "materialValue": "Giá trị vật liệu đã chọn"
+      },
+      "table": {
+        "document": "Chứng từ",
+        "date": "Ngày",
+        "items": "Hàng hóa",
+        "status": "Trạng thái",
+        "totalAmount": "Tổng chứng từ",
+        "material": "Vật liệu",
+        "documentCount": "Số chứng từ",
+        "quantity": "Số lượng",
+        "lineTotal": "Giá trị"
+      },
+      "materialFilterNote": "Chỉ liệt kê dòng của vật liệu đã chọn; cột tổng chứng từ vẫn là tổng của cả phiếu.",
+      "empty": {
+        "title": "Không có chứng từ trong kỳ này",
+        "description": "Hãy đổi khoảng thời gian hoặc bộ lọc."
+      },
+      "errors": {
+        "load": "Không thể tải báo cáo."
+      }
+    },
+    "inventoryPeriod": {
+      "title": "Báo cáo tồn kho theo kỳ",
+      "listTitle": "Tồn đầu kỳ, nhập xuất và tồn cuối kỳ",
+      "category": "Nhóm vật liệu",
+      "allCategories": "Tất cả nhóm",
+      "hideEmpty": "Ẩn vật liệu không có tồn và không phát sinh",
+      "mismatch": "Có {{count}} vật liệu có tồn cuối kỳ khác tồn hiện tại. Hãy kiểm tra lịch sử kho.",
+      "formula": "Tồn cuối = tồn đầu + nhập + khách trả + điều chỉnh tăng − xuất − trả nhà cung cấp − điều chỉnh giảm. Chứng từ bị hủy được trừ vào đúng cột gốc.",
+      "table": {
+        "material": "Vật liệu",
+        "unit": "ĐVT",
+        "opening": "Tồn đầu",
+        "importQuantity": "Nhập",
+        "customerReturnQuantity": "Khách trả",
+        "adjustmentInQuantity": "ĐC tăng",
+        "exportQuantity": "Xuất",
+        "supplierReturnQuantity": "Trả NCC",
+        "adjustmentOutQuantity": "ĐC giảm",
+        "closing": "Tồn cuối"
+      },
+      "empty": {
+        "title": "Không có dữ liệu tồn kho trong kỳ",
+        "description": "Hãy đổi khoảng thời gian hoặc bộ lọc."
+      },
+      "errors": {
+        "load": "Không thể tải báo cáo tồn kho."
+      }
+    },
+    "debt": {
+      "customer": {
+        "title": "Báo cáo công nợ khách hàng",
+        "listTitle": "Công nợ phải thu theo khách hàng",
+        "party": "Khách hàng",
+        "search": "Tìm khách hàng"
+      },
+      "supplier": {
+        "title": "Báo cáo công nợ nhà cung cấp",
+        "listTitle": "Công nợ phải trả theo nhà cung cấp",
+        "party": "Nhà cung cấp",
+        "search": "Tìm nhà cung cấp"
+      },
+      "table": {
+        "openingDebt": "Nợ đầu kỳ",
+        "debtIncrease": "Phát sinh tăng",
+        "payment": "Đã thanh toán",
+        "returnAdjustment": "Giảm do trả hàng",
+        "otherAdjustment": "Điều chỉnh",
+        "closingDebt": "Nợ cuối kỳ",
+        "overdueDebt": "Quá hạn"
+      },
+      "formula": "Nợ cuối kỳ = nợ đầu kỳ + phát sinh tăng − đã thanh toán − giảm do trả hàng ± điều chỉnh. Thanh toán hoặc chứng từ bị hủy được trừ vào đúng cột gốc.",
+      "overdueNote": "Chưa hiển thị nợ quá hạn vì chứng từ chưa có hạn thanh toán.",
+      "empty": {
+        "title": "Không có công nợ trong kỳ này",
+        "description": "Hãy đổi khoảng thời gian."
+      },
+      "errors": {
+        "load": "Không thể tải báo cáo công nợ."
+      }
     }
   }
 }

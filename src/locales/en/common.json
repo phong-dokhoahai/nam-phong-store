@@ -20,7 +20,8 @@
     "groups": {
       "menu": "Menu",
       "support": "Support",
-      "others": "Others"
+      "others": "Others",
+      "reports": "Reports"
     },
     "badges": {
       "new": "new",
@@ -137,7 +138,14 @@
       "inboxDetails": "Details",
       "stockReceipts": "Stock Receipts",
       "stockIssues": "Stock Issues",
-      "payments": "Thanh toán & công nợ"
+      "payments": "Thanh toán & công nợ",
+      "reportsLowStock": "Low stock report",
+      "reportsRevenue": "Revenue report",
+      "reportsPurchase": "Stock receipt report",
+      "reportsSales": "Stock issue report",
+      "reportsInventory": "Inventory period report",
+      "reportsCustomerDebt": "Customer debt report",
+      "reportsSupplierDebt": "Supplier debt report"
     },
     "widget": {
       "title": "#1 Tailwind CSS Dashboard",
@@ -1518,6 +1526,196 @@
       "documentNotFound": "Không tìm thấy chứng từ đã chọn.",
       "amountPositive": "Số tiền thanh toán phải lớn hơn 0.",
       "amountTooHigh": "Số tiền thanh toán không được vượt quá công nợ còn lại ({amount})."
+    }
+  },
+  "reports": {
+    "loading": "Loading report...",
+    "lowStock": {
+      "title": "Low stock report",
+      "listTitle": "Materials at or below minimum stock",
+      "searchLabel": "Search low stock",
+      "searchPlaceholder": "Search by name or SKU...",
+      "table": {
+        "material": "Material",
+        "category": "Category",
+        "currentStock": "Current stock",
+        "minimumStock": "Minimum stock",
+        "shortage": "Shortage",
+        "status": "Status"
+      },
+      "status": {
+        "lowStock": "Low stock",
+        "outOfStock": "Out of stock"
+      },
+      "empty": {
+        "title": "No low stock materials",
+        "description": "All active materials are above their minimum stock."
+      },
+      "errors": {
+        "load": "Unable to load the low stock report."
+      }
+    },
+    "pdf": {
+      "export": "Export PDF",
+      "exporting": "Exporting...",
+      "error": "Unable to export the PDF.",
+      "page": "Page",
+      "generatedAt": "Generated at {{time}}",
+      "companyName": "Nam Phong Storage",
+      "items": "Items: {{count}}",
+      "total": "Total"
+    },
+    "revenue": {
+      "title": "Revenue report",
+      "listTitle": "Revenue over time",
+      "from": "From",
+      "to": "To",
+      "groupByLabel": "Group by",
+      "pdfPeriod": "Period: {{from}} to {{to}}",
+      "note": "Net revenue = confirmed sales totals minus confirmed customer returns. It is not cash flow or debt.",
+      "groupBy": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month"
+      },
+      "summary": {
+        "orders": "Orders",
+        "sales": "Sales",
+        "returns": "Returns",
+        "netRevenue": "Net revenue"
+      },
+      "table": {
+        "period": "Period",
+        "orders": "Orders",
+        "totalAmount": "Sales",
+        "returns": "Returns",
+        "netRevenue": "Net revenue",
+        "total": "Total"
+      },
+      "empty": {
+        "title": "No revenue in this period",
+        "description": "Choose another date range or confirm sales orders first."
+      },
+      "errors": {
+        "load": "Unable to load the revenue report.",
+        "range": "Choose a valid date range."
+      }
+    },
+    "documents": {
+      "purchase": {
+        "title": "Stock receipt report",
+        "listTitle": "Stock receipts by period",
+        "party": "Supplier",
+        "creator": "Created by"
+      },
+      "sales": {
+        "title": "Stock issue / sales report",
+        "listTitle": "Stock issues by period",
+        "party": "Customer",
+        "creator": "Seller"
+      },
+      "filters": {
+        "from": "From",
+        "to": "To",
+        "material": "Material",
+        "status": "Status",
+        "all": "All"
+      },
+      "status": {
+        "CONFIRMED": "Confirmed",
+        "DRAFT": "Draft",
+        "CANCELLED": "Cancelled",
+        "all": "All statuses"
+      },
+      "mode": {
+        "documents": "By document",
+        "materials": "By material"
+      },
+      "summary": {
+        "documents": "Documents",
+        "materials": "Materials",
+        "totalValue": "Total document value",
+        "materialValue": "Value of selected material"
+      },
+      "table": {
+        "document": "Document",
+        "date": "Date",
+        "items": "Items",
+        "status": "Status",
+        "totalAmount": "Document total",
+        "material": "Material",
+        "documentCount": "Documents",
+        "quantity": "Quantity",
+        "lineTotal": "Value"
+      },
+      "materialFilterNote": "Only lines of the selected material are listed; the document total still covers the whole document.",
+      "empty": {
+        "title": "No documents in this period",
+        "description": "Change the date range or filters."
+      },
+      "errors": {
+        "load": "Unable to load the report."
+      }
+    },
+    "inventoryPeriod": {
+      "title": "Inventory period report",
+      "listTitle": "Opening, movements and closing stock",
+      "category": "Category",
+      "allCategories": "All categories",
+      "hideEmpty": "Hide materials without stock or movements",
+      "mismatch": "{{count}} material(s) have a closing stock that differs from the current stock. Check the inventory history.",
+      "formula": "Closing = opening + import + customer returns + adjustments in − export − supplier returns − adjustments out. Reversed documents are netted into their original column.",
+      "table": {
+        "material": "Material",
+        "unit": "Unit",
+        "opening": "Opening",
+        "importQuantity": "Import",
+        "customerReturnQuantity": "Customer returns",
+        "adjustmentInQuantity": "Adjust in",
+        "exportQuantity": "Export",
+        "supplierReturnQuantity": "Supplier returns",
+        "adjustmentOutQuantity": "Adjust out",
+        "closing": "Closing"
+      },
+      "empty": {
+        "title": "No inventory data in this period",
+        "description": "Change the date range or filters."
+      },
+      "errors": {
+        "load": "Unable to load the inventory report."
+      }
+    },
+    "debt": {
+      "customer": {
+        "title": "Customer debt report",
+        "listTitle": "Receivables by customer",
+        "party": "Customer",
+        "search": "Search customer"
+      },
+      "supplier": {
+        "title": "Supplier debt report",
+        "listTitle": "Payables by supplier",
+        "party": "Supplier",
+        "search": "Search supplier"
+      },
+      "table": {
+        "openingDebt": "Opening debt",
+        "debtIncrease": "Debt increase",
+        "payment": "Payments",
+        "returnAdjustment": "Returns",
+        "otherAdjustment": "Adjustments",
+        "closingDebt": "Closing debt",
+        "overdueDebt": "Overdue"
+      },
+      "formula": "Closing = opening + increase − payments − returns ± adjustments. Cancelled payments and documents are netted into their original column.",
+      "overdueNote": "Overdue debt is not shown because documents do not have a due date yet.",
+      "empty": {
+        "title": "No debt in this period",
+        "description": "Change the date range."
+      },
+      "errors": {
+        "load": "Unable to load the debt report."
+      }
     }
   }
 }
