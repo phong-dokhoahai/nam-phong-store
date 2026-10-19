@@ -1,17 +1,18 @@
+import { EditLineIcon } from "@/icons";
 import { useState } from "react";
 
 export default function Security() {
   const [switcherToggle, setSwitcherToggle] = useState(false);
 
   return (
-    <div className="mb-6 rounded-2xl border border-gray-200  p-5 lg:p-6 dark:border-gray-800 ">
-      <h4 className="text-lg mb-4 font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
+    <div className="mb-6 rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800">
+      <h4 className="mb-4 text-lg font-semibold text-gray-800 lg:mb-6 dark:text-white/90">
         Security
       </h4>
       <div>
         <div className="flex flex-col justify-between gap-4 border-b border-gray-200 py-4 first:pt-0 last:border-b-0 last:pb-0 sm:flex-row sm:items-end dark:border-gray-800">
           <div>
-            <span className="block text-base mb-1 font-medium text-gray-800 dark:text-white/90">
+            <span className="mb-1 block text-base font-medium text-gray-800 dark:text-white/90">
               Change Password
             </span>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -19,29 +20,15 @@ export default function Security() {
             </p>
           </div>
           <div>
-            <button className="shadow-theme-xs flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
-                <path
-                  d="M12.3861 5.08087L14.9182 7.61296M15.6437 3.5917L16.408 4.35603C16.8962 4.84419 16.8962 5.63564 16.408 6.1238L7.83547 14.6963C7.69039 14.8414 7.51182 14.9486 7.31554 15.0083L3.97461 16.0251L4.99141 12.6842C5.05115 12.4879 5.15829 12.3093 5.30337 12.1642L13.8759 3.5917C14.3641 3.10355 15.1555 3.10355 15.6437 3.5917Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <button className="flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200">
+              <EditLineIcon />
               Change Password
             </button>
           </div>
         </div>
         <div className="flex flex-col justify-between gap-4 border-b border-gray-200 py-4 first:pt-0 last:border-b-0 last:pb-0 sm:flex-row sm:items-end dark:border-gray-800">
           <div>
-            <span className="block text-base font-medium mb-1 text-gray-800 dark:text-white/90">
+            <span className="mb-1 block text-base font-medium text-gray-800 dark:text-white/90">
               Two-factor authentication (2FA)
             </span>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -69,7 +56,7 @@ export default function Security() {
                   }`}
                 ></div>
                 <div
-                  className={`shadow-theme-sm absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white duration-200 ease-linear ${
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-theme-sm duration-200 ease-linear ${
                     switcherToggle ? "translate-x-full" : "translate-x-0"
                   }`}
                 ></div>

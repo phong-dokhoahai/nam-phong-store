@@ -1,16 +1,39 @@
-import type { ReactNode } from "react";
+import { cn } from "@/utils";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface ButtonProps {
-  children: ReactNode; // Button text or content
-  size?: "sm" | "md"; // Button size
-  variant?: "primary" | "outline"; // Button variant
-  startIcon?: ReactNode; // Icon before the text
-  endIcon?: ReactNode; // Icon after the text
-  onClick?: () => void; // Click handler
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean; // Disabled state
-  className?: string; // Disabled state
+export type ButtonVariant =
+  "primary" | "outline" | "danger" | "successOutline" | "errorOutline";
+
+interface ButtonProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "children"
+> {
+  children: ReactNode;
+  size?: "sm" | "md";
+  variant?: ButtonVariant;
+  startIcon?: ReactNode;
+  endIcon?: ReactNode;
+  /** Disables the button and marks it busy; pass the busy label as children. */
+  loading?: boolean;
 }
+
+const sizeClasses = {
+  sm: "px-4 py-2.5 text-sm",
+  md: "px-5 py-3 text-sm",
+};
+
+const variantClasses: Record<ButtonVariant, string> = {
+  primary:
+    "bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300",
+  outline:
+    "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/3 dark:hover:text-gray-300",
+  danger:
+    "bg-error-500 text-white shadow-theme-xs hover:bg-error-600 disabled:bg-error-300",
+  successOutline:
+    "text-success-600 ring-1 ring-inset ring-success-300 hover:bg-success-50 dark:text-success-400 dark:ring-success-500/40 dark:hover:bg-success-500/10",
+  errorOutline:
+    "text-error-600 ring-1 ring-inset ring-error-300 hover:bg-error-100 dark:text-error-400 dark:ring-error-500/40 dark:hover:bg-error-500/10",
+};
 
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -18,35 +41,27 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   startIcon,
   endIcon,
-  onClick,
   type = "button",
   className = "",
   disabled = false,
+  loading = false,
+  ...props
 }) => {
-  // Size Classes
-  const sizeClasses = {
-    sm: "px-4 py-3 text-sm",
-    md: "px-5 py-3.5 text-sm",
-  };
-
-  // Variant Classes
-  const variantClasses = {
-    primary:
-      "bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300",
-    outline:
-      "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/3 dark:hover:text-gray-300",
-  };
+  const isDisabled = disabled || loading;
 
   return (
     <button
       type={type}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition ${
-        sizeClasses[size]
-      } ${variantClasses[variant]} ${
-        disabled ? "cursor-not-allowed opacity-50" : ""
-      } ${className}`}
-      onClick={onClick}
-      disabled={disabled}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition",
+        sizeClasses[size],
+        variantClasses[variant],
+        isDisabled && "cursor-not-allowed opacity-50",
+        className,
+      )}
+      disabled={isDisabled}
+      aria-busy={loading || undefined}
+      {...props}
     >
       {startIcon && <span className="flex items-center">{startIcon}</span>}
       {children}

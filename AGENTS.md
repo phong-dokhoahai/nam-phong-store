@@ -54,7 +54,7 @@ src/
 ├── hooks/                     # useModal, useGoBack, useClickOutside
 ├── i18n/                      # index.ts — i18next bootstrap (resources, defaultNS, fallbackLng)
 ├── locales/                   # translation files: en/common.json, ar/common.json,
-│                              #   es/common.json, de/common.json
+│                              #   es/common.json, de/common.json, vi/common.json
 ├── icons/                     # .svg files + index.ts barrel (SVGR named exports)
 └── utils/                     # utility helpers
 ```
@@ -96,8 +96,8 @@ src/
 ## Internationalization (react-i18next) Rules
 
 - **Setup**: i18next is bootstrapped in `src/i18n/index.ts` and imported once in `src/main.tsx`. Do not re-initialize it.
-- **Supported locales**: `en`, `ar`, `es`, `de`. All share the single `"common"` namespace.
-- **Translation dictionaries**: `src/locales/<locale>/common.json`. When adding any user-facing string, add the key to **all four** locale files.
+- **Supported locales**: `en`, `ar`, `es`, `de`, `vi`. All share the single `"common"` namespace.
+- **Translation dictionaries**: `src/locales/<locale>/common.json`. When adding any user-facing string, add the key to **all five** locale files.
 - **Using translations**:
   - In any component (all are client-side in Vite/React): use the `useTranslation` hook.
     ```tsx
@@ -145,12 +145,36 @@ src/
 - **Modals**: use `useModal` hook from `src/hooks/useModal.ts` and the `<Modal>` primitive from `src/components/ui/modal/`.
 - **Global state**: consume only via existing hooks — `useSidebar()`, `useTheme()`, `useLanguage()`.
 
+### Primitive map — use these, never raw HTML
+
+Before writing any raw `<button>`, `<input>`, `<select>`, `<textarea>`, `<label>` or a hand-styled box, pick the primitive below. If a primitive lacks a feature, extend the primitive (backward compatible) instead of copying its markup.
+
+| Need | Use | Notes |
+| --- | --- | --- |
+| Text / number / date / search input | `form/input/InputField` | Dates use `type="date"`; `form/date-picker` (flatpickr) is uncontrolled, demo only |
+| Search box with magnifier | `common/SearchInput` | |
+| Dropdown value picker | `form/Select` | Pass `value` (controlled); never remount with `key`. Per-option `disabled`, `error`, `placeholder` supported |
+| Multi-line text | `form/input/TextArea` | |
+| Checkbox | `form/input/Checkbox` | |
+| Field label | `form/Label` | Pair with `htmlFor` / `id` |
+| Text button | `ui/button/Button` | Variants: `primary`, `outline`, `danger`, `successOutline`, `errorOutline`; `loading` for busy state |
+| Icon-only button (table row actions) | `ui/button/IconButton` | `label` is required (aria-label + tooltip); `tone`: `brand` / `success` / `error` |
+| View-mode switch (e.g. day/week/month) | `common/SegmentedControl` | |
+| Popover menu ("⋯", user menu) | `ui/dropdown/Dropdown` + `DropdownItem` | Not for picking a form value — use `Select` |
+| Error / warning / success message | `common/InlineAlert` | `layout="panel"` + `action` for load-failure blocks with retry. `ui/alert/Alert` only when a title + icon + link is needed |
+| Loading placeholder | `common/LoadingState` (box) or `common/TableSkeleton` (table) | |
+| No data | `common/EmptyState` | `compact` for empty sections inside forms |
+| Headline number card | `common/StatCard` | |
+| Table / Modal / Badge / Pagination | `ui/table`, `ui/modal` + `useModal`, `ui/badge/Badge`, `common/ListPagination` | |
+
+Exception: libraries that only accept HTML strings (flatpickr `prevArrow`/`nextArrow`) may keep inline SVG strings.
+
 ## Don'ts
 
 - Don't install new packages without asking the user.
 - Don't create a `tailwind.config.js` or `tailwind.config.ts` — Tailwind v4 is fully configured through `src/index.css`.
 - Don't hardcode hex colors or pixel values in `className` — always use `@theme` tokens.
-- Don't hardcode user-facing text — add keys to all four `src/locales/<locale>/common.json` files and use `t()`.
+- Don't hardcode user-facing text — add keys to all five `src/locales/<locale>/common.json` files and use `t()`.
 - Don't use physical directional utilities (`ml-*`, `mr-*`, `pl-*`, `pr-*`, `left-*`, `right-*`, `border-l-*`, `border-r-*`, `rounded-l-*`, `rounded-r-*`, `text-left`, `text-right`) — always prefer CSS logical equivalents (`ms-*`, `me-*`, `ps-*`, `pe-*`, `start-*`, `end-*`, `border-s-*`, `border-e-*`, `rounded-s-*`, `rounded-e-*`, `text-start`, `text-end`).
 - Don't import `react-apexcharts`, `FullCalendar`, or `Swiper` at the module level without verifying they are safe to do so in that component's context — always check the existing pattern in that feature folder first.
 - Don't add new pages outside `src/pages/` or new routes outside `src/App.tsx`.

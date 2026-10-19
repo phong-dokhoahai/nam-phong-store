@@ -1,5 +1,10 @@
 import Input from "@/components/form/input/InputField";
+import Button from "@/components/ui/button/Button";
+import IconButton from "@/components/ui/button/IconButton";
+import EmptyState from "@/components/common/EmptyState";
+import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
+import Select from "@/components/form/Select";
 import {
   calculateLineTotal,
   calculateReceiptTotal,
@@ -15,6 +20,7 @@ import type {
 } from "./types";
 import { TrashBinIcon } from "@/icons";
 import { useTranslation } from "react-i18next";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type StockReceiptEditorProps = {
   draft: StockReceiptDraftValues;
@@ -185,35 +191,24 @@ export default function StockReceiptEditor({
         )}
       </div>
 
-      {error && (
-        <div className="mt-5 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-          {error}
-        </div>
-      )}
+      {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
       <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div>
           <Label htmlFor="stock-receipt-supplier">
             {t("stockReceipts.form.supplier")}
           </Label>
-          <select
+          <Select
             id="stock-receipt-supplier"
             value={draft.supplierId}
             disabled={!isDraftEditable || isSaving}
-            onChange={(event) =>
-              setDraftField("supplierId", event.target.value)
-            }
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-          >
-            <option value="">
-              {t("stockReceipts.form.supplierPlaceholder")}
-            </option>
-            {suppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.id}>
-                {supplier.name}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setDraftField("supplierId", value)}
+            placeholder={t("stockReceipts.form.supplierPlaceholder")}
+            options={suppliers.map((supplier) => ({
+              value: supplier.id,
+              label: supplier.name,
+            }))}
+          />
         </div>
         <div>
           <Label htmlFor="stock-receipt-date">
@@ -250,20 +245,18 @@ export default function StockReceiptEditor({
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {t("stockReceipts.lines.title")}
           </h4>
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="sm"
             onClick={addLine}
             disabled={!isDraftEditable || isSaving || materials.length === 0}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             {t("stockReceipts.lines.add")}
-          </button>
+          </Button>
         </div>
 
         {draft.lines.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-300 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-            {t("stockReceipts.lines.empty")}
-          </div>
+          <EmptyState compact description={t("stockReceipts.lines.empty")} />
         ) : (
           <div className="space-y-3">
             {draft.lines.map((line) => (
@@ -273,28 +266,19 @@ export default function StockReceiptEditor({
               >
                 <div>
                   <Label>{t("stockReceipts.lines.material")}</Label>
-                  <select
+                  <Select
                     value={line.materialId}
                     disabled={!isDraftEditable || isSaving}
-                    aria-invalid={Boolean(getLineError(line))}
-                    onChange={(event) =>
-                      updateLineMaterial(line.id, event.target.value)
-                    }
-                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-                  >
-                    {materials.map((material) => (
-                      <option
-                        key={material.id}
-                        value={material.id}
-                        disabled={
-                          line.materialId !== material.id &&
-                          selectedMaterialIds.includes(material.id)
-                        }
-                      >
-                        {material.sku} - {material.name}
-                      </option>
-                    ))}
-                  </select>
+                    error={Boolean(getLineError(line))}
+                    onChange={(value) => updateLineMaterial(line.id, value)}
+                    options={materials.map((material) => ({
+                      value: material.id,
+                      label: `${material.sku} - ${material.name}`,
+                      disabled:
+                        line.materialId !== material.id &&
+                        selectedMaterialIds.includes(material.id),
+                    }))}
+                  />
                 </div>
                 <div>
                   <Label>{t("stockReceipts.lines.unit")}</Label>
@@ -360,15 +344,14 @@ export default function StockReceiptEditor({
                   </p>
                 </div>
                 <div className="flex items-end">
-                  <button
-                    type="button"
+                  <IconButton
+                    icon={<TrashBinIcon className="size-4" />}
+                    label={t("stockReceipts.lines.remove")}
+                    tone="error"
+                    size="md"
                     onClick={() => removeLine(line.id)}
                     disabled={!isDraftEditable || isSaving}
-                    aria-label={t("stockReceipts.lines.remove")}
-                    className="inline-flex size-11 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-error-300 hover:text-error-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-error-700"
-                  >
-                    <TrashBinIcon className="size-4" />
-                  </button>
+                  />
                 </div>
                 {getLineError(line) && (
                   <p
@@ -389,13 +372,13 @@ export default function StockReceiptEditor({
           <Label htmlFor="stock-receipt-note">
             {t("stockReceipts.form.note")}
           </Label>
-          <textarea
+          <TextArea
             id="stock-receipt-note"
             value={draft.note}
             disabled={!isDraftEditable || isSaving}
             placeholder={t("stockReceipts.form.notePlaceholder")}
-            onChange={(event) => setDraftField("note", event.target.value)}
-            className="min-h-28 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+            onChange={(value) => setDraftField("note", value)}
+            className="min-h-28"
           />
         </div>
         <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
@@ -437,26 +420,25 @@ export default function StockReceiptEditor({
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <button
-          type="button"
+        <Button
+          size="sm"
           onClick={onSave}
           disabled={!isDraftEditable || isSaving}
-          className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSaving
             ? t("stockReceipts.actions.saving")
             : t("stockReceipts.actions.saveDraft")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="successOutline"
+          size="sm"
           onClick={onConfirm}
           disabled={
             !selectedReceipt || selectedReceipt.status !== "DRAFT" || isSaving
           }
-          className="rounded-lg border border-success-300 px-4 py-2.5 text-sm font-medium text-success-600 transition-colors hover:bg-success-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-success-500/40 dark:text-success-400 dark:hover:bg-success-500/10"
         >
           {t("stockReceipts.actions.confirm")}
-        </button>
+        </Button>
       </div>
     </div>
   );

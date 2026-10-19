@@ -1,6 +1,12 @@
+import InlineAlert from "@/components/common/InlineAlert";
+import Input from "@/components/form/input/InputField";
+import TextArea from "@/components/form/input/TextArea";
+import Label from "@/components/form/Label";
+import Select from "@/components/form/Select";
+import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
-import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useTranslation } from "react-i18next";
 import type {
   PaymentDirection,
   PaymentDocument,
@@ -66,46 +72,41 @@ export default function PaymentFormModal({
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        <div>
+          <Label htmlFor="payment-direction">
             {t("payments.form.direction")}
-          </span>
-          <select
+          </Label>
+          <Select
+            id="payment-direction"
             value={draft.direction}
-            onChange={(event) =>
-              changeDirection(event.target.value as PaymentDirection)
-            }
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pe-10 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-          >
-            <option value="customer">{t("payments.direction.customer")}</option>
-            <option value="supplier">{t("payments.direction.supplier")}</option>
-          </select>
-        </label>
+            onChange={(value) => changeDirection(value as PaymentDirection)}
+            options={[
+              { value: "customer", label: t("payments.direction.customer") },
+              { value: "supplier", label: t("payments.direction.supplier") },
+            ]}
+          />
+        </div>
 
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        <div>
+          <Label htmlFor="payment-document">
             {t("payments.form.document")}
-          </span>
-          <select
+          </Label>
+          <Select
+            id="payment-document"
             value={draft.documentId}
-            onChange={(event) => updateDraft("documentId", event.target.value)}
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pe-10 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-          >
-            <option value="">{t("payments.form.documentPlaceholder")}</option>
-            {payableDocuments.map((document) => (
-              <option key={document.id} value={document.id}>
-                {document.code} - {document.partyName} -{" "}
-                {formatCurrency(document.debtAmount)}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={(value) => updateDraft("documentId", value)}
+            placeholder={t("payments.form.documentPlaceholder")}
+            options={payableDocuments.map((document) => ({
+              value: document.id,
+              label: `${document.code} - ${document.partyName} - ${formatCurrency(document.debtAmount)}`,
+            }))}
+          />
+        </div>
 
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-            {t("payments.form.amount")}
-          </span>
-          <input
+        <div>
+          <Label htmlFor="payment-amount">{t("payments.form.amount")}</Label>
+          <Input
+            id="payment-amount"
             type="number"
             min="0"
             max={selectedDocument?.debtAmount || undefined}
@@ -113,99 +114,80 @@ export default function PaymentFormModal({
             onChange={(event) =>
               updateDraft("amount", Number(event.target.value))
             }
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+            hint={
+              selectedDocument
+                ? t("payments.form.remaining", {
+                    amount: formatCurrency(selectedDocument.debtAmount),
+                  })
+                : undefined
+            }
           />
-          {selectedDocument && (
-            <span className="mt-1 block text-theme-xs text-gray-500 dark:text-gray-400">
-              {t("payments.form.remaining", {
-                amount: formatCurrency(selectedDocument.debtAmount),
-              })}
-            </span>
-          )}
-        </label>
+        </div>
 
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-            {t("payments.form.paymentDate")}
-          </span>
-          <input
+        <div>
+          <Label htmlFor="payment-date">{t("payments.form.paymentDate")}</Label>
+          <Input
+            id="payment-date"
             type="date"
             value={draft.paymentDate}
             onChange={(event) => updateDraft("paymentDate", event.target.value)}
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
           />
-        </label>
+        </div>
 
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-            {t("payments.form.method")}
-          </span>
-          <select
+        <div>
+          <Label htmlFor="payment-method">{t("payments.form.method")}</Label>
+          <Select
+            id="payment-method"
             value={draft.method}
-            onChange={(event) =>
-              updateDraft("method", event.target.value as PaymentMethod)
-            }
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pe-10 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-          >
-            <option value="CASH">{t("payments.method.CASH")}</option>
-            <option value="BANK_TRANSFER">
-              {t("payments.method.BANK_TRANSFER")}
-            </option>
-            <option value="OTHER">{t("payments.method.OTHER")}</option>
-          </select>
-        </label>
+            onChange={(value) => updateDraft("method", value as PaymentMethod)}
+            options={(["CASH", "BANK_TRANSFER", "OTHER"] as const).map(
+              (method) => ({
+                value: method,
+                label: t(`payments.method.${method}`),
+              }),
+            )}
+          />
+        </div>
 
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        <div>
+          <Label htmlFor="payment-reference">
             {t("payments.form.referenceNumber")}
-          </span>
-          <input
+          </Label>
+          <Input
+            id="payment-reference"
             value={draft.referenceNumber}
             onChange={(event) =>
               updateDraft("referenceNumber", event.target.value)
             }
             placeholder={t("payments.form.referencePlaceholder")}
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
           />
-        </label>
+        </div>
       </div>
 
-      <label className="mt-4 block">
-        <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-          {t("payments.form.note")}
-        </span>
-        <textarea
+      <div className="mt-4">
+        <Label>{t("payments.form.note")}</Label>
+        <TextArea
           value={draft.note}
-          onChange={(event) => updateDraft("note", event.target.value)}
+          onChange={(value) => updateDraft("note", value)}
           placeholder={t("payments.form.notePlaceholder")}
           rows={3}
-          className="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
         />
-      </label>
+      </div>
 
-      {error && (
-        <div className="mt-5 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-          {error}
-        </div>
-      )}
+      {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
       <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onClose}
           disabled={isSaving}
-          className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
         >
           {t("common.close")}
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={isSaving}
-          className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50"
-        >
+        </Button>
+        <Button size="sm" onClick={onSave} disabled={isSaving}>
           {isSaving ? t("payments.actions.saving") : t("payments.actions.save")}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

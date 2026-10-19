@@ -16,9 +16,7 @@ import type {
 } from "./types";
 
 type CustomerRelation =
-  | StockIssueCustomerLookup
-  | StockIssueCustomerLookup[]
-  | null;
+  StockIssueCustomerLookup | StockIssueCustomerLookup[] | null;
 
 type MaterialRelation =
   | {
@@ -194,116 +192,81 @@ export const fetchStockIssuesPayload = async (options: {
   search: string;
   status: "all" | StockIssue["status"];
 }): Promise<StockIssuePayload> => {
-    if (!isStockIssuesBackendAvailable() || !supabase) {
-      return {
-        source: "demo",
-        issues: demoStockIssues,
-        totalCount: demoStockIssues.length,
-        customers: demoStockIssueCustomers,
-        materials: demoStockIssueMaterials,
-      };
-    }
+  if (!isStockIssuesBackendAvailable() || !supabase) {
+    return {
+      source: "demo",
+      issues: demoStockIssues,
+      totalCount: demoStockIssues.length,
+      customers: demoStockIssueCustomers,
+      materials: demoStockIssueMaterials,
+    };
+  }
 
-    const offset = (options.page - 1) * options.pageSize;
-    let issuesQuery = supabase
-      .from("sales_orders")
-      .select(issueSelect, { count: "exact" })
-      .order("updated_at", { ascending: false })
-      .range(offset, offset + options.pageSize - 1);
+  const offset = (options.page - 1) * options.pageSize;
+  let issuesQuery = supabase
+    .from("sales_orders")
+    .select(issueSelect, { count: "exact" })
+    .order("updated_at", { ascending: false })
+    .range(offset, offset + options.pageSize - 1);
 
-    if (options.status !== "all") {
-      issuesQuery = issuesQuery.eq("status", options.status);
-    }
-    const search = options.search
-      .trim()
-      .replace(/[^\p{L}\p{N}\s-]/gu, " ")
-      .replace(/\s+/g, " ");
-    if (search) {
-      const pattern = `*${search}*`;
-      const { data: matchingCustomers, error: customerSearchError } =
-        await supabase
-          .from("customers")
-          .select("id")
-          .ilike("name", pattern);
-      if (customerSearchError) throw new Error(customerSearchError.message);
+  if (options.status !== "all") {
+    issuesQuery = issuesQuery.eq("status", options.status);
+  }
+  const search = options.search
+    .trim()
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .replace(/\s+/g, " ");
+  if (search) {
+    const pattern = `*${search}*`;
+    const { data: matchingCustomers, error: customerSearchError } =
+      await supabase.from("customers").select("id").ilike("name", pattern);
+    if (customerSearchError) throw new Error(customerSearchError.message);
 
-      const filters = [`code.ilike.${pattern}`, `delivery_address.ilike.${pattern}`];
-      if (matchingCustomers?.length) {
-        filters.push(
-          `customer_id.in.(${matchingCustomers.map(({ id }) => id).join(",")})`,
-        );
-      }
-      issuesQuery = issuesQuery.or(filters.join(","));
-    }
-
-    const [customersResult, materialsResult, issuesResult] = await Promise.all([
-      supabase
-        .from("customers")
-        .select("id, code, name")
-        .eq("is_active", true)
-        .order("name", { ascending: true }),
-      supabase
-        .from("materials")
-        .select(materialSelect)
-        .eq("is_active", true)
-        .order("name", { ascending: true }),
-      issuesQuery,
-    ]);
-
-    if (customersResult.error || materialsResult.error || issuesResult.error) {
-      throw new Error(
-        customersResult.error?.message ||
-          materialsResult.error?.message ||
-          issuesResult.error?.message ||
-          "Unable to load stock issues.",
+    const filters = [
+      `code.ilike.${pattern}`,
+      `delivery_address.ilike.${pattern}`,
+    ];
+    if (matchingCustomers?.length) {
+      filters.push(
+        `customer_id.in.(${matchingCustomers.map(({ id }) => id).join(",")})`,
       );
     }
+    issuesQuery = issuesQuery.or(filters.join(","));
+  }
 
-    return {
-      source: "supabase",
-      totalCount: issuesResult.count || 0,
-      customers: (customersResult.data || []) as StockIssueCustomerLookup[],
-      materials: (
-        (materialsResult.data || []) as Parameters<typeof toMaterialLookup>[0][]
-      ).map(toMaterialLookup),
-      issues: ((issuesResult.data || []) as IssueRow[]).map(toIssue),
-    };
-  };
+  const [customersResult, materialsResult, issuesResult] = await Promise.all([
+    supabase
+      .from("customers")
+      .select("id, code, name")
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    supabase
+      .from("materials")
+      .select(materialSelect)
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    issuesQuery,
+  ]);
 
-const toIssuePayload = (values: StockIssueDraftValues, code?: string) => {
-  const subtotal = calculateSubtotal(values.lines);
-  const totalAmount = calculateIssueTotal(
-    subtotal,
-    values.discountAmount,
-    values.shippingFee,
-    values.taxAmount,
-  );
+  if (customersResult.error || materialsResult.error || issuesResult.error) {
+    throw new Error(
+      customersResult.error?.message ||
+        materialsResult.error?.message ||
+        issuesResult.error?.message ||
+        "Unable to load stock issues.",
+    );
+  }
 
   return {
-    ...(code ? { code } : {}),
-    customer_id: values.customerId,
-    sale_date: values.issueDate,
-    subtotal,
-    discount_amount: values.discountAmount,
-    shipping_fee: values.shippingFee,
-    tax_amount: values.taxAmount,
-    total_amount: totalAmount,
-    paid_amount: 0,
-    debt_amount: totalAmount,
-    payment_status: "UNPAID" as const,
-    delivery_address: values.deliveryAddress.trim() || null,
-    note: values.note.trim() || null,
+    source: "supabase",
+    totalCount: issuesResult.count || 0,
+    customers: (customersResult.data || []) as StockIssueCustomerLookup[],
+    materials: (
+      (materialsResult.data || []) as Parameters<typeof toMaterialLookup>[0][]
+    ).map(toMaterialLookup),
+    issues: ((issuesResult.data || []) as IssueRow[]).map(toIssue),
   };
 };
-
-const toItemPayload = (issueId: string, line: StockIssueLine) => ({
-  sales_order_id: issueId,
-  material_id: line.materialId,
-  quantity: line.quantity,
-  unit_price: line.unitPrice,
-  discount_amount: line.discountAmount,
-  line_total: line.lineTotal,
-});
 
 const fetchIssueById = async (issueId: string) => {
   if (!supabase) throw new Error("Supabase is not configured.");
@@ -318,74 +281,43 @@ const fetchIssueById = async (issueId: string) => {
   return toIssue(data as IssueRow);
 };
 
-export const createStockIssue = async (
+// One RPC call = one transaction: the draft header and its items are saved
+// together, the id and document code are kept on update, and totals are
+// recomputed by the database (see migration 202610160007).
+const saveDraft = async (
+  draftId: string | null,
   values: StockIssueDraftValues,
 ): Promise<StockIssue> => {
   if (!supabase) throw new Error("Supabase is not configured.");
 
-  const { data: code, error: codeError } = await supabase.rpc(
-    "next_document_code",
-    {
-      document_type: "BH",
-      document_date: values.issueDate,
-    },
-  );
+  const { data, error } = await supabase.rpc("save_sales_order_draft", {
+    p_id: draftId,
+    p_customer_id: values.customerId,
+    p_sale_date: values.issueDate,
+    p_discount_amount: values.discountAmount,
+    p_shipping_fee: values.shippingFee,
+    p_tax_amount: values.taxAmount,
+    p_delivery_address: values.deliveryAddress,
+    p_note: values.note,
+    p_items: values.lines.map((line) => ({
+      material_id: line.materialId,
+      quantity: line.quantity,
+      unit_price: line.unitPrice,
+      discount_amount: line.discountAmount,
+    })),
+  });
 
-  if (codeError) throw new Error(codeError.message);
-
-  const { data: issue, error: issueError } = await supabase
-    .from("sales_orders")
-    .insert(toIssuePayload(values, String(code)))
-    .select("id")
-    .single();
-
-  if (issueError) throw new Error(issueError.message);
-
-  const issueId = String((issue as { id: string }).id);
-
-  if (values.lines.length > 0) {
-    const { error: itemsError } = await supabase
-      .from("sales_order_items")
-      .insert(values.lines.map((line) => toItemPayload(issueId, line)));
-
-    if (itemsError) {
-      await supabase
-        .from("sales_orders")
-        .delete()
-        .eq("id", issueId)
-        .eq("status", "DRAFT");
-      throw new Error(itemsError.message);
-    }
-  }
-
-  return fetchIssueById(issueId);
+  if (error) throw new Error(error.message);
+  return fetchIssueById(String((data as { id: string }).id));
 };
 
-export const updateStockIssue = async (
-  issueId: string,
+export const createStockIssue = (values: StockIssueDraftValues) =>
+  saveDraft(null, values);
+
+export const updateStockIssue = (
+  draftId: string,
   values: StockIssueDraftValues,
-): Promise<StockIssue> => {
-  if (!supabase) throw new Error("Supabase is not configured.");
-
-  const replacementIssue = await createStockIssue(values);
-
-  const { error: deleteError } = await supabase
-    .from("sales_orders")
-    .delete()
-    .eq("id", issueId)
-    .eq("status", "DRAFT");
-
-  if (deleteError) {
-    await supabase
-      .from("sales_orders")
-      .delete()
-      .eq("id", replacementIssue.id)
-      .eq("status", "DRAFT");
-    throw new Error(deleteError.message);
-  }
-
-  return replacementIssue;
-};
+) => saveDraft(draftId, values);
 
 export const confirmStockIssue = async (
   issueId: string,

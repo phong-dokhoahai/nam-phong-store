@@ -2,6 +2,7 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { useTranslation } from "react-i18next";
 import type { Material } from "./types";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type DeleteMaterialModalProps = {
   isOpen: boolean;
@@ -36,11 +37,7 @@ export default function DeleteMaterialModal({
           </p>
         </div>
 
-        {error && (
-          <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-            {error}
-          </div>
-        )}
+        {error && <InlineAlert>{error}</InlineAlert>}
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button type="button" variant="outline" onClick={onClose}>
@@ -50,7 +47,7 @@ export default function DeleteMaterialModal({
             type="button"
             disabled={isSaving || !material}
             onClick={onConfirm}
-            className="bg-error-500 hover:bg-error-600 disabled:bg-error-300"
+            variant="danger"
           >
             {isSaving
               ? t("materials.delete.deactivating")

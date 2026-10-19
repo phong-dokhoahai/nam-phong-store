@@ -1,7 +1,15 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import EmptyState from "@/components/common/EmptyState";
+import InlineAlert from "@/components/common/InlineAlert";
 import ListPagination from "@/components/common/ListPagination";
+import LoadingState from "@/components/common/LoadingState";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import SearchInput from "@/components/common/SearchInput";
+import Checkbox from "@/components/form/input/Checkbox";
+import Label from "@/components/form/Label";
+import Select from "@/components/form/Select";
 import { formatQuantity } from "@/components/materials/materialStatus";
+import DateRangeFields from "@/components/reports/DateRangeFields";
 import ExportPdfButton from "@/components/reports/ExportPdfButton";
 import InventoryPeriodTable from "@/components/reports/InventoryPeriodTable";
 import { inventoryPeriodColumns } from "@/components/reports/inventoryPeriodColumns";
@@ -23,9 +31,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const PAGE_SIZE = 20;
-
-const fieldClass =
-  "h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90";
 
 const hasMovement = (row: InventoryPeriodRow) =>
   row.opening !== 0 ||
@@ -75,7 +80,11 @@ export default function InventoryPeriodReport() {
       setPage(1);
 
       try {
-        const data = await fetchInventoryPeriod(range.from, range.to, categoryId);
+        const data = await fetchInventoryPeriod(
+          range.from,
+          range.to,
+          categoryId,
+        );
         if (isMounted) setRows(data);
       } catch (loadError) {
         if (!isMounted) return;
@@ -118,14 +127,19 @@ export default function InventoryPeriodReport() {
       new Set(
         canReconcile
           ? rows
-              .filter((row) => Math.abs(row.closing - row.currentStock) > 0.0005)
+              .filter(
+                (row) => Math.abs(row.closing - row.currentStock) > 0.0005,
+              )
               .map((row) => row.materialId)
           : [],
       ),
     [canReconcile, rows],
   );
 
-  const pagedRows = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pagedRows = filteredRows.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
 
   const buildPdfData = (): ReportPdfData => ({
     title: t("reports.inventoryPeriod.title"),
@@ -163,73 +177,53 @@ export default function InventoryPeriodReport() {
       <ComponentCard title={t("reports.inventoryPeriod.listTitle")}>
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <label className="block text-sm text-gray-700 dark:text-gray-300">
-              <span className="mb-1.5 block">{t("reports.documents.filters.from")}</span>
-              <input
-                type="date"
-                value={range.from}
-                max={range.to || undefined}
-                onChange={(event) =>
-                  setRange((current) => ({ ...current, from: event.target.value }))
-                }
-                className={fieldClass}
-              />
-            </label>
-            <label className="block text-sm text-gray-700 dark:text-gray-300">
-              <span className="mb-1.5 block">{t("reports.documents.filters.to")}</span>
-              <input
-                type="date"
-                value={range.to}
-                min={range.from || undefined}
-                onChange={(event) =>
-                  setRange((current) => ({ ...current, to: event.target.value }))
-                }
-                className={fieldClass}
-              />
-            </label>
-            <label className="block text-sm text-gray-700 dark:text-gray-300">
-              <span className="mb-1.5 block">{t("reports.inventoryPeriod.category")}</span>
-              <select
+            <DateRangeFields value={range} onChange={setRange} />
+            <div>
+              <Label htmlFor="inventory-report-category">
+                {t("reports.inventoryPeriod.category")}
+              </Label>
+              <Select
+                id="inventory-report-category"
                 value={categoryId}
-                onChange={(event) => setCategoryId(event.target.value)}
-                className={fieldClass}
-              >
-                <option value="">{t("reports.inventoryPeriod.allCategories")}</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block text-sm text-gray-700 dark:text-gray-300">
-              <span className="mb-1.5 block">{t("reports.lowStock.searchLabel")}</span>
-              <input
-                type="search"
+                onChange={setCategoryId}
+                options={[
+                  {
+                    value: "",
+                    label: t("reports.inventoryPeriod.allCategories"),
+                  },
+                  ...categories.map((category) => ({
+                    value: category.id,
+                    label: category.label,
+                  })),
+                ]}
+              />
+            </div>
+            <div>
+              <Label htmlFor="inventory-report-search">
+                {t("reports.lowStock.searchLabel")}
+              </Label>
+              <SearchInput
+                id="inventory-report-search"
                 value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value);
+                onChange={(value) => {
+                  setSearch(value);
                   setPage(1);
                 }}
                 placeholder={t("reports.lowStock.searchPlaceholder")}
-                className={fieldClass}
               />
-            </label>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={hideEmpty}
-                onChange={(event) => {
-                  setHideEmpty(event.target.checked);
-                  setPage(1);
-                }}
-                className="size-4 rounded border-gray-300 text-brand-500 dark:border-gray-700"
-              />
-              {t("reports.inventoryPeriod.hideEmpty")}
-            </label>
+            <Checkbox
+              id="inventory-report-hide-empty"
+              checked={hideEmpty}
+              onChange={(checked) => {
+                setHideEmpty(checked);
+                setPage(1);
+              }}
+              label={t("reports.inventoryPeriod.hideEmpty")}
+            />
             <ExportPdfButton
               buildData={buildPdfData}
               fileName={`inventory-report-${range.from}-${range.to}`}
@@ -242,33 +236,28 @@ export default function InventoryPeriodReport() {
               {t("reports.revenue.errors.range")}
             </p>
           )}
-          {error && (
-            <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-              {error}
-            </div>
-          )}
+          {error && <InlineAlert>{error}</InlineAlert>}
           {!isLoading && mismatchedIds.size > 0 && (
-            <div className="rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-warning-400">
-              {t("reports.inventoryPeriod.mismatch", { count: mismatchedIds.size })}
-            </div>
+            <InlineAlert variant="warning">
+              {t("reports.inventoryPeriod.mismatch", {
+                count: mismatchedIds.size,
+              })}
+            </InlineAlert>
           )}
 
           {isLoading ? (
-            <div className="rounded-xl border border-gray-200 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              {t("reports.loading")}
-            </div>
+            <LoadingState label={t("reports.loading")} />
           ) : filteredRows.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {t("reports.inventoryPeriod.empty.title")}
-              </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {t("reports.inventoryPeriod.empty.description")}
-              </p>
-            </div>
+            <EmptyState
+              title={t("reports.inventoryPeriod.empty.title")}
+              description={t("reports.inventoryPeriod.empty.description")}
+            />
           ) : (
             <>
-              <InventoryPeriodTable rows={pagedRows} mismatchedIds={mismatchedIds} />
+              <InventoryPeriodTable
+                rows={pagedRows}
+                mismatchedIds={mismatchedIds}
+              />
               <ListPagination
                 page={page}
                 pageSize={PAGE_SIZE}

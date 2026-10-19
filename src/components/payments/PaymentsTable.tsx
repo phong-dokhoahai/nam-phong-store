@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge/Badge";
+import IconButton from "@/components/ui/button/IconButton";
 import {
   Table,
   TableBody,
@@ -10,6 +11,7 @@ import { DollarLineIcon } from "@/icons";
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/utils/formatCurrency";
 import type { PaymentDocument } from "./types";
+import EmptyState from "@/components/common/EmptyState";
 
 type PaymentsTableProps = {
   documents: PaymentDocument[];
@@ -24,14 +26,10 @@ export default function PaymentsTable({
 
   if (documents.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t("payments.empty.title")}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("payments.empty.description")}
-        </p>
-      </div>
+      <EmptyState
+        title={t("payments.empty.title")}
+        description={t("payments.empty.description")}
+      />
     );
   }
 
@@ -107,16 +105,12 @@ export default function PaymentsTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-4 text-end">
-                  <button
-                    type="button"
+                  <IconButton
+                    icon={<DollarLineIcon className="size-4" />}
+                    label={t("payments.actions.payDocument")}
                     onClick={() => onPay(document)}
                     disabled={document.debtAmount <= 0}
-                    aria-label={t("payments.actions.payDocument")}
-                    title={t("payments.actions.payDocument")}
-                    className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-brand-300 hover:text-brand-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-brand-700"
-                  >
-                    <DollarLineIcon className="size-4" />
-                  </button>
+                  />
                 </TableCell>
               </TableRow>
             ))}

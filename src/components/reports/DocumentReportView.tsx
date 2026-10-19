@@ -1,4 +1,6 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import StatCard from "@/components/common/StatCard";
+import SegmentedControl from "@/components/common/SegmentedControl";
 import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { formatQuantity } from "@/components/materials/materialStatus";
@@ -26,6 +28,9 @@ import type {
   DocumentReportLookups,
   DocumentReportRow,
 } from "./types";
+import LoadingState from "@/components/common/LoadingState";
+import InlineAlert from "@/components/common/InlineAlert";
+import EmptyState from "@/components/common/EmptyState";
 
 const PAGE_SIZE = 20;
 
@@ -165,9 +170,21 @@ export default function DocumentReportView({
         ...common,
         columns: [
           { header: t("reports.documents.table.material"), flex: 4 },
-          { header: t("reports.documents.table.documentCount"), flex: 1, align: "right" },
-          { header: t("reports.documents.table.quantity"), flex: 2, align: "right" },
-          { header: t("reports.documents.table.lineTotal"), flex: 2, align: "right" },
+          {
+            header: t("reports.documents.table.documentCount"),
+            flex: 1,
+            align: "right",
+          },
+          {
+            header: t("reports.documents.table.quantity"),
+            flex: 2,
+            align: "right",
+          },
+          {
+            header: t("reports.documents.table.lineTotal"),
+            flex: 2,
+            align: "right",
+          },
         ],
         rows: materialRows.map((row) => [
           `${row.materialName} (${row.materialSku})`,
@@ -194,7 +211,11 @@ export default function DocumentReportView({
         { header: t("reports.documents.table.items"), flex: 4 },
         { header: t(`reports.documents.${kind}.creator`), flex: 1.8 },
         { header: t("reports.documents.table.status"), flex: 1.5 },
-        { header: t("reports.documents.table.totalAmount"), flex: 2, align: "right" },
+        {
+          header: t("reports.documents.table.totalAmount"),
+          flex: 2,
+          align: "right",
+        },
       ],
       rows: visibleDocuments.map((row) => [
         row.code,
@@ -241,13 +262,6 @@ export default function DocumentReportView({
     },
   ];
 
-  const tabClass = (active: boolean) =>
-    `rounded-md px-3 py-2 text-sm font-medium ${
-      active
-        ? "bg-white text-gray-900 shadow-theme-xs dark:bg-gray-800 dark:text-white"
-        : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-    }`;
-
   const isEmpty = visibleDocuments.length === 0;
 
   return (
@@ -264,18 +278,14 @@ export default function DocumentReportView({
           />
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="inline-flex w-fit gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-900">
-              {(["documents", "materials"] as const).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setMode(option)}
-                  className={tabClass(mode === option)}
-                >
-                  {t(`reports.documents.mode.${option}`)}
-                </button>
-              ))}
-            </div>
+            <SegmentedControl
+              value={mode}
+              onChange={setMode}
+              options={(["documents", "materials"] as const).map((option) => ({
+                value: option,
+                label: t(`reports.documents.mode.${option}`),
+              }))}
+            />
             <ExportPdfButton
               buildData={buildPdfData}
               fileName={`${kind}-report-${filters.from}-${filters.to}`}
@@ -288,40 +298,24 @@ export default function DocumentReportView({
               {t("reports.revenue.errors.range")}
             </p>
           )}
-          {error && (
-            <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-              {error}
-            </div>
-          )}
+          {error && <InlineAlert>{error}</InlineAlert>}
 
           {isLoading ? (
-            <div className="rounded-xl border border-gray-200 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              {t("reports.loading")}
-            </div>
+            <LoadingState label={t("reports.loading")} />
           ) : isEmpty ? (
-            <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {t("reports.documents.empty.title")}
-              </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {t("reports.documents.empty.description")}
-              </p>
-            </div>
+            <EmptyState
+              title={t("reports.documents.empty.title")}
+              description={t("reports.documents.empty.description")}
+            />
           ) : (
             <>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 {summaryCards.map((card) => (
-                  <div
+                  <StatCard
                     key={card.label}
-                    className="rounded-xl border border-gray-200 p-4 dark:border-gray-800"
-                  >
-                    <p className="text-theme-sm text-gray-500 dark:text-gray-400">
-                      {card.label}
-                    </p>
-                    <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-                      {card.value}
-                    </p>
-                  </div>
+                    label={card.label}
+                    value={card.value}
+                  />
                 ))}
               </div>
 

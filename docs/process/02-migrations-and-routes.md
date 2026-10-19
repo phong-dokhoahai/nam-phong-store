@@ -12,7 +12,10 @@
 | `202610060001` | RPC `confirm_sales_order` |
 | `202610070001` | RPC `record_customer_payment`, `record_supplier_payment` |
 | `202610130001` | Seed đơn vị ưu tiên |
-| `202610160001`–`0005` | View `v_low_stock_materials`, `v_daily_sales_summary`, RPC `report_inventory_period`, `report_debt_period`, sửa kiểm tra admin NULL |
+| `202610160001`–`0004` | View `v_low_stock_materials`, `v_daily_sales_summary`, RPC `report_inventory_period`, `report_debt_period` (đã push) |
+| `202610160005` | **Bảo mật:** `is_admin()` trả NULL khi chưa có profile active làm trigger `protect_profile_admin_fields` không chặn → user mới đăng ký có thể tự nâng lên ADMIN. Sửa bằng `coalesce(..., false)` cho trigger và `report_debt_period`. Đã push |
+| `202610160006` | **Sửa lỗi:** `next_document_code` luôn lỗi `42702 document_type is ambiguous` (tham số trùng tên cột) → trên production **không tạo được** phiếu nhập/xuất/thu/chi. Thêm `#variable_conflict use_column`. Đã push |
+| `202610160007` | RPC `save_sales_order_draft`, `save_purchase_receipt_draft` (+ helper `parse_draft_items`): lưu nháp atomic thay cho chuỗi request create-new/delete-old ở frontend. Đã push; test 15/15 sau push |
 
 Migration mới phải đặt tên `YYYYMMDDNNNN_<mô_tả>.sql`, lớn hơn migration cuối cùng ở trên.
 

@@ -192,126 +192,81 @@ export const fetchStockReceiptsPayload = async (options: {
   search: string;
   status: "all" | StockReceipt["status"];
 }): Promise<StockReceiptPayload> => {
-    if (!isStockReceiptsBackendAvailable() || !supabase) {
-      return {
-        source: "demo",
-        receipts: demoStockReceipts,
-        totalCount: demoStockReceipts.length,
-        suppliers: demoStockReceiptSuppliers,
-        materials: demoStockReceiptMaterials,
-      };
-    }
-
-    const offset = (options.page - 1) * options.pageSize;
-    let receiptsQuery = supabase
-      .from("purchase_receipts")
-      .select(receiptSelect, { count: "exact" })
-      .order("updated_at", { ascending: false })
-      .range(offset, offset + options.pageSize - 1);
-
-    if (options.status !== "all") {
-      receiptsQuery = receiptsQuery.eq("status", options.status);
-    }
-    const search = options.search
-      .trim()
-      .replace(/[^\p{L}\p{N}\s-]/gu, " ")
-      .replace(/\s+/g, " ");
-    if (search) {
-      const pattern = `*${search}*`;
-      const { data: matchingSuppliers, error: supplierSearchError } =
-        await supabase
-          .from("suppliers")
-          .select("id")
-          .ilike("name", pattern);
-      if (supplierSearchError) throw new Error(supplierSearchError.message);
-
-      const filters = [
-        `code.ilike.${pattern}`,
-        `supplier_invoice_number.ilike.${pattern}`,
-      ];
-      if (matchingSuppliers?.length) {
-        filters.push(
-          `supplier_id.in.(${matchingSuppliers.map(({ id }) => id).join(",")})`,
-        );
-      }
-      receiptsQuery = receiptsQuery.or(
-        filters.join(","),
-      );
-    }
-
-    const [suppliersResult, materialsResult, receiptsResult] =
-      await Promise.all([
-        supabase
-          .from("suppliers")
-          .select("id, code, name")
-          .eq("is_active", true)
-          .order("name", { ascending: true }),
-        supabase
-          .from("materials")
-          .select(materialSelect)
-          .eq("is_active", true)
-          .order("name", { ascending: true }),
-        receiptsQuery,
-      ]);
-
-    if (
-      suppliersResult.error ||
-      materialsResult.error ||
-      receiptsResult.error
-    ) {
-      throw new Error(
-        suppliersResult.error?.message ||
-          materialsResult.error?.message ||
-          receiptsResult.error?.message ||
-          "Unable to load stock receipts.",
-      );
-    }
-
+  if (!isStockReceiptsBackendAvailable() || !supabase) {
     return {
-      source: "supabase",
-      totalCount: receiptsResult.count || 0,
-      suppliers: (suppliersResult.data || []) as StockReceiptSupplierLookup[],
-      materials: (
-        (materialsResult.data || []) as Parameters<typeof toMaterialLookup>[0][]
-      ).map(toMaterialLookup),
-      receipts: ((receiptsResult.data || []) as ReceiptRow[]).map(toReceipt),
+      source: "demo",
+      receipts: demoStockReceipts,
+      totalCount: demoStockReceipts.length,
+      suppliers: demoStockReceiptSuppliers,
+      materials: demoStockReceiptMaterials,
     };
-  };
+  }
 
-const toReceiptPayload = (values: StockReceiptDraftValues, code?: string) => {
-  const subtotal = calculateSubtotal(values.lines);
-  const totalAmount = calculateReceiptTotal(
-    subtotal,
-    values.discountAmount,
-    values.shippingFee,
-    values.taxAmount,
-  );
+  const offset = (options.page - 1) * options.pageSize;
+  let receiptsQuery = supabase
+    .from("purchase_receipts")
+    .select(receiptSelect, { count: "exact" })
+    .order("updated_at", { ascending: false })
+    .range(offset, offset + options.pageSize - 1);
+
+  if (options.status !== "all") {
+    receiptsQuery = receiptsQuery.eq("status", options.status);
+  }
+  const search = options.search
+    .trim()
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .replace(/\s+/g, " ");
+  if (search) {
+    const pattern = `*${search}*`;
+    const { data: matchingSuppliers, error: supplierSearchError } =
+      await supabase.from("suppliers").select("id").ilike("name", pattern);
+    if (supplierSearchError) throw new Error(supplierSearchError.message);
+
+    const filters = [
+      `code.ilike.${pattern}`,
+      `supplier_invoice_number.ilike.${pattern}`,
+    ];
+    if (matchingSuppliers?.length) {
+      filters.push(
+        `supplier_id.in.(${matchingSuppliers.map(({ id }) => id).join(",")})`,
+      );
+    }
+    receiptsQuery = receiptsQuery.or(filters.join(","));
+  }
+
+  const [suppliersResult, materialsResult, receiptsResult] = await Promise.all([
+    supabase
+      .from("suppliers")
+      .select("id, code, name")
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    supabase
+      .from("materials")
+      .select(materialSelect)
+      .eq("is_active", true)
+      .order("name", { ascending: true }),
+    receiptsQuery,
+  ]);
+
+  if (suppliersResult.error || materialsResult.error || receiptsResult.error) {
+    throw new Error(
+      suppliersResult.error?.message ||
+        materialsResult.error?.message ||
+        receiptsResult.error?.message ||
+        "Unable to load stock receipts.",
+    );
+  }
 
   return {
-    ...(code ? { code } : {}),
-    supplier_id: values.supplierId,
-    receipt_date: values.receiptDate,
-    subtotal,
-    discount_amount: values.discountAmount,
-    shipping_fee: values.shippingFee,
-    tax_amount: values.taxAmount,
-    total_amount: totalAmount,
-    paid_amount: 0,
-    debt_amount: totalAmount,
-    payment_status: "UNPAID" as const,
-    supplier_invoice_number: values.supplierInvoiceNumber.trim() || null,
-    note: values.note.trim() || null,
+    source: "supabase",
+    totalCount: receiptsResult.count || 0,
+    suppliers: (suppliersResult.data || []) as StockReceiptSupplierLookup[],
+    materials: (
+      (materialsResult.data || []) as Parameters<typeof toMaterialLookup>[0][]
+    ).map(toMaterialLookup),
+    receipts: ((receiptsResult.data || []) as ReceiptRow[]).map(toReceipt),
   };
 };
-
-const toItemPayload = (receiptId: string, line: StockReceiptLine) => ({
-  purchase_receipt_id: receiptId,
-  material_id: line.materialId,
-  quantity: line.quantity,
-  unit_price: line.unitPrice,
-  discount_amount: line.discountAmount,
-  line_total: line.lineTotal,
-});
 
 const fetchReceiptById = async (receiptId: string) => {
   if (!supabase) throw new Error("Supabase is not configured.");
@@ -326,74 +281,43 @@ const fetchReceiptById = async (receiptId: string) => {
   return toReceipt(data as ReceiptRow);
 };
 
-export const createStockReceipt = async (
+// One RPC call = one transaction: the draft header and its items are saved
+// together, the id and document code are kept on update, and totals are
+// recomputed by the database (see migration 202610160007).
+const saveDraft = async (
+  draftId: string | null,
   values: StockReceiptDraftValues,
 ): Promise<StockReceipt> => {
   if (!supabase) throw new Error("Supabase is not configured.");
 
-  const { data: code, error: codeError } = await supabase.rpc(
-    "next_document_code",
-    {
-      document_type: "PN",
-      document_date: values.receiptDate,
-    },
-  );
+  const { data, error } = await supabase.rpc("save_purchase_receipt_draft", {
+    p_id: draftId,
+    p_supplier_id: values.supplierId,
+    p_receipt_date: values.receiptDate,
+    p_discount_amount: values.discountAmount,
+    p_shipping_fee: values.shippingFee,
+    p_tax_amount: values.taxAmount,
+    p_supplier_invoice_number: values.supplierInvoiceNumber,
+    p_note: values.note,
+    p_items: values.lines.map((line) => ({
+      material_id: line.materialId,
+      quantity: line.quantity,
+      unit_price: line.unitPrice,
+      discount_amount: line.discountAmount,
+    })),
+  });
 
-  if (codeError) throw new Error(codeError.message);
-
-  const { data: receipt, error: receiptError } = await supabase
-    .from("purchase_receipts")
-    .insert(toReceiptPayload(values, String(code)))
-    .select("id")
-    .single();
-
-  if (receiptError) throw new Error(receiptError.message);
-
-  const receiptId = String((receipt as { id: string }).id);
-
-  if (values.lines.length > 0) {
-    const { error: itemsError } = await supabase
-      .from("purchase_receipt_items")
-      .insert(values.lines.map((line) => toItemPayload(receiptId, line)));
-
-    if (itemsError) {
-      await supabase
-        .from("purchase_receipts")
-        .delete()
-        .eq("id", receiptId)
-        .eq("status", "DRAFT");
-      throw new Error(itemsError.message);
-    }
-  }
-
-  return fetchReceiptById(receiptId);
+  if (error) throw new Error(error.message);
+  return fetchReceiptById(String((data as { id: string }).id));
 };
 
-export const updateStockReceipt = async (
-  receiptId: string,
+export const createStockReceipt = (values: StockReceiptDraftValues) =>
+  saveDraft(null, values);
+
+export const updateStockReceipt = (
+  draftId: string,
   values: StockReceiptDraftValues,
-): Promise<StockReceipt> => {
-  if (!supabase) throw new Error("Supabase is not configured.");
-
-  const replacementReceipt = await createStockReceipt(values);
-
-  const { error: deleteError } = await supabase
-    .from("purchase_receipts")
-    .delete()
-    .eq("id", receiptId)
-    .eq("status", "DRAFT");
-
-  if (deleteError) {
-    await supabase
-      .from("purchase_receipts")
-      .delete()
-      .eq("id", replacementReceipt.id)
-      .eq("status", "DRAFT");
-    throw new Error(deleteError.message);
-  }
-
-  return replacementReceipt;
-};
+) => saveDraft(draftId, values);
 
 export const confirmStockReceipt = async (
   receiptId: string,

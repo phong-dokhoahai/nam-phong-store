@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge/Badge";
+import IconButton from "@/components/ui/button/IconButton";
 import {
   Table,
   TableBody,
@@ -9,11 +10,9 @@ import {
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
-import {
-  formatQuantity,
-  getMaterialStatus,
-} from "./materialStatus";
+import { formatQuantity, getMaterialStatus } from "./materialStatus";
 import type { Material, MaterialStockStatus } from "./types";
+import EmptyState from "@/components/common/EmptyState";
 
 type MaterialsTableProps = {
   materials: Material[];
@@ -40,14 +39,10 @@ export default function MaterialsTable({
 
   if (materials.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t("materials.empty.title")}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("materials.empty.description")}
-        </p>
-      </div>
+      <EmptyState
+        title={t("materials.empty.title")}
+        description={t("materials.empty.description")}
+      />
     );
   }
 
@@ -135,9 +130,7 @@ export default function MaterialsTable({
                       <p>{formatCurrency(material.defaultSalePrice)}</p>
                       <p className="mt-1 text-theme-xs">
                         {t("materials.table.purchase", {
-                          value: formatCurrency(
-                            material.defaultPurchasePrice,
-                          ),
+                          value: formatCurrency(material.defaultPurchasePrice),
                         })}
                       </p>
                     </div>
@@ -149,23 +142,18 @@ export default function MaterialsTable({
                   </TableCell>
                   <TableCell className="px-4 py-4 text-end">
                     <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
+                      <IconButton
+                        icon={<PencilIcon className="size-4" />}
+                        label={t("materials.actions.edit")}
                         onClick={() => onEdit(material)}
-                        aria-label={t("materials.actions.edit")}
-                        className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-gray-800 dark:text-gray-400 dark:hover:border-brand-700"
-                      >
-                        <PencilIcon className="size-4" />
-                      </button>
-                      <button
-                        type="button"
+                      />
+                      <IconButton
+                        icon={<TrashBinIcon className="size-4" />}
+                        label={t("materials.actions.deactivate")}
+                        tone="error"
                         onClick={() => onDeactivate(material)}
-                        aria-label={t("materials.actions.deactivate")}
                         disabled={!material.isActive}
-                        className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-error-300 hover:text-error-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-error-700"
-                      >
-                        <TrashBinIcon className="size-4" />
-                      </button>
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

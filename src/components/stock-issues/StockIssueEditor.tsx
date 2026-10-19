@@ -1,5 +1,10 @@
 import Input from "@/components/form/input/InputField";
+import Button from "@/components/ui/button/Button";
+import IconButton from "@/components/ui/button/IconButton";
+import EmptyState from "@/components/common/EmptyState";
+import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
+import Select from "@/components/form/Select";
 import { TrashBinIcon } from "@/icons";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
@@ -16,6 +21,7 @@ import type {
   StockIssueLine,
   StockIssueMaterialLookup,
 } from "./types";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type StockIssueEditorProps = {
   draft: StockIssueDraftValues;
@@ -197,35 +203,24 @@ export default function StockIssueEditor({
         )}
       </div>
 
-      {error && (
-        <div className="mt-5 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-          {error}
-        </div>
-      )}
+      {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
       <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div>
           <Label htmlFor="stock-issue-customer">
             {t("stockIssues.form.customer")}
           </Label>
-          <select
+          <Select
             id="stock-issue-customer"
             value={draft.customerId}
             disabled={!isDraftEditable || isSaving}
-            onChange={(event) =>
-              setDraftField("customerId", event.target.value)
-            }
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-          >
-            <option value="">
-              {t("stockIssues.form.customerPlaceholder")}
-            </option>
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.name}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setDraftField("customerId", value)}
+            placeholder={t("stockIssues.form.customerPlaceholder")}
+            options={customers.map((item) => ({
+              value: item.id,
+              label: item.name,
+            }))}
+          />
         </div>
         <div>
           <Label htmlFor="stock-issue-date">
@@ -260,20 +255,18 @@ export default function StockIssueEditor({
           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {t("stockIssues.lines.title")}
           </h4>
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="sm"
             onClick={addLine}
             disabled={!isDraftEditable || isSaving || materials.length === 0}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             {t("stockIssues.lines.add")}
-          </button>
+          </Button>
         </div>
 
         {draft.lines.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-300 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-            {t("stockIssues.lines.empty")}
-          </div>
+          <EmptyState compact description={t("stockIssues.lines.empty")} />
         ) : (
           <div className="space-y-3">
             {draft.lines.map((line) => {
@@ -287,28 +280,19 @@ export default function StockIssueEditor({
                 >
                   <div>
                     <Label>{t("stockIssues.lines.material")}</Label>
-                    <select
+                    <Select
                       value={line.materialId}
                       disabled={!isDraftEditable || isSaving}
-                      aria-invalid={Boolean(lineError)}
-                      onChange={(event) =>
-                        updateLineMaterial(line.id, event.target.value)
-                      }
-                      className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-                    >
-                      {materials.map((material) => (
-                        <option
-                          key={material.id}
-                          value={material.id}
-                          disabled={
-                            line.materialId !== material.id &&
-                            selectedMaterialIds.includes(material.id)
-                          }
-                        >
-                          {material.sku} - {material.name}
-                        </option>
-                      ))}
-                    </select>
+                      error={Boolean(lineError)}
+                      onChange={(value) => updateLineMaterial(line.id, value)}
+                      options={materials.map((material) => ({
+                        value: material.id,
+                        label: `${material.sku} - ${material.name}`,
+                        disabled:
+                          line.materialId !== material.id &&
+                          selectedMaterialIds.includes(material.id),
+                      }))}
+                    />
                     {material && (
                       <p className="mt-1 text-theme-xs text-gray-500 dark:text-gray-400">
                         {t("stockIssues.lines.available", {
@@ -382,15 +366,14 @@ export default function StockIssueEditor({
                     </p>
                   </div>
                   <div className="flex items-end">
-                    <button
-                      type="button"
+                    <IconButton
+                      icon={<TrashBinIcon className="size-4" />}
+                      label={t("stockIssues.lines.remove")}
+                      tone="error"
+                      size="md"
                       onClick={() => removeLine(line.id)}
                       disabled={!isDraftEditable || isSaving}
-                      aria-label={t("stockIssues.lines.remove")}
-                      className="inline-flex size-11 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-error-300 hover:text-error-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-error-700"
-                    >
-                      <TrashBinIcon className="size-4" />
-                    </button>
+                    />
                   </div>
                   {lineError && (
                     <p
@@ -409,16 +392,14 @@ export default function StockIssueEditor({
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px]">
         <div>
-          <Label htmlFor="stock-issue-note">
-            {t("stockIssues.form.note")}
-          </Label>
-          <textarea
+          <Label htmlFor="stock-issue-note">{t("stockIssues.form.note")}</Label>
+          <TextArea
             id="stock-issue-note"
             value={draft.note}
             disabled={!isDraftEditable || isSaving}
             placeholder={t("stockIssues.form.notePlaceholder")}
-            onChange={(event) => setDraftField("note", event.target.value)}
-            className="min-h-28 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+            onChange={(value) => setDraftField("note", value)}
+            className="min-h-28"
           />
         </div>
         <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
@@ -460,24 +441,25 @@ export default function StockIssueEditor({
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <button
-          type="button"
+        <Button
+          size="sm"
           onClick={onSave}
           disabled={!isDraftEditable || isSaving}
-          className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSaving
             ? t("stockIssues.actions.saving")
             : t("stockIssues.actions.saveDraft")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="successOutline"
+          size="sm"
           onClick={onConfirm}
-          disabled={!selectedIssue || selectedIssue.status !== "DRAFT" || isSaving}
-          className="rounded-lg border border-success-300 px-4 py-2.5 text-sm font-medium text-success-600 transition-colors hover:bg-success-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-success-500/40 dark:text-success-400 dark:hover:bg-success-500/10"
+          disabled={
+            !selectedIssue || selectedIssue.status !== "DRAFT" || isSaving
+          }
         >
           {t("stockIssues.actions.confirm")}
-        </button>
+        </Button>
       </div>
     </div>
   );

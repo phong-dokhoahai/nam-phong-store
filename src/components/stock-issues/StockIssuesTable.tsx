@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge/Badge";
+import IconButton from "@/components/ui/button/IconButton";
 import {
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
 import { formatQuantity } from "./StockIssueFormat";
 import type { StockIssue, StockIssueStatus } from "./types";
+import EmptyState from "@/components/common/EmptyState";
 
 type StockIssuesTableProps = {
   issues: StockIssue[];
@@ -38,14 +40,10 @@ export default function StockIssuesTable({
 
   if (issues.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t("stockIssues.empty.title")}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("stockIssues.empty.description")}
-        </p>
-      </div>
+      <EmptyState
+        title={t("stockIssues.empty.title")}
+        description={t("stockIssues.empty.description")}
+      />
     );
   }
 
@@ -55,22 +53,40 @@ export default function StockIssuesTable({
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-white/5">
             <TableRow>
-              <TableCell isHeader className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+              <TableCell
+                isHeader
+                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+              >
                 {t("stockIssues.table.issue")}
               </TableCell>
-              <TableCell isHeader className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+              <TableCell
+                isHeader
+                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+              >
                 {t("stockIssues.table.customer")}
               </TableCell>
-              <TableCell isHeader className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+              <TableCell
+                isHeader
+                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+              >
                 {t("stockIssues.table.lines")}
               </TableCell>
-              <TableCell isHeader className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+              <TableCell
+                isHeader
+                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+              >
                 {t("stockIssues.table.total")}
               </TableCell>
-              <TableCell isHeader className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+              <TableCell
+                isHeader
+                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+              >
                 {t("stockIssues.table.status")}
               </TableCell>
-              <TableCell isHeader className="px-4 py-3 text-end text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+              <TableCell
+                isHeader
+                className="px-4 py-3 text-end text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+              >
                 {t("stockIssues.table.actions")}
               </TableCell>
             </TableRow>
@@ -126,27 +142,20 @@ export default function StockIssuesTable({
                   </TableCell>
                   <TableCell className="px-4 py-4 text-end">
                     <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
+                      <IconButton
+                        icon={<SelectIcon className="size-4" />}
+                        label={selectLabel}
                         onClick={() => onSelect(issue)}
-                        aria-label={selectLabel}
-                        title={selectLabel}
-                        className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-gray-800 dark:text-gray-400 dark:hover:border-brand-700"
-                      >
-                        <SelectIcon className="size-4" />
-                      </button>
-                      <button
-                        type="button"
+                      />
+                      <IconButton
+                        icon={<CheckLineIcon className="size-4" />}
+                        label={t("stockIssues.actions.confirm")}
+                        tone="success"
                         onClick={() => onConfirm(issue)}
-                        aria-label={t("stockIssues.actions.confirm")}
-                        title={t("stockIssues.actions.confirm")}
                         disabled={
                           issue.status !== "DRAFT" || issue.lines.length === 0
                         }
-                        className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-success-300 hover:text-success-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-success-700"
-                      >
-                        <CheckLineIcon className="size-4" />
-                      </button>
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

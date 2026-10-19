@@ -45,8 +45,7 @@ export default function InventoryToolbar({
           />
         </div>
         <Select
-          key={`inventory-category-${categoryId}`}
-          defaultValue={categoryId}
+          value={categoryId}
           placeholder={t("inventory.toolbar.allCategories")}
           options={[
             { value: "all", label: t("inventory.toolbar.allCategories") },
@@ -58,8 +57,7 @@ export default function InventoryToolbar({
           onChange={onCategoryChange}
         />
         <Select
-          key={`inventory-status-${status}`}
-          defaultValue={status}
+          value={status}
           placeholder={t("inventory.toolbar.allStatuses")}
           options={[
             { value: "all", label: t("inventory.toolbar.allStatuses") },

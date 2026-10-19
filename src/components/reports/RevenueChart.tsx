@@ -16,7 +16,11 @@ export default function RevenueChart({ rows }: { rows: RevenuePeriodRow[] }) {
       toolbar: { show: false },
     },
     plotOptions: {
-      bar: { columnWidth: "45%", borderRadius: 5, borderRadiusApplication: "end" },
+      bar: {
+        columnWidth: "45%",
+        borderRadius: 5,
+        borderRadiusApplication: "end",
+      },
     },
     dataLabels: { enabled: false },
     xaxis: {

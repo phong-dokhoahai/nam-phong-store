@@ -14,6 +14,8 @@ import type {
 } from "@/components/materials/types";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import LoadingState from "@/components/common/LoadingState";
+import InlineAlert from "@/components/common/InlineAlert";
 
 const PAGE_SIZE = 20;
 
@@ -103,16 +105,10 @@ export default function Inventory() {
             onStatusChange={setStatus}
           />
 
-          {error && (
-            <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-              {error}
-            </div>
-          )}
+          {error && <InlineAlert>{error}</InlineAlert>}
 
           {isLoading ? (
-            <div className="rounded-xl border border-gray-200 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              {t("inventory.loading")}
-            </div>
+            <LoadingState label={t("inventory.loading")} />
           ) : (
             <InventoryTable materials={visibleMaterials} />
           )}
