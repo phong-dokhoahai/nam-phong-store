@@ -9,6 +9,7 @@ import {
 import { formatQuantity } from "@/components/materials/materialStatus";
 import { useTranslation } from "react-i18next";
 import type { LowStockRow } from "./types";
+import EmptyState from "@/components/common/EmptyState";
 
 const headerClass =
   "px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400";
@@ -18,14 +19,10 @@ export default function LowStockTable({ rows }: { rows: LowStockRow[] }) {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t("reports.lowStock.empty.title")}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("reports.lowStock.empty.description")}
-        </p>
-      </div>
+      <EmptyState
+        title={t("reports.lowStock.empty.title")}
+        description={t("reports.lowStock.empty.description")}
+      />
     );
   }
 
@@ -79,7 +76,10 @@ export default function LowStockTable({ rows }: { rows: LowStockRow[] }) {
                   {formatQuantity(row.shortageQuantity)} {row.unitName}
                 </TableCell>
                 <TableCell className="px-4 py-4 text-start">
-                  <Badge color={row.isOutOfStock ? "error" : "warning"} size="sm">
+                  <Badge
+                    color={row.isOutOfStock ? "error" : "warning"}
+                    size="sm"
+                  >
                     {t(
                       row.isOutOfStock
                         ? "reports.lowStock.status.outOfStock"

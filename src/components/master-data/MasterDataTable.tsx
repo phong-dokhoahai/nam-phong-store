@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge/Badge";
+import IconButton from "@/components/ui/button/IconButton";
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import { useTranslation } from "react-i18next";
 import type { MasterDataKind, MasterDataRecord } from "./types";
+import EmptyState from "@/components/common/EmptyState";
 
 type MasterDataTableProps = {
   kind: MasterDataKind;
@@ -30,14 +32,10 @@ export default function MasterDataTable({
 
   if (records.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t(`masterData.${kind}.empty.title`)}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t(`masterData.${kind}.empty.description`)}
-        </p>
-      </div>
+      <EmptyState
+        title={t(`masterData.${kind}.empty.title`)}
+        description={t(`masterData.${kind}.empty.description`)}
+      />
     );
   }
 
@@ -128,23 +126,18 @@ export default function MasterDataTable({
                 </TableCell>
                 <TableCell className="px-4 py-4 text-end">
                   <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
+                    <IconButton
+                      icon={<PencilIcon className="size-4" />}
+                      label={t(`masterData.${kind}.actions.edit`)}
                       onClick={() => onEdit(record)}
-                      aria-label={t(`masterData.${kind}.actions.edit`)}
-                      className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-gray-800 dark:text-gray-400 dark:hover:border-brand-700"
-                    >
-                      <PencilIcon className="size-4" />
-                    </button>
-                    <button
-                      type="button"
+                    />
+                    <IconButton
+                      icon={<TrashBinIcon className="size-4" />}
+                      label={t(`masterData.${kind}.actions.deactivate`)}
+                      tone="error"
                       onClick={() => onDeactivate(record)}
-                      aria-label={t(`masterData.${kind}.actions.deactivate`)}
                       disabled={!record.isActive || record.isProtected}
-                      className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-error-300 hover:text-error-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-error-700"
-                    >
-                      <TrashBinIcon className="size-4" />
-                    </button>
+                    />
                   </div>
                 </TableCell>
               </TableRow>

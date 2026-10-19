@@ -7,11 +7,8 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type {
-  Material,
-  MaterialFormValues,
-  MaterialLookup,
-} from "./types";
+import type { Material, MaterialFormValues, MaterialLookup } from "./types";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type MaterialFormModalProps = {
   isOpen: boolean;
@@ -123,9 +120,7 @@ export default function MaterialFormModal({
         </div>
 
         {(error || localError) && (
-          <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-            {error || localError}
-          </div>
+          <InlineAlert>{error || localError}</InlineAlert>
         )}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -150,8 +145,7 @@ export default function MaterialFormModal({
           <div>
             <Label>{t("materials.form.category")}</Label>
             <Select
-              key={`category-${values.categoryId}`}
-              defaultValue={values.categoryId}
+              value={values.categoryId}
               placeholder={t("materials.form.categoryPlaceholder")}
               options={categoryOptions}
               onChange={(value) => updateValue("categoryId", value)}
@@ -160,8 +154,7 @@ export default function MaterialFormModal({
           <div>
             <Label>{t("materials.form.unit")}</Label>
             <Select
-              key={`unit-${values.unitId}`}
-              defaultValue={values.unitId}
+              value={values.unitId}
               placeholder={t("materials.form.unitPlaceholder")}
               options={unitOptions}
               onChange={(value) => updateValue("unitId", value)}

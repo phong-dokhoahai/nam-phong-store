@@ -1,3 +1,28 @@
+import { ReactComponent as MastercardIcon } from "./mastercard.svg?react";
+import { ReactComponent as ChevronDownSmIcon } from "./chevron-down-sm.svg?react";
+import { ReactComponent as AlertErrorIcon } from "./alert-error.svg?react";
+import { ReactComponent as AlertSuccessIcon } from "./alert-success.svg?react";
+import { ReactComponent as AppMenuDotsIcon } from "./app-menu-dots.svg?react";
+import { ReactComponent as BellIcon } from "./bell.svg?react";
+import { ReactComponent as CameraIcon } from "./camera.svg?react";
+import { ReactComponent as CheckboxCheckDisabledIcon } from "./checkbox-check-disabled.svg?react";
+import { ReactComponent as CheckboxCheckIcon } from "./checkbox-check.svg?react";
+import { ReactComponent as ChevronRightIcon } from "./chevron-right.svg?react";
+import { ReactComponent as EditLineIcon } from "./edit-line.svg?react";
+import { ReactComponent as FacebookIcon } from "./facebook.svg?react";
+import { ReactComponent as GoogleIcon } from "./google.svg?react";
+import { ReactComponent as HamburgerIcon } from "./hamburger.svg?react";
+import { ReactComponent as InstagramIcon } from "./instagram.svg?react";
+import { ReactComponent as LinkedinIcon } from "./linkedin.svg?react";
+import { ReactComponent as SignOutIcon } from "./sign-out.svg?react";
+import { ReactComponent as ThemeMoonIcon } from "./theme-moon.svg?react";
+import { ReactComponent as ThemeSunIcon } from "./theme-sun.svg?react";
+import { ReactComponent as TrashOutlineIcon } from "./trash-outline.svg?react";
+import { ReactComponent as UserCircleLineIcon } from "./user-circle-line.svg?react";
+import { ReactComponent as XBrandIcon } from "./x-brand.svg?react";
+import { ReactComponent as XMarkIcon } from "./x-mark.svg?react";
+import { ReactComponent as XSmallIcon } from "./x-small.svg?react";
+import { ReactComponent as XSocialIcon } from "./x-social.svg?react";
 import { ReactComponent as PlusIcon } from "./plus.svg?react";
 import { ReactComponent as CloseIcon } from "./close.svg?react";
 import { ReactComponent as BoxIcon } from "./box.svg?react";
@@ -244,4 +269,29 @@ export {
   SystemIcon,
   TextIcon,
   UserAltIcon,
+  AlertErrorIcon,
+  AlertSuccessIcon,
+  AppMenuDotsIcon,
+  BellIcon,
+  CameraIcon,
+  CheckboxCheckDisabledIcon,
+  CheckboxCheckIcon,
+  ChevronRightIcon,
+  EditLineIcon,
+  FacebookIcon,
+  GoogleIcon,
+  HamburgerIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  SignOutIcon,
+  ThemeMoonIcon,
+  ThemeSunIcon,
+  TrashOutlineIcon,
+  UserCircleLineIcon,
+  XBrandIcon,
+  XMarkIcon,
+  XSmallIcon,
+  XSocialIcon,
+  ChevronDownSmIcon,
+  MastercardIcon,
 };

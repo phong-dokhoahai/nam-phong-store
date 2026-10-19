@@ -1,7 +1,9 @@
 import { Modal } from "@/components/ui/modal";
+import Button from "@/components/ui/button/Button";
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/utils/formatCurrency";
 import type { StockIssue } from "./types";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type ConfirmStockIssueModalProps = {
   isOpen: boolean;
@@ -38,31 +40,22 @@ export default function ConfirmStockIssueModal({
         </p>
       </div>
 
-      {error && (
-        <div className="mt-5 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-          {error}
-        </div>
-      )}
+      {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
       <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onClose}
           disabled={isSaving}
-          className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
         >
           {t("common.close")}
-        </button>
-        <button
-          type="button"
-          onClick={onConfirm}
-          disabled={isSaving || !issue}
-          className="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50"
-        >
+        </Button>
+        <Button size="sm" onClick={onConfirm} disabled={isSaving || !issue}>
           {isSaving
             ? t("stockIssues.confirm.confirming")
             : t("stockIssues.actions.confirm")}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

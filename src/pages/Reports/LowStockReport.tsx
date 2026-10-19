@@ -1,6 +1,9 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import InlineAlert from "@/components/common/InlineAlert";
 import ListPagination from "@/components/common/ListPagination";
+import LoadingState from "@/components/common/LoadingState";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import SearchInput from "@/components/common/SearchInput";
 import { formatQuantity } from "@/components/materials/materialStatus";
 import ExportPdfButton from "@/components/reports/ExportPdfButton";
 import type { ReportPdfData } from "@/components/reports/pdf/ReportPdfDocument";
@@ -63,9 +66,21 @@ export default function LowStockReport() {
     columns: [
       { header: t("reports.lowStock.table.material"), flex: 3 },
       { header: t("reports.lowStock.table.category"), flex: 2 },
-      { header: t("reports.lowStock.table.currentStock"), flex: 1.5, align: "right" },
-      { header: t("reports.lowStock.table.minimumStock"), flex: 1.5, align: "right" },
-      { header: t("reports.lowStock.table.shortage"), flex: 1.5, align: "right" },
+      {
+        header: t("reports.lowStock.table.currentStock"),
+        flex: 1.5,
+        align: "right",
+      },
+      {
+        header: t("reports.lowStock.table.minimumStock"),
+        flex: 1.5,
+        align: "right",
+      },
+      {
+        header: t("reports.lowStock.table.shortage"),
+        flex: 1.5,
+        align: "right",
+      },
       { header: t("reports.lowStock.table.status"), flex: 1.5 },
     ],
     rows: filteredRows.map((row) => [
@@ -94,34 +109,28 @@ export default function LowStockReport() {
       <ComponentCard title={t("reports.lowStock.listTitle")}>
         <div className="space-y-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-            aria-label={t("reports.lowStock.searchLabel")}
-            placeholder={t("reports.lowStock.searchPlaceholder")}
-            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 sm:max-w-sm"
-          />
-          <ExportPdfButton
-            buildData={buildPdfData}
-            fileName="low-stock-report"
-            disabled={isLoading || filteredRows.length === 0}
-          />
+            <div className="w-full sm:max-w-sm">
+              <SearchInput
+                value={search}
+                onChange={(value) => {
+                  setSearch(value);
+                  setPage(1);
+                }}
+                aria-label={t("reports.lowStock.searchLabel")}
+                placeholder={t("reports.lowStock.searchPlaceholder")}
+              />
+            </div>
+            <ExportPdfButton
+              buildData={buildPdfData}
+              fileName="low-stock-report"
+              disabled={isLoading || filteredRows.length === 0}
+            />
           </div>
 
-          {error && (
-            <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-              {error}
-            </div>
-          )}
+          {error && <InlineAlert>{error}</InlineAlert>}
 
           {isLoading ? (
-            <div className="rounded-xl border border-gray-200 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              {t("reports.loading")}
-            </div>
+            <LoadingState label={t("reports.loading")} />
           ) : (
             <LowStockTable rows={visibleRows} />
           )}

@@ -1,6 +1,12 @@
 import ComponentCard from "@/components/common/ComponentCard";
+import EmptyState from "@/components/common/EmptyState";
+import InlineAlert from "@/components/common/InlineAlert";
 import ListPagination from "@/components/common/ListPagination";
+import LoadingState from "@/components/common/LoadingState";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import SearchInput from "@/components/common/SearchInput";
+import StatCard from "@/components/common/StatCard";
+import Label from "@/components/form/Label";
 import {
   Table,
   TableBody,
@@ -11,6 +17,7 @@ import {
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import DateRangeFields from "./DateRangeFields";
 import { debtColumns } from "./debtColumns";
 import ExportPdfButton from "./ExportPdfButton";
 import type { ReportPdfData } from "./pdf/ReportPdfDocument";
@@ -20,8 +27,6 @@ import type { DebtPeriodRow, DebtReportKind } from "./types";
 
 const PAGE_SIZE = 20;
 
-const fieldClass =
-  "h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90";
 const headerClass =
   "px-3 py-3 text-end text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400";
 
@@ -90,7 +95,10 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
   }, [isRangeValid, rows, search]);
 
   const totals = useMemo(() => sumColumns(filteredRows), [filteredRows]);
-  const pagedRows = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pagedRows = filteredRows.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
 
   const buildPdfData = (): ReportPdfData => ({
     title: t(`${prefix}.title`),
@@ -103,7 +111,11 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
         flex: 1.6,
         align: "right" as const,
       })),
-      { header: t("reports.debt.table.overdueDebt"), flex: 1.2, align: "right" },
+      {
+        header: t("reports.debt.table.overdueDebt"),
+        flex: 1.2,
+        align: "right",
+      },
     ],
     rows: filteredRows.map((row) => [
       `${row.partyName} (${row.partyCode})`,
@@ -137,42 +149,20 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
         <div className="space-y-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <label className="block text-sm text-gray-700 dark:text-gray-300">
-                <span className="mb-1.5 block">{t("reports.documents.filters.from")}</span>
-                <input
-                  type="date"
-                  value={range.from}
-                  max={range.to || undefined}
-                  onChange={(event) =>
-                    setRange((current) => ({ ...current, from: event.target.value }))
-                  }
-                  className={fieldClass}
-                />
-              </label>
-              <label className="block text-sm text-gray-700 dark:text-gray-300">
-                <span className="mb-1.5 block">{t("reports.documents.filters.to")}</span>
-                <input
-                  type="date"
-                  value={range.to}
-                  min={range.from || undefined}
-                  onChange={(event) =>
-                    setRange((current) => ({ ...current, to: event.target.value }))
-                  }
-                  className={fieldClass}
-                />
-              </label>
-              <label className="block text-sm text-gray-700 dark:text-gray-300">
-                <span className="mb-1.5 block">{t(`${prefix}.search`)}</span>
-                <input
-                  type="search"
+              <DateRangeFields value={range} onChange={setRange} />
+              <div>
+                <Label htmlFor={`${kind}-debt-search`}>
+                  {t(`${prefix}.search`)}
+                </Label>
+                <SearchInput
+                  id={`${kind}-debt-search`}
                   value={search}
-                  onChange={(event) => {
-                    setSearch(event.target.value);
+                  onChange={(value) => {
+                    setSearch(value);
                     setPage(1);
                   }}
-                  className={fieldClass}
                 />
-              </label>
+              </div>
             </div>
             <ExportPdfButton
               buildData={buildPdfData}
@@ -186,40 +176,24 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
               {t("reports.revenue.errors.range")}
             </p>
           )}
-          {error && (
-            <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-              {error}
-            </div>
-          )}
+          {error && <InlineAlert>{error}</InlineAlert>}
 
           {isLoading ? (
-            <div className="rounded-xl border border-gray-200 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              {t("reports.loading")}
-            </div>
+            <LoadingState label={t("reports.loading")} />
           ) : filteredRows.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {t("reports.debt.empty.title")}
-              </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {t("reports.debt.empty.description")}
-              </p>
-            </div>
+            <EmptyState
+              title={t("reports.debt.empty.title")}
+              description={t("reports.debt.empty.description")}
+            />
           ) : (
             <>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {summaryCards.map((card) => (
-                  <div
+                  <StatCard
                     key={card.column}
-                    className="rounded-xl border border-gray-200 p-4 dark:border-gray-800"
-                  >
-                    <p className="text-theme-sm text-gray-500 dark:text-gray-400">
-                      {t(`reports.debt.table.${card.column}`)}
-                    </p>
-                    <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-                      {formatCurrency(card.value)}
-                    </p>
-                  </div>
+                    label={t(`reports.debt.table.${card.column}`)}
+                    value={formatCurrency(card.value)}
+                  />
                 ))}
               </div>
 
@@ -235,7 +209,11 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
                           {t(`${prefix}.party`)}
                         </TableCell>
                         {debtColumns.map((column) => (
-                          <TableCell key={column} isHeader className={headerClass}>
+                          <TableCell
+                            key={column}
+                            isHeader
+                            className={headerClass}
+                          >
                             {t(`reports.debt.table.${column}`)}
                           </TableCell>
                         ))}

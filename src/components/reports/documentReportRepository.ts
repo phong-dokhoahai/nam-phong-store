@@ -66,7 +66,10 @@ const itemColumns = `
 
 // Item names come from the snapshot taken on the document (BR 73: reports
 // must not be rebuilt from current master data); fall back for old rows.
-const toRow = (row: DocumentRow, kind: DocumentReportKind): DocumentReportRow => {
+const toRow = (
+  row: DocumentRow,
+  kind: DocumentReportKind,
+): DocumentReportRow => {
   const party = one(row.party);
 
   return {

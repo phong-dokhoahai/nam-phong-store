@@ -1,4 +1,8 @@
+import StatCard from "@/components/common/StatCard";
+import TableSkeleton from "@/components/common/TableSkeleton";
 import ComponentCard from "@/components/common/ComponentCard";
+import InlineAlert from "@/components/common/InlineAlert";
+import Button from "@/components/ui/button/Button";
 import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PaymentFormModal from "@/components/payments/PaymentFormModal";
@@ -185,13 +189,13 @@ export default function Payments() {
       <PageBreadcrumb pageTitle={t("payments.title")} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <DebtSummaryCard
-          title={t("payments.summary.receivable")}
-          value={summary.receivable}
+        <StatCard
+          label={t("payments.summary.receivable")}
+          value={formatCurrency(summary.receivable)}
         />
-        <DebtSummaryCard
-          title={t("payments.summary.payable")}
-          value={summary.payable}
+        <StatCard
+          label={t("payments.summary.payable")}
+          value={formatCurrency(summary.payable)}
         />
       </div>
 
@@ -207,23 +211,22 @@ export default function Payments() {
           />
 
           {isLoading ? (
-            <PaymentsSkeleton label={t("payments.loading")} />
+            <TableSkeleton label={t("payments.loading")} />
           ) : loadError ? (
-            <div
-              role="alert"
-              className="rounded-xl border border-error-200 bg-error-50 px-6 py-8 text-center dark:border-error-500/20 dark:bg-error-500/10"
+            <InlineAlert
+              layout="panel"
+              action={
+                <Button
+                  variant="errorOutline"
+                  size="sm"
+                  onClick={() => loadPayments()}
+                >
+                  {t("payments.errors.retry")}
+                </Button>
+              }
             >
-              <p className="text-sm font-medium text-error-600 dark:text-error-400">
-                {loadError}
-              </p>
-              <button
-                type="button"
-                onClick={() => loadPayments()}
-                className="mt-4 rounded-lg border border-error-300 px-4 py-2 text-sm font-medium text-error-600 transition-colors hover:bg-error-100 dark:border-error-500/40 dark:text-error-400 dark:hover:bg-error-500/10"
-              >
-                {t("payments.errors.retry")}
-              </button>
-            </div>
+              {loadError}
+            </InlineAlert>
           ) : (
             <PaymentsTable
               documents={visibleDocuments}
@@ -261,44 +264,6 @@ export default function Payments() {
         onDraftChange={setDraft}
         onSave={handleSave}
       />
-    </div>
-  );
-}
-
-function DebtSummaryCard({ title, value }: { title: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-white/5 dark:bg-white/3">
-      <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-      <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-        {formatCurrency(value)}
-      </p>
-    </div>
-  );
-}
-
-function PaymentsSkeleton({ label }: { label: string }) {
-  return (
-    <div
-      aria-busy="true"
-      aria-label={label}
-      className="rounded-xl border border-gray-200 bg-white p-5 dark:border-white/5 dark:bg-white/3"
-    >
-      <div className="mb-4 h-4 w-40 rounded bg-gray-100 dark:bg-gray-800" />
-      <div className="space-y-3">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-1 gap-3 sm:grid-cols-[1.2fr_1fr_0.7fr_0.7fr_0.7fr] sm:items-center"
-          >
-            {Array.from({ length: 5 }).map((__, cellIndex) => (
-              <div
-                key={cellIndex}
-                className="h-4 rounded bg-gray-100 dark:bg-gray-800"
-              />
-            ))}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

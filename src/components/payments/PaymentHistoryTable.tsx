@@ -1,3 +1,4 @@
+import EmptyState from "@/components/common/EmptyState";
 import {
   Table,
   TableBody,
@@ -19,13 +20,7 @@ export default function PaymentHistoryTable({
   const { t } = useTranslation();
 
   if (transactions.length === 0) {
-    return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-10 text-center dark:border-gray-700">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {t("payments.history.empty")}
-        </p>
-      </div>
-    );
+    return <EmptyState compact description={t("payments.history.empty")} />;
   }
 
   return (

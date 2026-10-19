@@ -1,3 +1,4 @@
+import { ChevronDownIcon } from "@/icons";
 import { cn } from "@/utils";
 import { useState } from "react";
 
@@ -65,22 +66,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             ))}
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center bg-none text-gray-700 dark:text-gray-400">
-            <svg
-              className="stroke-current"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ChevronDownIcon className="stroke-current" />
           </div>
         </div>
       )}
@@ -116,22 +102,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             ))}
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-700 dark:text-gray-400">
-            <svg
-              className="stroke-current"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ChevronDownIcon className="stroke-current" />
           </div>
         </div>
       )}

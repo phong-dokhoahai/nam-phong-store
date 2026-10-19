@@ -15,6 +15,7 @@ import type {
   MaterialStockStatus,
 } from "@/components/materials/types";
 import { useTranslation } from "react-i18next";
+import EmptyState from "@/components/common/EmptyState";
 
 type InventoryTableProps = {
   materials: Material[];
@@ -35,14 +36,10 @@ export default function InventoryTable({ materials }: InventoryTableProps) {
 
   if (materials.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t("inventory.empty.title")}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("inventory.empty.description")}
-        </p>
-      </div>
+      <EmptyState
+        title={t("inventory.empty.title")}
+        description={t("inventory.empty.description")}
+      />
     );
   }
 

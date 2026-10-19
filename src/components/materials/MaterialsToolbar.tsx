@@ -47,8 +47,7 @@ export default function MaterialsToolbar({
           />
         </div>
         <Select
-          key={`category-${categoryId}`}
-          defaultValue={categoryId}
+          value={categoryId}
           placeholder={t("materials.toolbar.allCategories")}
           options={[
             { value: "all", label: t("materials.toolbar.allCategories") },
@@ -60,8 +59,7 @@ export default function MaterialsToolbar({
           onChange={onCategoryChange}
         />
         <Select
-          key={`status-${status}`}
-          defaultValue={status}
+          value={status}
           placeholder={t("materials.toolbar.allStatuses")}
           options={[
             { value: "all", label: t("materials.toolbar.allStatuses") },

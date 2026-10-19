@@ -1,3 +1,4 @@
+import StatCard from "@/components/common/StatCard";
 import ComponentCard from "@/components/common/ComponentCard";
 import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -22,6 +23,8 @@ import type {
   MasterDataSource,
   MasterDataStatus,
 } from "./types";
+import LoadingState from "@/components/common/LoadingState";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type MasterDataPageProps = {
   kind: MasterDataKind;
@@ -233,30 +236,18 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
       <PageBreadcrumb pageTitle={t(`masterData.${kind}.title`)} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("masterData.common.stats.total")}
-          </p>
-          <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-            {stats.total}
-          </p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("masterData.common.stats.active")}
-          </p>
-          <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-            {stats.active}
-          </p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("masterData.common.stats.inactive")}
-          </p>
-          <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-            {stats.inactive}
-          </p>
-        </div>
+        <StatCard
+          label={t("masterData.common.stats.total")}
+          value={stats.total}
+        />
+        <StatCard
+          label={t("masterData.common.stats.active")}
+          value={stats.active}
+        />
+        <StatCard
+          label={t("masterData.common.stats.inactive")}
+          value={stats.inactive}
+        />
       </div>
 
       <ComponentCard title={t(`masterData.${kind}.listTitle`)}>
@@ -272,15 +263,11 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
           />
 
           {error && !formModal.isOpen && !deactivateModal.isOpen && (
-            <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-              {error}
-            </div>
+            <InlineAlert>{error}</InlineAlert>
           )}
 
           {isLoading ? (
-            <div className="rounded-xl border border-gray-200 px-6 py-10 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              {t(`masterData.${kind}.loading`)}
-            </div>
+            <LoadingState label={t(`masterData.${kind}.loading`)} />
           ) : (
             <MasterDataTable
               kind={kind}

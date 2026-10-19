@@ -1,80 +1,98 @@
+import { ChevronDownIcon } from "@/icons";
+import { cn } from "@/utils";
 import { useState } from "react";
 
-interface Option {
+export interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface SelectProps {
-  options: Option[];
+  options: SelectOption[];
+  /** Shown as a disabled first option when nothing is selected. */
   placeholder?: string;
   onChange: (value: string) => void;
   className?: string;
+  /**
+   * Controlled value. When provided, the parent owns the selection and the
+   * component re-renders on every change (no `key` remount needed).
+   */
+  value?: string;
+  /** Initial value for uncontrolled usage. Ignored when `value` is set. */
   defaultValue?: string;
+  id?: string;
+  name?: string;
+  disabled?: boolean;
+  error?: boolean;
+  "aria-label"?: string;
 }
 
 const Select: React.FC<SelectProps> = ({
   options,
-  placeholder = "Select an option",
+  placeholder,
   onChange,
   className = "",
+  value,
   defaultValue = "",
+  id,
+  name,
+  disabled = false,
+  error = false,
+  "aria-label": ariaLabel,
 }) => {
-  // Manage the selected value
-  const [selectedValue, setSelectedValue] = useState<string>(defaultValue);
+  const [internalValue, setInternalValue] = useState<string>(defaultValue);
+  const isControlled = value !== undefined;
+  const selectedValue = isControlled ? value : internalValue;
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSelectedValue(value);
-    onChange(value); // Trigger parent handler
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!isControlled) setInternalValue(event.target.value);
+    onChange(event.target.value);
   };
 
   return (
     <div className="relative">
       <select
-        className={`h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pe-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 ${
+        id={id}
+        name={name}
+        aria-label={ariaLabel}
+        aria-invalid={error || undefined}
+        disabled={disabled}
+        className={cn(
+          "h-11 w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pe-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:placeholder:text-white/30",
+          error
+            ? "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:border-error-500"
+            : "border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 dark:border-gray-700 dark:focus:border-brand-800",
           selectedValue
             ? "text-gray-800 dark:text-white/90"
-            : "text-gray-400 dark:text-gray-400"
-        } ${className}`}
+            : "text-gray-400 dark:text-gray-400",
+          disabled && "cursor-not-allowed opacity-50",
+          className,
+        )}
         value={selectedValue}
         onChange={handleChange}
       >
-        {/* Placeholder option */}
-        <option
-          value=""
-          disabled
-          className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-        >
-          {placeholder}
-        </option>
-        {/* Map over options */}
+        {placeholder !== undefined && (
+          <option
+            value=""
+            disabled
+            className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
+          >
+            {placeholder}
+          </option>
+        )}
         {options.map((option) => (
           <option
             key={option.value}
             value={option.value}
+            disabled={option.disabled}
             className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
           >
             {option.label}
           </option>
         ))}
       </select>
-      <svg
-        className="pointer-events-none absolute inset-e-3 top-1/2 -translate-y-1/2 text-gray-700 dark:text-gray-400"
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M4.79175 8.02075L10.0001 13.2291L15.2084 8.02075"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <ChevronDownIcon className="pointer-events-none absolute inset-e-3 top-1/2 size-5 -translate-y-1/2 text-gray-700 dark:text-gray-400" />
     </div>
   );
 };

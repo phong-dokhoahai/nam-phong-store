@@ -25,7 +25,10 @@ type LowStockDbRow = {
 const PAGE_SIZE = 1000;
 
 export const fetchAllRows = async <T>(
-  query: (from: number, to: number) => PromiseLike<{
+  query: (
+    from: number,
+    to: number,
+  ) => PromiseLike<{
     data: unknown[] | null;
     error: { message: string } | null;
   }>,
@@ -176,7 +179,10 @@ export const fetchCategories = async () => {
     .order("name", { ascending: true });
 
   if (error) throw new Error(error.message);
-  return (data || []).map((row) => ({ id: row.id as string, label: row.name as string }));
+  return (data || []).map((row) => ({
+    id: row.id as string,
+    label: row.name as string,
+  }));
 };
 
 type DebtPeriodDbRow = {

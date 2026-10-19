@@ -1,3 +1,4 @@
+import StatCard from "@/components/common/StatCard";
 import { useTranslation } from "react-i18next";
 import { getMaterialStatus } from "./materialStatus";
 import type { Material } from "./types";
@@ -27,17 +28,7 @@ export default function MaterialsStats({ materials }: MaterialsStatsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3"
-        >
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {stat.label}
-          </p>
-          <p className="mt-2 text-title-sm font-semibold text-gray-800 dark:text-white/90">
-            {stat.value}
-          </p>
-        </div>
+        <StatCard key={stat.label} label={stat.label} value={stat.value} />
       ))}
     </div>
   );

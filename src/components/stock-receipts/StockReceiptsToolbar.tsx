@@ -1,3 +1,6 @@
+import SearchInput from "@/components/common/SearchInput";
+import Select from "@/components/form/Select";
+import Button from "@/components/ui/button/Button";
 import { PlusIcon } from "@/icons";
 import { useTranslation } from "react-i18next";
 import type { StockReceiptSource, StockReceiptStatus } from "./types";
@@ -24,30 +27,35 @@ export default function StockReceiptsToolbar({
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-1 flex-col gap-3 sm:flex-row">
-        <input
-          aria-label={t("stockReceipts.toolbar.searchLabel")}
-          value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder={t("stockReceipts.toolbar.searchPlaceholder")}
-          className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden sm:max-w-80 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-        />
-        <select
-          aria-label={t("stockReceipts.toolbar.statusLabel")}
-          value={status}
-          onChange={(event) =>
-            onStatusChange(event.target.value as "all" | StockReceiptStatus)
-          }
-          className="h-11 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pe-10 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
-        >
-          <option value="all">{t("stockReceipts.toolbar.allStatuses")}</option>
-          <option value="DRAFT">{t("stockReceipts.status.DRAFT")}</option>
-          <option value="CONFIRMED">
-            {t("stockReceipts.status.CONFIRMED")}
-          </option>
-          <option value="CANCELLED">
-            {t("stockReceipts.status.CANCELLED")}
-          </option>
-        </select>
+        <div className="w-full sm:max-w-80">
+          <SearchInput
+            aria-label={t("stockReceipts.toolbar.searchLabel")}
+            value={search}
+            onChange={onSearchChange}
+            placeholder={t("stockReceipts.toolbar.searchPlaceholder")}
+          />
+        </div>
+        <div className="sm:w-56">
+          <Select
+            aria-label={t("stockReceipts.toolbar.statusLabel")}
+            value={status}
+            onChange={(value) =>
+              onStatusChange(value as "all" | StockReceiptStatus)
+            }
+            options={[
+              { value: "all", label: t("stockReceipts.toolbar.allStatuses") },
+              { value: "DRAFT", label: t("stockReceipts.status.DRAFT") },
+              {
+                value: "CONFIRMED",
+                label: t("stockReceipts.status.CONFIRMED"),
+              },
+              {
+                value: "CANCELLED",
+                label: t("stockReceipts.status.CANCELLED"),
+              },
+            ]}
+          />
+        </div>
         <span className="inline-flex h-11 items-center rounded-lg border border-gray-200 px-4 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
           {t(
             source === "supabase"
@@ -57,14 +65,9 @@ export default function StockReceiptsToolbar({
         </span>
       </div>
 
-      <button
-        type="button"
-        onClick={onCreate}
-        className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-brand-600"
-      >
-        <PlusIcon className="size-4" />
+      <Button startIcon={<PlusIcon className="size-5" />} onClick={onCreate}>
         {t("stockReceipts.actions.create")}
-      </button>
+      </Button>
     </div>
   );
 }

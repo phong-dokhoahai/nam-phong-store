@@ -12,6 +12,7 @@ import type {
   MasterDataKind,
   MasterDataRecord,
 } from "./types";
+import InlineAlert from "@/components/common/InlineAlert";
 
 type MasterDataFormModalProps = {
   kind: MasterDataKind;
@@ -108,9 +109,7 @@ export default function MasterDataFormModal({
         </div>
 
         {(error || localError) && (
-          <div className="rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-600 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-            {error || localError}
-          </div>
+          <InlineAlert>{error || localError}</InlineAlert>
         )}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -141,8 +140,7 @@ export default function MasterDataFormModal({
             <div>
               <Label>{t("masterData.units.form.precision")}</Label>
               <Select
-                key={`precision-${values.precision}`}
-                defaultValue={String(values.precision)}
+                value={String(values.precision)}
                 options={[0, 1, 2, 3].map((precision) => ({
                   value: String(precision),
                   label: t("masterData.units.form.precisionOption", {

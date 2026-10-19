@@ -20,6 +20,7 @@ Cần cập nhật gì:
 | Thêm/xóa/đổi quyền route | [02-migrations-and-routes.md](02-migrations-and-routes.md) — mục 3 |
 | Tạo pattern mới cần tái dùng | [03-patterns-and-next-steps.md](03-patterns-and-next-steps.md) — mục 4 |
 | Hoàn thành hoặc phát sinh việc tiếp theo | [03-patterns-and-next-steps.md](03-patterns-and-next-steps.md) — mục 5 (xóa mục xong, thêm mục mới) |
+| Mọi task xong (kể cả task không đổi trạng thái module) | [05-daily-log.md](05-daily-log.md) — thêm dòng vào block ngày hôm nay theo mẫu |
 | Mọi lần cập nhật | [PROCESS.md](../PROCESS.md) — dòng **Cập nhật lần cuối** (ngày tuyệt đối `YYYY-MM-DD` + commit/ghi chú) |
 
 ## 7. Checklist hoàn thành task
@@ -27,5 +28,6 @@ Cần cập nhật gì:
 - [ ] Trạng thái module trong `01-status.md` khớp với code hiện tại?
 - [ ] Migration và route mới đã ghi vào `02-migrations-and-routes.md`?
 - [ ] Danh sách việc tiếp theo trong `03-patterns-and-next-steps.md` đã cập nhật?
+- [ ] Đã thêm dòng vào block ngày hôm nay trong `05-daily-log.md`, đúng mẫu?
 - [ ] Dòng **Cập nhật lần cuối** trong `PROCESS.md` đã đổi?
 - [ ] Không chép chi tiết nghiệp vụ/schema/log vào process (chỉ trỏ link)?

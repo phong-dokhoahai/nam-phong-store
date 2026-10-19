@@ -1,4 +1,5 @@
 import Badge from "@/components/ui/badge/Badge";
+import IconButton from "@/components/ui/button/IconButton";
 import {
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
 import { formatQuantity } from "./stockReceiptFormat";
 import type { StockReceipt, StockReceiptStatus } from "./types";
+import EmptyState from "@/components/common/EmptyState";
 
 type StockReceiptsTableProps = {
   receipts: StockReceipt[];
@@ -38,14 +40,10 @@ export default function StockReceiptsTable({
 
   if (receipts.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 px-6 py-12 text-center dark:border-gray-700">
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {t("stockReceipts.empty.title")}
-        </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("stockReceipts.empty.description")}
-        </p>
-      </div>
+      <EmptyState
+        title={t("stockReceipts.empty.title")}
+        description={t("stockReceipts.empty.description")}
+      />
     );
   }
 
@@ -144,28 +142,21 @@ export default function StockReceiptsTable({
                   </TableCell>
                   <TableCell className="px-4 py-4 text-end">
                     <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
+                      <IconButton
+                        icon={<SelectIcon className="size-4" />}
+                        label={selectLabel}
                         onClick={() => onSelect(receipt)}
-                        aria-label={selectLabel}
-                        title={selectLabel}
-                        className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-gray-800 dark:text-gray-400 dark:hover:border-brand-700"
-                      >
-                        <SelectIcon className="size-4" />
-                      </button>
-                      <button
-                        type="button"
+                      />
+                      <IconButton
+                        icon={<CheckLineIcon className="size-4" />}
+                        label={t("stockReceipts.actions.confirm")}
+                        tone="success"
                         onClick={() => onConfirm(receipt)}
-                        aria-label={t("stockReceipts.actions.confirm")}
-                        title={t("stockReceipts.actions.confirm")}
                         disabled={
                           receipt.status !== "DRAFT" ||
                           receipt.lines.length === 0
                         }
-                        className="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-success-300 hover:text-success-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:border-success-700"
-                      >
-                        <CheckLineIcon className="size-4" />
-                      </button>
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

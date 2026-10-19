@@ -10,11 +10,12 @@ Ký hiệu: ✅ xong · 🟡 đang làm / xong một phần · ⬜ chưa làm ·
 | Authentication, `ProtectedRoute`, `AdminRoute` | ✅ | `src/auth/`; profile bootstrap qua trigger + migration service_role |
 | Vật liệu (Materials) CRUD | ✅ | `src/components/materials/`, route `/materials` |
 | Danh mục / Đơn vị / NCC / Khách hàng | ✅ | Dùng chung `src/components/master-data/` (`MasterDataPage`); seed đơn vị ưu tiên |
-| Nhập kho (Stock receipt) | ✅ | Draft CRUD + RPC `confirm_purchase_receipt` |
-| Xuất kho / bán hàng (Stock issue) | ✅ | Draft CRUD + RPC `confirm_sales_order` |
+| Nhập kho (Stock receipt) | 🟡 | Lưu nháp qua RPC `save_purchase_receipt_draft` (migration `202610160007`, đã push; đã test trên DB thật trong transaction rollback: `supabase/tests/save-document-draft.rollback.sql`, 15/15 pass) + RPC `confirm_purchase_receipt` |
+| Xuất kho / bán hàng (Stock issue) | 🟡 | Lưu nháp qua RPC `save_sales_order_draft` (migration `202610160007`, đã push; đã test trên DB thật trong transaction rollback: `supabase/tests/save-document-draft.rollback.sql`, 15/15 pass) + RPC `confirm_sales_order` |
 | Thanh toán / công nợ (Payments) | ✅ | RPC `record_customer_payment`, `record_supplier_payment`; `debt_ledger_entries` |
 | Tồn kho (Inventory) | 🟡 | Trang `/inventory` đọc tồn từ `materials`; chưa có màn lịch sử movement |
-| Báo cáo (Reports) | 🟡 | Có inventory period, low stock, purchases, sales, revenue, customer/supplier debt, export PDF; **chưa commit**, cần review/test |
+| Báo cáo (Reports) | 🟡 | Có inventory period, low stock, purchases, sales, revenue, customer/supplier debt, export PDF; commit `68c3d55`. Build pass; **chưa test UI trên trình duyệt** (DB production đang trống) |
+| Chuẩn hóa UI primitive | 🟡 | `Select` controlled, `Button` variants, `IconButton`, `common/{InlineAlert,LoadingState,EmptyState,StatCard,SearchInput,SegmentedControl,TableSkeleton}`; payments/stock-*/reports/master-data/materials đã chuyển; SVG inline đã đưa vào `src/icons/`. Build pass, **chưa commit, chưa test UI**. Bảng tra: `AGENTS.md` → "Primitive map" |
 | Dashboard | ⬜ | `/` vẫn là demo `Dashboard/Ecommerce` của template, chưa nối dữ liệu kho |
 | Hủy chứng từ (cancel + bút toán đảo) | ⬜ | Chưa có RPC |
 | Trả hàng (sales/purchase return) | ⬜ | Có bảng, chưa có RPC và UI |

@@ -67,6 +67,8 @@ Frontend không được thay thế các RPC dưới đây bằng chuỗi reques
 
 | RPC đề xuất | Chức năng |
 |---|---|
+| `save_purchase_receipt_draft` | Tạo/sửa phiếu nhập nháp (header + dòng) trong một transaction, giữ nguyên id và mã, tính lại tổng ở DB |
+| `save_sales_order_draft` | Tạo/sửa đơn bán nháp (header + dòng) trong một transaction, giữ nguyên id và mã, tính lại tổng ở DB |
 | `confirm_purchase_receipt` | Xác nhận nhập hàng, tăng tồn, ghi công nợ |
 | `cancel_purchase_receipt` | Hủy phiếu nhập và tạo bút toán đảo |
 | `confirm_sales_order` | Kiểm tra tồn, xuất kho, ghi công nợ |

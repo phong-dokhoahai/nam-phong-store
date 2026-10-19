@@ -1,4 +1,7 @@
+import TableSkeleton from "@/components/common/TableSkeleton";
 import ComponentCard from "@/components/common/ComponentCard";
+import InlineAlert from "@/components/common/InlineAlert";
+import Button from "@/components/ui/button/Button";
 import ListPagination from "@/components/common/ListPagination";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ConfirmStockReceiptModal from "@/components/stock-receipts/ConfirmStockReceiptModal";
@@ -216,16 +219,6 @@ export default function StockReceipts() {
               selectedReceipt || undefined,
             );
 
-      if (
-        source === "supabase" &&
-        selectedReceipt &&
-        savedReceipt.id !== selectedReceipt.id
-      ) {
-        setReceipts((current) =>
-          current.filter((receipt) => receipt.id !== selectedReceipt.id),
-        );
-      }
-
       upsertReceiptInList(savedReceipt);
       editorModal.closeModal();
     } catch (saveError) {
@@ -289,23 +282,22 @@ export default function StockReceipts() {
           />
 
           {isLoading ? (
-            <StockReceiptsTableSkeleton label={t("stockReceipts.loading")} />
+            <TableSkeleton label={t("stockReceipts.loading")} />
           ) : loadError ? (
-            <div
-              role="alert"
-              className="rounded-xl border border-error-200 bg-error-50 px-6 py-8 text-center dark:border-error-500/20 dark:bg-error-500/10"
+            <InlineAlert
+              layout="panel"
+              action={
+                <Button
+                  variant="errorOutline"
+                  size="sm"
+                  onClick={() => loadReceipts()}
+                >
+                  {t("stockReceipts.errors.retry")}
+                </Button>
+              }
             >
-              <p className="text-sm font-medium text-error-600 dark:text-error-400">
-                {loadError}
-              </p>
-              <button
-                type="button"
-                onClick={() => loadReceipts()}
-                className="mt-4 rounded-lg border border-error-300 px-4 py-2 text-sm font-medium text-error-600 transition-colors hover:bg-error-100 dark:border-error-500/40 dark:text-error-400 dark:hover:bg-error-500/10"
-              >
-                {t("stockReceipts.errors.retry")}
-              </button>
-            </div>
+              {loadError}
+            </InlineAlert>
           ) : (
             <StockReceiptsTable
               receipts={visibleReceipts}
@@ -318,7 +310,9 @@ export default function StockReceipts() {
             <ListPagination
               page={page}
               pageSize={PAGE_SIZE}
-              totalItems={source === "supabase" ? totalCount : filteredReceipts.length}
+              totalItems={
+                source === "supabase" ? totalCount : filteredReceipts.length
+              }
               onPageChange={setPage}
             />
           )}
@@ -347,33 +341,6 @@ export default function StockReceipts() {
         onClose={confirmModal.closeModal}
         onConfirm={handleConfirm}
       />
-    </div>
-  );
-}
-
-function StockReceiptsTableSkeleton({ label }: { label: string }) {
-  return (
-    <div
-      aria-busy="true"
-      aria-label={label}
-      className="rounded-xl border border-gray-200 bg-white p-5 dark:border-white/5 dark:bg-white/3"
-    >
-      <div className="mb-4 h-4 w-40 rounded bg-gray-100 dark:bg-gray-800" />
-      <div className="space-y-3">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-1 gap-3 sm:grid-cols-[1.2fr_1fr_0.7fr_0.7fr_0.6fr] sm:items-center"
-          >
-            {Array.from({ length: 5 }).map((__, cellIndex) => (
-              <div
-                key={cellIndex}
-                className="h-4 rounded bg-gray-100 dark:bg-gray-800"
-              />
-            ))}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

@@ -53,7 +53,9 @@ export default function MaterialSummaryTable({
                     {row.materialSku}
                   </p>
                 </TableCell>
-                <TableCell className={numberClass}>{row.documentCount}</TableCell>
+                <TableCell className={numberClass}>
+                  {row.documentCount}
+                </TableCell>
                 <TableCell className="px-4 py-4 text-end text-theme-sm font-medium text-gray-800 dark:text-white/90">
                   {formatQuantity(row.quantity)} {row.unitName}
                 </TableCell>

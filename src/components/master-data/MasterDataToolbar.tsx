@@ -43,8 +43,7 @@ export default function MasterDataToolbar({
           />
         </div>
         <Select
-          key={`status-${status}`}
-          defaultValue={status}
+          value={status}
           placeholder={t("masterData.common.toolbar.allStatuses")}
           options={[
             {
