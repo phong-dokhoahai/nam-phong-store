@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router";
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router";
 import { AdminRoute, ProtectedRoute } from "@/auth";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
@@ -7,7 +7,6 @@ import SignUp from "./pages/AuthPages/SignUp";
 import Calendar from "./pages/Calendar";
 import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
-import Home from "./pages/Dashboard/Ecommerce";
 import FormElements from "./pages/Forms/FormElements";
 import Categories from "./pages/MasterData/Categories";
 import Customers from "./pages/MasterData/Customers";
@@ -44,7 +43,9 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-              <Route index path="/" element={<Home />} />
+              {/* No real dashboard yet: land on the inventory overview
+                  instead of the template's demo sales dashboard. */}
+              <Route index element={<Navigate to="/inventory" replace />} />
 
               {/* Others Page */}
               <Route path="/calendar" element={<Calendar />} />
@@ -60,14 +61,23 @@ export default function App() {
               <Route path="/stock-receipts" element={<StockReceipts />} />
               <Route path="/stock-issues" element={<StockIssues />} />
               <Route path="/payments" element={<Payments />} />
-              <Route path="/reports/inventory" element={<InventoryPeriodReport />} />
+              <Route
+                path="/reports/inventory"
+                element={<InventoryPeriodReport />}
+              />
               <Route path="/reports/low-stock" element={<LowStockReport />} />
               <Route path="/reports/purchases" element={<PurchaseReport />} />
               <Route path="/reports/sales" element={<SalesReport />} />
               <Route element={<AdminRoute />}>
                 <Route path="/reports/revenue" element={<RevenueReport />} />
-                <Route path="/reports/customer-debt" element={<CustomerDebtReport />} />
-                <Route path="/reports/supplier-debt" element={<SupplierDebtReport />} />
+                <Route
+                  path="/reports/customer-debt"
+                  element={<CustomerDebtReport />}
+                />
+                <Route
+                  path="/reports/supplier-debt"
+                  element={<SupplierDebtReport />}
+                />
               </Route>
 
               {/* Forms */}

@@ -51,7 +51,7 @@ src/
 ├── layout/                    # AppLayout (sidebar+header shell), AlternativeLayout,
 │                              #   AppSidebar, AppHeader, Backdrop, SidebarWidget
 ├── context/                   # ThemeContext, SidebarContext, LanguageContext
-├── hooks/                     # useModal, useGoBack, useClickOutside
+├── hooks/                     # useModal, useAsyncData, usePagination, useDebouncedValue, useGoBack, useClickOutside
 ├── i18n/                      # index.ts — i18next bootstrap (resources, defaultNS, fallbackLng)
 ├── locales/                   # translation files: en/common.json, ar/common.json,
 │                              #   es/common.json, de/common.json, vi/common.json
@@ -62,7 +62,7 @@ src/
 ## Stack
 
 - **React 19** with strict **TypeScript** (~5.7), bundled by **Vite 8**.
-- **React Router v7** (`react-router`) for client-side routing via `BrowserRouter`.
+- **React Router v8** (`react-router`) for client-side routing via `BrowserRouter`.
 - **react-i18next v17** + **i18next v26** for internationalization and RTL support.
 - **Tailwind CSS v4** — configured entirely through `src/index.css`; **no `tailwind.config` file exists**.
 - **react-apexcharts** for charts, **@fullcalendar/react** for the calendar, **Swiper** for carousels.
@@ -87,8 +87,8 @@ src/
 - **Hook files**: camelCase (`useModal.ts`).
 - **New reusable component** → `src/components/<feature>/` if domain-specific, else `src/components/common/` or `src/components/ui/`.
 - **New icon** → drop the `.svg` into `src/icons/`, add a named export to `src/icons/index.ts` using a PascalCase name (e.g., `export { ReactComponent as MyIcon } from "./my-icon.svg"`). Never inline SVG markup in components.
-- **Breadcrumbs** → add `<PageBreadCrumb pageTitle="…" />` at the top of admin pages, matching existing pages.
-- **Demo sections** → wrap in `<ComponentCard title="…">` to match the UI element demo pages pattern.
+- **App page layout** (all warehouse screens): `common/PageHeader` (the page `<h1>`, one-line `description`, `meta` = `DataSourceBadge`, `actions` = the primary action) → optional summary `StatCard` row → a `<section>` with `FilterToolbar` + `AsyncContent` + table + `ListPagination`. No `ComponentCard` around lists and no breadcrumb: the page title is the only heading above the content.
+- **Template demo pages** (UI Elements, Forms, Tables demos) keep `<PageBreadCrumb>` and `<ComponentCard>`; do not use them on app pages.
 - Modals use the `useModal` hook (`isOpen`, `openModal`, `closeModal`, `toggleModal`).
 - Global state goes through the existing contexts (`useSidebar`, `useTheme`, `useLanguage`) — do not add new providers without a clear need.
 - Prefer primitives from `src/components/ui/` and `src/components/form/` over raw HTML or new third-party equivalents.
@@ -114,11 +114,28 @@ src/
 - Tailwind CSS **v4** — the entire theme lives in `src/index.css` under `@theme`. **Never create a `tailwind.config.js/ts`**.
 - Always use theme tokens instead of hardcoded values:
   - **Colors**: `brand`, `gray`, `blue-light`, `orange`, `success`, `error`, `warning` scales (`25`–`950`), plus `theme-pink-500` / `theme-purple-500`.
-  - **Typography**: `font-outfit`, `text-theme-xs/sm/xl`, `text-title-sm/md/lg/xl/2xl`.
+  - **Typography**: `font-sans` = Be Vietnam Pro (loaded in `index.html`, chosen for Vietnamese diacritics; system fallback). App UI uses Tailwind's `text-xs/sm/base/lg/xl/2xl`; page title `text-xl sm:text-2xl`, dialog title `text-lg`, stat value `text-2xl`. `text-title-*` (30–72px) is for template/marketing pages only. Amounts use `tabular-nums` (on by default in tables and stat cards).
   - **Shadows**: `shadow-theme-xs/sm/md/lg/xl`, `shadow-focus-ring`, `shadow-slider-navigation`, `shadow-tooltip`, `shadow-datepicker`.
   - **Breakpoints**: custom `2xsm` (375px), `xsm` (425px), `3xl` (2000px) alongside defaults.
   - **Z-index**: `z-1`, `z-9`, `z-99`, `z-999`, `z-9999`, `z-99999`, `z-999999` tokens.
-- **Dark mode is class-based** (`@custom-variant dark (&:is(.dark *))`, toggled by `ThemeContext` adding/removing `.dark` on `<html>`). Every styled element must include its `dark:` variant.
+- **Dark mode is class-based** (`@custom-variant dark (&:is(.dark *))`, toggled by `ThemeContext` adding/removing `.dark` on `<html>`). Every styled element must include its `dark:` variant — **except** when it uses a semantic token below, whose dark value is already built in.
+- **Semantic tokens** (defined in `index.css` under `:root` / `.dark` + `@theme inline`) are the single source of truth for recurring surface, border and text decisions. Prefer them over raw light/dark pairs:
+
+  | Token | Replaces | Use for |
+  | --- | --- | --- |
+  | `bg-surface` | `bg-white dark:bg-white/3` | cards, table frames, stat cards |
+  | `bg-canvas` | `bg-gray-50 dark:bg-gray-900` | page background (set on `body`) |
+  | `bg-surface-subtle` | `bg-gray-50 dark:bg-white/2` | table header band, row hover, totals panels |
+  | `bg-surface-muted` | `bg-gray-100 dark:bg-gray-800` | skeleton bars, hover fills on icon buttons |
+  | `border-line` | `border-gray-200 dark:border-gray-800` | outer borders |
+  | `border-line-subtle` / `divide-line-subtle` | `border-gray-100 dark:border-gray-800` | dividers, table rows |
+  | `text-fg` | `text-gray-800 dark:text-white/90` | headings, primary values |
+  | `text-fg-muted` | `text-gray-500 dark:text-gray-400` | secondary text, table body |
+  | `text-fg-subtle` | `text-gray-400 dark:text-gray-500` | group labels, tertiary text |
+
+  To restyle every card/table/modal at once, change the token value in `index.css`, not the components. Add a token only for a decision that recurs across features.
+- **Form control look** (border, focus ring, error/success, disabled) lives in `src/components/form/controlStyles.ts` and is shared by `InputField`, `Select` and `TextArea`.
+- **`cn()`** (`@/utils`) knows the custom `text-theme-*` / `text-title-*` / `shadow-theme-*` scales; always merge classes with it (never string concatenation) so a `className` override wins.
 - **CSS Logical Properties for RTL & Internationalization**:
   - Never use physical directional utilities when logical equivalents exist; physical `left`/`right` properties break the Arabic (`ar`) RTL layout:
     - **Margins**: use `ms-*` / `me-*` instead of `ml-*` / `mr-*`.
@@ -161,11 +178,28 @@ Before writing any raw `<button>`, `<input>`, `<select>`, `<textarea>`, `<label>
 | Icon-only button (table row actions) | `ui/button/IconButton` | `label` is required (aria-label + tooltip); `tone`: `brand` / `success` / `error` |
 | View-mode switch (e.g. day/week/month) | `common/SegmentedControl` | |
 | Popover menu ("⋯", user menu) | `ui/dropdown/Dropdown` + `DropdownItem` | Not for picking a form value — use `Select` |
-| Error / warning / success message | `common/InlineAlert` | `layout="panel"` + `action` for load-failure blocks with retry. `ui/alert/Alert` only when a title + icon + link is needed |
-| Loading placeholder | `common/LoadingState` (box) or `common/TableSkeleton` (table) | |
+| Error / warning / success message | `common/InlineAlert` | `ui/alert/Alert` only when a title + icon + link is needed |
+| Validation text under a field / filter group | `common/FieldError` | |
+| Loading → load error (retry) → content | `common/AsyncContent` | Wraps a data section; `placeholder="table"` (skeleton) or `"box"`. Empty results stay the child's `EmptyState` |
+| Loading placeholder (standalone) | `common/LoadingState` (box) or `common/TableSkeleton` (table) | Prefer `AsyncContent` |
 | No data | `common/EmptyState` | `compact` for empty sections inside forms |
-| Headline number card | `common/StatCard` | |
-| Table / Modal / Badge / Pagination | `ui/table`, `ui/modal` + `useModal`, `ui/badge/Badge`, `common/ListPagination` | |
+| Headline number card | `common/StatCard` | Only for numbers that matter for the page's task. `tone="warning"/"error"` for values needing attention; `onClick` + `isActive` turns it into a filter toggle for the list below |
+| Page title + primary action | `common/PageHeader` | One per app page; primary action goes in `actions` |
+| List toolbar (search + filters) | `common/FilterToolbar` | `search` slot (wide), filters as children (fixed width each), optional `actions` for secondary controls. The primary "create" action belongs in `PageHeader`, not here |
+| "Supabase data" / "Demo data" indicator | `common/DataSourceBadge` | |
+| Data table | `ui/table`: `TableContainer` > `Table` > `TableHeader`/`TableBody` > `TableRow` > `TableCell` | Styled by default (header band, sentence-case headers, compact rows, row hover, cells `nowrap` so the container scrolls on mobile). `align="end"` for every amount/quantity/action column; `font-medium text-fg` for the key value; `min-w-64 whitespace-normal` for long free text |
+| Dialog | `ui/modal`: `Modal` (`size` `sm`/`md`/`lg`/`xl`) + `ModalHeader` + `ModalFooter`, with `useModal` | `ModalHeader` names the dialog; a custom heading uses `useModalTitleId()` |
+| Yes/no confirmation | `common/ConfirmDialog` | Feature wrapper passes the copy; `tone="danger"` for destructive actions |
+| Badge / Pagination | `ui/badge/Badge`, `common/ListPagination` | Badges never wrap |
+
+Shared logic for screens:
+
+| Need | Use |
+| --- | --- |
+| Load data with loading / error / retry | `hooks/useAsyncData(load, { initialData, errorMessage, onSuccess? })` — `load` memoized; `null` skips (invalid filters); `setData` for local updates after a mutation |
+| Client-side paging that resets when filters change | `hooks/usePagination`: `usePagedItems(items, resetKey)` → `pageItems` + `pagination` (spread on `ListPagination`); `useResettablePage(resetKey)` for server paging |
+| Error message from a thrown value | `utils/getErrorMessage(error, t("…"))` |
+| Quantity / money display | `utils/formatQuantity`, `utils/formatCurrency` |
 
 Exception: libraries that only accept HTML strings (flatpickr `prevArrow`/`nextArrow`) may keep inline SVG strings.
 

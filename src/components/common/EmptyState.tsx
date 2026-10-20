@@ -27,18 +27,9 @@ export default function EmptyState({
         className,
       )}
     >
-      {title && (
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-          {title}
-        </p>
-      )}
+      {title && <p className="text-sm font-medium text-fg">{title}</p>}
       {description && (
-        <p
-          className={cn(
-            "text-sm text-gray-500 dark:text-gray-400",
-            title && "mt-1",
-          )}
-        >
+        <p className={cn("text-sm text-fg-muted", title && "mt-1")}>
           {description}
         </p>
       )}

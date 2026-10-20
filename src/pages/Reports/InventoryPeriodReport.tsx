@@ -1,14 +1,13 @@
-import ComponentCard from "@/components/common/ComponentCard";
+import AsyncContent from "@/components/common/AsyncContent";
 import EmptyState from "@/components/common/EmptyState";
+import FieldError from "@/components/common/FieldError";
 import InlineAlert from "@/components/common/InlineAlert";
 import ListPagination from "@/components/common/ListPagination";
-import LoadingState from "@/components/common/LoadingState";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
 import SearchInput from "@/components/common/SearchInput";
 import Checkbox from "@/components/form/input/Checkbox";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
-import { formatQuantity } from "@/components/materials/materialStatus";
 import DateRangeFields from "@/components/reports/DateRangeFields";
 import ExportPdfButton from "@/components/reports/ExportPdfButton";
 import InventoryPeriodTable from "@/components/reports/InventoryPeriodTable";
@@ -27,10 +26,14 @@ import type {
   InventoryPeriodRow,
   ReportLookup,
 } from "@/components/reports/types";
-import { useEffect, useMemo, useState } from "react";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { usePagedItems } from "@/hooks/usePagination";
+import { formatQuantity } from "@/utils/formatQuantity";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const PAGE_SIZE = 20;
+const noRows: InventoryPeriodRow[] = [];
+const noCategories: ReportLookup[] = [];
 
 const hasMovement = (row: InventoryPeriodRow) =>
   row.opening !== 0 ||
@@ -43,68 +46,32 @@ export default function InventoryPeriodReport() {
   const [categoryId, setCategoryId] = useState("");
   const [search, setSearch] = useState("");
   const [hideEmpty, setHideEmpty] = useState(true);
-  const [categories, setCategories] = useState<ReportLookup[]>([]);
-  const [rows, setRows] = useState<InventoryPeriodRow[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
 
   const isRangeValid = isDateRangeValid(range);
 
-  useEffect(() => {
-    let isMounted = true;
+  // The category filter is optional: its load error is ignored and the
+  // report still works with "all categories".
+  const { data: categories } = useAsyncData(fetchCategories, {
+    initialData: noCategories,
+    errorMessage: "",
+  });
 
-    const loadCategories = async () => {
-      try {
-        const data = await fetchCategories();
-        if (isMounted) setCategories(data);
-      } catch {
-        // The category filter is optional; the report still works without it.
-      }
-    };
-
-    loadCategories();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isRangeValid) return;
-    let isMounted = true;
-
-    const loadReport = async () => {
-      setIsLoading(true);
-      setError("");
-      setPage(1);
-
-      try {
-        const data = await fetchInventoryPeriod(
-          range.from,
-          range.to,
-          categoryId,
-        );
-        if (isMounted) setRows(data);
-      } catch (loadError) {
-        if (!isMounted) return;
-        setRows([]);
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("reports.inventoryPeriod.errors.load"),
-        );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadReport();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [categoryId, isRangeValid, range.from, range.to, t]);
+  const loadReport = useMemo(
+    () =>
+      isRangeValid
+        ? () => fetchInventoryPeriod(range.from, range.to, categoryId)
+        : null,
+    [categoryId, isRangeValid, range.from, range.to],
+  );
+  const {
+    data: rows,
+    isLoading,
+    error,
+    reload,
+  } = useAsyncData(loadReport, {
+    initialData: noRows,
+    errorMessage: t("reports.inventoryPeriod.errors.load"),
+  });
 
   const filteredRows = useMemo(() => {
     if (!isRangeValid) return [];
@@ -136,9 +103,9 @@ export default function InventoryPeriodReport() {
     [canReconcile, rows],
   );
 
-  const pagedRows = filteredRows.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
+  const paging = usePagedItems(
+    filteredRows,
+    `${range.from}|${range.to}|${categoryId}|${search}|${hideEmpty}`,
   );
 
   const buildPdfData = (): ReportPdfData => ({
@@ -172,82 +139,80 @@ export default function InventoryPeriodReport() {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t("reports.inventoryPeriod.title")} />
+      <PageHeader
+        title={t("reports.inventoryPeriod.title")}
+        description={t("reports.inventoryPeriod.listTitle")}
+        actions={
+          <ExportPdfButton
+            buildData={buildPdfData}
+            fileName={`inventory-report-${range.from}-${range.to}`}
+            disabled={isLoading || filteredRows.length === 0}
+          />
+        }
+      />
 
-      <ComponentCard title={t("reports.inventoryPeriod.listTitle")}>
-        <div className="space-y-5">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <DateRangeFields value={range} onChange={setRange} />
-            <div>
-              <Label htmlFor="inventory-report-category">
-                {t("reports.inventoryPeriod.category")}
-              </Label>
-              <Select
-                id="inventory-report-category"
-                value={categoryId}
-                onChange={setCategoryId}
-                options={[
-                  {
-                    value: "",
-                    label: t("reports.inventoryPeriod.allCategories"),
-                  },
-                  ...categories.map((category) => ({
-                    value: category.id,
-                    label: category.label,
-                  })),
-                ]}
-              />
-            </div>
-            <div>
-              <Label htmlFor="inventory-report-search">
-                {t("reports.lowStock.searchLabel")}
-              </Label>
-              <SearchInput
-                id="inventory-report-search"
-                value={search}
-                onChange={(value) => {
-                  setSearch(value);
-                  setPage(1);
-                }}
-                placeholder={t("reports.lowStock.searchPlaceholder")}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Checkbox
-              id="inventory-report-hide-empty"
-              checked={hideEmpty}
-              onChange={(checked) => {
-                setHideEmpty(checked);
-                setPage(1);
-              }}
-              label={t("reports.inventoryPeriod.hideEmpty")}
-            />
-            <ExportPdfButton
-              buildData={buildPdfData}
-              fileName={`inventory-report-${range.from}-${range.to}`}
-              disabled={isLoading || filteredRows.length === 0}
+      <section className="space-y-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <DateRangeFields value={range} onChange={setRange} />
+          <div>
+            <Label htmlFor="inventory-report-category">
+              {t("reports.inventoryPeriod.category")}
+            </Label>
+            <Select
+              id="inventory-report-category"
+              value={categoryId}
+              onChange={setCategoryId}
+              options={[
+                {
+                  value: "",
+                  label: t("reports.inventoryPeriod.allCategories"),
+                },
+                ...categories.map((category) => ({
+                  value: category.id,
+                  label: category.label,
+                })),
+              ]}
             />
           </div>
+          <div>
+            <Label htmlFor="inventory-report-search">
+              {t("reports.lowStock.searchLabel")}
+            </Label>
+            <SearchInput
+              id="inventory-report-search"
+              value={search}
+              onChange={setSearch}
+              placeholder={t("reports.lowStock.searchPlaceholder")}
+            />
+          </div>
+        </div>
 
-          {!isRangeValid && (
-            <p className="text-sm text-error-600 dark:text-error-400">
-              {t("reports.revenue.errors.range")}
-            </p>
-          )}
-          {error && <InlineAlert>{error}</InlineAlert>}
-          {!isLoading && mismatchedIds.size > 0 && (
-            <InlineAlert variant="warning">
-              {t("reports.inventoryPeriod.mismatch", {
-                count: mismatchedIds.size,
-              })}
-            </InlineAlert>
-          )}
+        <Checkbox
+          id="inventory-report-hide-empty"
+          checked={hideEmpty}
+          onChange={setHideEmpty}
+          label={t("reports.inventoryPeriod.hideEmpty")}
+        />
 
-          {isLoading ? (
-            <LoadingState label={t("reports.loading")} />
-          ) : filteredRows.length === 0 ? (
+        {!isRangeValid && (
+          <FieldError>{t("reports.revenue.errors.range")}</FieldError>
+        )}
+        {!isLoading && mismatchedIds.size > 0 && (
+          <InlineAlert variant="warning">
+            {t("reports.inventoryPeriod.mismatch", {
+              count: mismatchedIds.size,
+            })}
+          </InlineAlert>
+        )}
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={error}
+          onRetry={reload}
+          loadingLabel={t("reports.loading")}
+          placeholder="box"
+        >
+          {filteredRows.length === 0 ? (
             <EmptyState
               title={t("reports.inventoryPeriod.empty.title")}
               description={t("reports.inventoryPeriod.empty.description")}
@@ -255,22 +220,17 @@ export default function InventoryPeriodReport() {
           ) : (
             <>
               <InventoryPeriodTable
-                rows={pagedRows}
+                rows={paging.pageItems}
                 mismatchedIds={mismatchedIds}
               />
-              <ListPagination
-                page={page}
-                pageSize={PAGE_SIZE}
-                totalItems={filteredRows.length}
-                onPageChange={setPage}
-              />
-              <p className="text-theme-xs text-gray-500 dark:text-gray-400">
+              <ListPagination {...paging.pagination} />
+              <p className="text-theme-xs text-fg-muted">
                 {t("reports.inventoryPeriod.formula")}
               </p>
             </>
           )}
-        </div>
-      </ComponentCard>
+        </AsyncContent>
+      </section>
     </div>
   );
 }

@@ -1,8 +1,6 @@
-import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { useTranslation } from "react-i18next";
 import type { MasterDataKind, MasterDataRecord } from "./types";
-import InlineAlert from "@/components/common/InlineAlert";
 
 type DeactivateMasterDataModalProps = {
   kind: MasterDataKind;
@@ -26,37 +24,20 @@ export default function DeactivateMasterDataModal({
   const { t } = useTranslation();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg p-6 lg:p-8">
-      <div className="space-y-5">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-            {t(`masterData.${kind}.deactivate.title`)}
-          </h3>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {t(`masterData.${kind}.deactivate.description`, {
-              name: record?.name || "",
-            })}
-          </p>
-        </div>
-
-        {error && <InlineAlert>{error}</InlineAlert>}
-
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button type="button" variant="outline" onClick={onClose}>
-            {t("common.close")}
-          </Button>
-          <Button
-            type="button"
-            disabled={isSaving || !record}
-            onClick={onConfirm}
-            variant="danger"
-          >
-            {isSaving
-              ? t("masterData.common.deactivate.deactivating")
-              : t(`masterData.${kind}.actions.deactivate`)}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+    <ConfirmDialog
+      isOpen={isOpen}
+      tone="danger"
+      title={t(`masterData.${kind}.deactivate.title`)}
+      description={t(`masterData.${kind}.deactivate.description`, {
+        name: record?.name || "",
+      })}
+      confirmLabel={t(`masterData.${kind}.actions.deactivate`)}
+      busyLabel={t("masterData.common.deactivate.deactivating")}
+      isBusy={isSaving}
+      confirmDisabled={!record}
+      error={error}
+      onClose={onClose}
+      onConfirm={onConfirm}
+    />
   );
 }

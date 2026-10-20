@@ -1,33 +1,24 @@
-import Badge from "@/components/ui/badge/Badge";
+import EmptyState from "@/components/common/EmptyState";
 import IconButton from "@/components/ui/button/IconButton";
 import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { PencilIcon, TrashBinIcon } from "@/icons";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { formatQuantity } from "@/utils/formatQuantity";
 import { useTranslation } from "react-i18next";
-import { formatQuantity, getMaterialStatus } from "./materialStatus";
-import type { Material, MaterialStockStatus } from "./types";
-import EmptyState from "@/components/common/EmptyState";
+import MaterialStatusBadge from "./MaterialStatusBadge";
+import type { Material } from "./types";
 
 type MaterialsTableProps = {
   materials: Material[];
   onEdit: (material: Material) => void;
   onDeactivate: (material: Material) => void;
-};
-
-const statusColor: Record<
-  MaterialStockStatus,
-  "success" | "warning" | "error" | "light"
-> = {
-  active: "success",
-  lowStock: "warning",
-  outOfStock: "error",
-  inactive: "light",
 };
 
 export default function MaterialsTable({
@@ -47,121 +38,78 @@ export default function MaterialsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
-      <div className="max-w-full overflow-x-auto">
-        <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/5">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
-              >
-                {t("materials.table.material")}
+    <TableContainer>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableCell isHeader>{t("materials.table.material")}</TableCell>
+            <TableCell isHeader>{t("materials.table.category")}</TableCell>
+            <TableCell isHeader align="end">
+              {t("materials.table.stock")}
+            </TableCell>
+            <TableCell isHeader align="end">
+              {t("materials.table.prices")}
+            </TableCell>
+            <TableCell isHeader>{t("materials.table.status")}</TableCell>
+            <TableCell isHeader align="end">
+              {t("materials.table.actions")}
+            </TableCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {materials.map((material) => (
+            <TableRow key={material.id}>
+              <TableCell>
+                <p className="font-medium text-fg">{material.name}</p>
+                <p className="mt-1 text-theme-xs">{material.sku}</p>
               </TableCell>
-              <TableCell
-                isHeader
-                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
-              >
-                {t("materials.table.category")}
+              <TableCell>
+                <p>{material.categoryName}</p>
+                <p className="mt-1 text-theme-xs">{material.unitName}</p>
               </TableCell>
-              <TableCell
-                isHeader
-                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
-              >
-                {t("materials.table.stock")}
+              <TableCell align="end">
+                <p className="font-medium text-fg">
+                  {formatQuantity(material.currentStock)} {material.unitName}
+                </p>
+                <p className="mt-1 text-theme-xs">
+                  {t("materials.table.minimum", {
+                    value: formatQuantity(material.minimumStock),
+                  })}
+                </p>
               </TableCell>
-              <TableCell
-                isHeader
-                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
-              >
-                {t("materials.table.prices")}
+              <TableCell align="end">
+                <p className="font-medium text-fg">
+                  {formatCurrency(material.defaultSalePrice)}
+                </p>
+                <p className="mt-1 text-theme-xs">
+                  {t("materials.table.purchase", {
+                    value: formatCurrency(material.defaultPurchasePrice),
+                  })}
+                </p>
               </TableCell>
-              <TableCell
-                isHeader
-                className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
-              >
-                {t("materials.table.status")}
+              <TableCell>
+                <MaterialStatusBadge material={material} />
               </TableCell>
-              <TableCell
-                isHeader
-                className="px-4 py-3 text-end text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
-              >
-                {t("materials.table.actions")}
+              <TableCell align="end">
+                <div className="flex justify-end gap-2">
+                  <IconButton
+                    icon={<PencilIcon className="size-4" />}
+                    label={t("materials.actions.edit")}
+                    onClick={() => onEdit(material)}
+                  />
+                  <IconButton
+                    icon={<TrashBinIcon className="size-4" />}
+                    label={t("materials.actions.deactivate")}
+                    tone="error"
+                    onClick={() => onDeactivate(material)}
+                    disabled={!material.isActive}
+                  />
+                </div>
               </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-            {materials.map((material) => {
-              const status = getMaterialStatus(material);
-
-              return (
-                <TableRow key={material.id}>
-                  <TableCell className="px-5 py-4 text-start">
-                    <div>
-                      <p className="font-medium text-gray-800 dark:text-white/90">
-                        {material.name}
-                      </p>
-                      <p className="mt-1 text-theme-xs text-gray-500 dark:text-gray-400">
-                        {material.sku}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                    <div>
-                      <p>{material.categoryName}</p>
-                      <p className="mt-1 text-theme-xs">{material.unitName}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                    <div>
-                      <p>
-                        {formatQuantity(material.currentStock)}{" "}
-                        {material.unitName}
-                      </p>
-                      <p className="mt-1 text-theme-xs">
-                        {t("materials.table.minimum", {
-                          value: formatQuantity(material.minimumStock),
-                        })}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                    <div>
-                      <p>{formatCurrency(material.defaultSalePrice)}</p>
-                      <p className="mt-1 text-theme-xs">
-                        {t("materials.table.purchase", {
-                          value: formatCurrency(material.defaultPurchasePrice),
-                        })}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 text-start">
-                    <Badge color={statusColor[status]} size="sm">
-                      {t(`materials.status.${status}`)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 text-end">
-                    <div className="flex justify-end gap-2">
-                      <IconButton
-                        icon={<PencilIcon className="size-4" />}
-                        label={t("materials.actions.edit")}
-                        onClick={() => onEdit(material)}
-                      />
-                      <IconButton
-                        icon={<TrashBinIcon className="size-4" />}
-                        label={t("materials.actions.deactivate")}
-                        tone="error"
-                        onClick={() => onDeactivate(material)}
-                        disabled={!material.isActive}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

@@ -24,7 +24,7 @@ type MaterialRow = {
   units?: MaterialLookup | MaterialLookup[] | null;
 };
 
-type MaterialsPayload = {
+export type MaterialsPayload = {
   source: MaterialSource;
   materials: Material[];
   categories: MaterialLookup[];

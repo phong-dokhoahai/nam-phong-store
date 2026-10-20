@@ -53,7 +53,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       type={type}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition",
+        "inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition focus-visible:ring-3 focus-visible:ring-brand-500/30 focus-visible:outline-none",
         sizeClasses[size],
         variantClasses[variant],
         isDisabled && "cursor-not-allowed opacity-50",

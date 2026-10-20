@@ -4,7 +4,9 @@
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  /* Be Vietnam Pro: designed for Vietnamese diacritics (loaded in index.html). */
+  --font-sans:
+    "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -168,6 +170,48 @@
 }
 
 /*
+  Semantic tokens for recurring surface, border and text decisions.
+  Light/dark values live here, so `bg-surface`, `border-line`, `text-fg`…
+  need no `dark:` variant at the use site. Change a value here to restyle
+  every card, table, stat, modal and empty/loading state at once.
+*/
+:root {
+  --canvas: var(--color-gray-50);
+  --surface: var(--color-white);
+  --surface-subtle: var(--color-gray-50);
+  --surface-muted: var(--color-gray-100);
+  --line: var(--color-gray-200);
+  --line-subtle: var(--color-gray-100);
+  --fg: var(--color-gray-800);
+  --fg-muted: var(--color-gray-500);
+  --fg-subtle: var(--color-gray-400);
+}
+
+.dark {
+  --canvas: var(--color-gray-900);
+  --surface: rgb(255 255 255 / 0.03);
+  --surface-subtle: rgb(255 255 255 / 0.02);
+  --surface-muted: var(--color-gray-800);
+  --line: var(--color-gray-800);
+  --line-subtle: var(--color-gray-800);
+  --fg: rgb(255 255 255 / 0.9);
+  --fg-muted: var(--color-gray-400);
+  --fg-subtle: var(--color-gray-500);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-line-subtle: var(--line-subtle);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+}
+
+/*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
   looks the same as it did with Tailwind CSS v3.
@@ -190,7 +234,7 @@
   }
 
   body {
-    @apply relative z-1 bg-gray-50 font-outfit font-normal;
+    @apply relative z-1 bg-canvas font-sans font-normal text-fg antialiased;
   }
 }
 

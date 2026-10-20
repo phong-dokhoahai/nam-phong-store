@@ -11,7 +11,6 @@ import type {
   StockReceiptLine,
   StockReceiptMaterialLookup,
   StockReceiptPayload,
-  StockReceiptSource,
   StockReceiptSupplierLookup,
 } from "./types";
 
@@ -389,8 +388,3 @@ export const getEmptyDraftValues = (): StockReceiptDraftValues => ({
   note: "",
   lines: [],
 });
-
-export const getSourceLabelKey = (source: StockReceiptSource) =>
-  source === "supabase"
-    ? "stockReceipts.toolbar.liveSource"
-    : "stockReceipts.toolbar.demoSource";

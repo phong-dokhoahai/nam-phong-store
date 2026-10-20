@@ -4,7 +4,7 @@ import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import { Modal, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type {
@@ -97,16 +97,12 @@ export default function MasterDataFormModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl p-6 lg:p-8">
+    <Modal isOpen={isOpen} onClose={onClose} size="md">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-            {title}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {t(`masterData.${kind}.form.subtitle`)}
-          </p>
-        </div>
+        <ModalHeader
+          title={title}
+          description={t(`masterData.${kind}.form.subtitle`)}
+        />
 
         {(error || localError) && (
           <InlineAlert>{error || localError}</InlineAlert>
@@ -138,8 +134,11 @@ export default function MasterDataFormModal({
           </div>
           {kind === "units" ? (
             <div>
-              <Label>{t("masterData.units.form.precision")}</Label>
+              <Label htmlFor={`${kind}-precision`}>
+                {t("masterData.units.form.precision")}
+              </Label>
               <Select
+                id={`${kind}-precision`}
                 value={String(values.precision)}
                 options={[0, 1, 2, 3].map((precision) => ({
                   value: String(precision),
@@ -206,8 +205,11 @@ export default function MasterDataFormModal({
                 />
               </div>
               <div className="md:col-span-2">
-                <Label>{t("masterData.common.form.address")}</Label>
+                <Label htmlFor={`${kind}-address`}>
+                  {t("masterData.common.form.address")}
+                </Label>
                 <TextArea
+                  id={`${kind}-address`}
                   rows={3}
                   value={values.address}
                   onChange={(value) => updateValue("address", value)}
@@ -215,8 +217,11 @@ export default function MasterDataFormModal({
                 />
               </div>
               <div className="md:col-span-2">
-                <Label>{t("masterData.common.form.note")}</Label>
+                <Label htmlFor={`${kind}-note`}>
+                  {t("masterData.common.form.note")}
+                </Label>
                 <TextArea
+                  id={`${kind}-note`}
                   rows={3}
                   value={values.note}
                   onChange={(value) => updateValue("note", value)}
@@ -226,8 +231,11 @@ export default function MasterDataFormModal({
             </>
           ) : (
             <div className="md:col-span-2">
-              <Label>{t("masterData.categories.form.description")}</Label>
+              <Label htmlFor={`${kind}-description`}>
+                {t("masterData.categories.form.description")}
+              </Label>
               <TextArea
+                id={`${kind}-description`}
                 rows={4}
                 value={values.description}
                 onChange={(value) => updateValue("description", value)}
@@ -247,16 +255,16 @@ export default function MasterDataFormModal({
           </div>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button type="button" variant="outline" onClick={onClose}>
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose} disabled={isSaving}>
             {t("common.close")}
           </Button>
-          <Button type="submit" disabled={isSaving}>
+          <Button type="submit" loading={isSaving}>
             {isSaving
               ? t("masterData.common.form.saving")
               : t("common.saveChanges")}
           </Button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

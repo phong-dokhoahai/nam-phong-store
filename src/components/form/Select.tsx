@@ -1,6 +1,7 @@
 import { ChevronDownIcon } from "@/icons";
 import { cn } from "@/utils";
 import { useState } from "react";
+import { controlClassName } from "./controlStyles";
 
 export interface SelectOption {
   value: string;
@@ -58,16 +59,16 @@ const Select: React.FC<SelectProps> = ({
         aria-label={ariaLabel}
         aria-invalid={error || undefined}
         disabled={disabled}
-        className={cn(
-          "h-11 w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pe-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:bg-gray-900 dark:placeholder:text-white/30",
-          error
-            ? "border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:border-error-500"
-            : "border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 dark:border-gray-700 dark:focus:border-brand-800",
-          selectedValue
-            ? "text-gray-800 dark:text-white/90"
-            : "text-gray-400 dark:text-gray-400",
-          disabled && "cursor-not-allowed opacity-50",
-          className,
+        className={controlClassName(
+          { error, disabled },
+          cn(
+            "h-11 appearance-none pe-11",
+            // Grey only while the placeholder is showing; "" may be a real option.
+            placeholder !== undefined &&
+              !selectedValue &&
+              "text-gray-400 dark:text-gray-400",
+            className,
+          ),
         )}
         value={selectedValue}
         onChange={handleChange}

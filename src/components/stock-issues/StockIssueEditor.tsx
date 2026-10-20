@@ -1,7 +1,10 @@
 import Input from "@/components/form/input/InputField";
+import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import IconButton from "@/components/ui/button/IconButton";
+import { useModalTitleId } from "@/components/ui/modal/modalTitle";
 import EmptyState from "@/components/common/EmptyState";
+import FieldError from "@/components/common/FieldError";
 import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
@@ -12,8 +15,8 @@ import {
   calculateIssueTotal,
   calculateLineTotal,
   calculateSubtotal,
-  formatQuantity,
 } from "./StockIssueFormat";
+import { formatQuantity } from "@/utils/formatQuantity";
 import type {
   StockIssue,
   StockIssueCustomerLookup,
@@ -54,6 +57,7 @@ export default function StockIssueEditor({
   onConfirm,
 }: StockIssueEditorProps) {
   const { t } = useTranslation();
+  const titleId = useModalTitleId();
   const isDraftEditable = !selectedIssue || selectedIssue.status === "DRAFT";
   const subtotal = calculateSubtotal(draft.lines);
   const totalAmount = calculateIssueTotal(
@@ -184,23 +188,23 @@ export default function StockIssueEditor({
   };
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-      <div className="flex flex-col gap-3 border-b border-gray-100 pb-5 sm:flex-row sm:items-start sm:justify-between dark:border-gray-800">
-        <div>
-          <h3 className="text-title-sm font-semibold text-gray-800 dark:text-white/90">
+    <div>
+      <div className="border-b border-line-subtle pe-12 pb-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 id={titleId} className="text-lg font-semibold text-fg">
             {selectedIssue
               ? t("stockIssues.editor.editTitle", { code: selectedIssue.code })
               : t("stockIssues.editor.createTitle")}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {t("stockIssues.editor.subtitle")}
-          </p>
+          </h2>
+          {selectedIssue && (
+            <Badge color="light" size="sm">
+              {t(`stockIssues.status.${selectedIssue.status}`)}
+            </Badge>
+          )}
         </div>
-        {selectedIssue && (
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-            {t(`stockIssues.status.${selectedIssue.status}`)}
-          </span>
-        )}
+        <p className="mt-1 text-sm text-fg-muted">
+          {t("stockIssues.editor.subtitle")}
+        </p>
       </div>
 
       {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
@@ -252,9 +256,9 @@ export default function StockIssueEditor({
 
       <div className="mt-6">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <h3 className="text-sm font-semibold text-fg">
             {t("stockIssues.lines.title")}
-          </h4>
+          </h3>
           <Button
             variant="outline"
             size="sm"
@@ -268,7 +272,27 @@ export default function StockIssueEditor({
         {draft.lines.length === 0 ? (
           <EmptyState compact description={t("stockIssues.lines.empty")} />
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-line-subtle rounded-xl border border-line">
+            <div
+              aria-hidden="true"
+              className="hidden gap-3 rounded-t-xl bg-surface-subtle px-3 py-2 text-xs font-medium text-fg-muted lg:grid lg:grid-cols-[minmax(200px,1fr)_72px_112px_136px_128px_136px_32px]"
+            >
+              <span>{t("stockIssues.lines.material")}</span>
+              <span>{t("stockIssues.lines.unit")}</span>
+              <span className="text-end">
+                {t("stockIssues.lines.quantity")}
+              </span>
+              <span className="text-end">
+                {t("stockIssues.lines.unitPrice")}
+              </span>
+              <span className="text-end">
+                {t("stockIssues.lines.discount")}
+              </span>
+              <span className="text-end">
+                {t("stockIssues.lines.lineTotal")}
+              </span>
+              <span />
+            </div>
             {draft.lines.map((line) => {
               const material = getMaterial(line.materialId);
               const lineError = getLineError(line);
@@ -276,11 +300,17 @@ export default function StockIssueEditor({
               return (
                 <div
                   key={line.id}
-                  className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 p-4 lg:grid-cols-[minmax(220px,1.4fr)_110px_150px_150px_150px_44px] dark:border-gray-800"
+                  className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 lg:grid-cols-[minmax(200px,1fr)_72px_112px_136px_128px_136px_32px] lg:items-start"
                 >
                   <div>
-                    <Label>{t("stockIssues.lines.material")}</Label>
+                    <Label
+                      htmlFor={`${line.id}-material`}
+                      className="lg:sr-only"
+                    >
+                      {t("stockIssues.lines.material")}
+                    </Label>
                     <Select
+                      id={`${line.id}-material`}
                       value={line.materialId}
                       disabled={!isDraftEditable || isSaving}
                       error={Boolean(lineError)}
@@ -294,7 +324,7 @@ export default function StockIssueEditor({
                       }))}
                     />
                     {material && (
-                      <p className="mt-1 text-theme-xs text-gray-500 dark:text-gray-400">
+                      <p className="mt-1 text-theme-xs text-fg-muted">
                         {t("stockIssues.lines.available", {
                           quantity: formatQuantity(material.currentStock),
                           unit: material.unitName,
@@ -303,14 +333,23 @@ export default function StockIssueEditor({
                     )}
                   </div>
                   <div>
-                    <Label>{t("stockIssues.lines.unit")}</Label>
-                    <div className="flex h-11 items-center rounded-lg border border-gray-200 px-3 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                    <Label className="lg:sr-only">
+                      {t("stockIssues.lines.unit")}
+                    </Label>
+                    <div className="flex h-11 items-center text-sm text-fg-muted">
                       {line.unitName}
                     </div>
                   </div>
                   <div>
-                    <Label>{t("stockIssues.lines.quantity")}</Label>
+                    <Label
+                      htmlFor={`${line.id}-quantity`}
+                      className="lg:sr-only"
+                    >
+                      {t("stockIssues.lines.quantity")}
+                    </Label>
                     <Input
+                      id={`${line.id}-quantity`}
+                      className="text-end"
                       type="number"
                       min={0.001}
                       step={0.001}
@@ -327,8 +366,15 @@ export default function StockIssueEditor({
                     />
                   </div>
                   <div>
-                    <Label>{t("stockIssues.lines.unitPrice")}</Label>
+                    <Label
+                      htmlFor={`${line.id}-unitPrice`}
+                      className="lg:sr-only"
+                    >
+                      {t("stockIssues.lines.unitPrice")}
+                    </Label>
                     <Input
+                      id={`${line.id}-unitPrice`}
+                      className="text-end"
                       type="number"
                       min={0}
                       step={1}
@@ -345,8 +391,15 @@ export default function StockIssueEditor({
                     />
                   </div>
                   <div>
-                    <Label>{t("stockIssues.lines.discount")}</Label>
+                    <Label
+                      htmlFor={`${line.id}-discount`}
+                      className="lg:sr-only"
+                    >
+                      {t("stockIssues.lines.discount")}
+                    </Label>
                     <Input
+                      id={`${line.id}-discount`}
+                      className="text-end"
                       type="number"
                       min={0}
                       step={1}
@@ -361,27 +414,29 @@ export default function StockIssueEditor({
                         )
                       }
                     />
-                    <p className="mt-1 text-theme-xs text-gray-500 dark:text-gray-400">
-                      {formatCurrency(line.lineTotal)}
-                    </p>
                   </div>
-                  <div className="flex items-end">
+                  <div className="flex h-11 items-center justify-between gap-2 text-sm sm:col-span-2 lg:col-span-1 lg:justify-end">
+                    <span className="text-fg-muted lg:sr-only">
+                      {t("stockIssues.lines.lineTotal")}
+                    </span>
+                    <span className="font-medium text-fg tabular-nums">
+                      {formatCurrency(line.lineTotal)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-end lg:h-11">
                     <IconButton
                       icon={<TrashBinIcon className="size-4" />}
                       label={t("stockIssues.lines.remove")}
                       tone="error"
-                      size="md"
+                      size="sm"
                       onClick={() => removeLine(line.id)}
                       disabled={!isDraftEditable || isSaving}
                     />
                   </div>
                   {lineError && (
-                    <p
-                      role="alert"
-                      className="text-sm text-error-600 lg:col-span-6 dark:text-error-400"
-                    >
+                    <FieldError className="sm:col-span-2 lg:col-span-7">
                       {lineError}
-                    </p>
+                    </FieldError>
                   )}
                 </div>
               );
@@ -402,7 +457,7 @@ export default function StockIssueEditor({
             className="min-h-28"
           />
         </div>
-        <div className="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+        <div className="rounded-xl bg-surface-subtle p-4">
           <div className="space-y-3">
             <SummaryRow
               label={t("stockIssues.summary.subtotal")}
@@ -429,7 +484,7 @@ export default function StockIssueEditor({
               disabled={!isDraftEditable || isSaving}
               onChange={(value) => setDraftField("taxAmount", value)}
             />
-            <div className="border-t border-gray-100 pt-3 dark:border-gray-800">
+            <div className="border-t border-line-subtle pt-3">
               <SummaryRow
                 label={t("stockIssues.summary.total")}
                 value={formatCurrency(totalAmount)}
@@ -440,19 +495,14 @@ export default function StockIssueEditor({
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button
-          size="sm"
-          onClick={onSave}
-          disabled={!isDraftEditable || isSaving}
-        >
+      <div className="mt-6 flex flex-col-reverse gap-3 border-t border-line-subtle pt-4 sm:flex-row sm:justify-end">
+        <Button onClick={onSave} disabled={!isDraftEditable || isSaving}>
           {isSaving
             ? t("stockIssues.actions.saving")
             : t("stockIssues.actions.saveDraft")}
         </Button>
         <Button
           variant="successOutline"
-          size="sm"
           onClick={onConfirm}
           disabled={
             !selectedIssue || selectedIssue.status !== "DRAFT" || isSaving
@@ -476,12 +526,12 @@ function SummaryRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-4 text-sm">
-      <span className="text-gray-500 dark:text-gray-400">{label}</span>
+      <span className="text-fg-muted">{label}</span>
       <span
         className={
           strong
-            ? "font-semibold text-gray-800 dark:text-white/90"
-            : "text-gray-700 dark:text-gray-300"
+            ? "text-base font-semibold text-fg tabular-nums"
+            : "text-fg tabular-nums"
         }
       >
         {value}
@@ -504,17 +554,22 @@ function NumberSummaryInput({
   onChange: (value: number) => void;
 }) {
   return (
-    <div>
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        type="number"
-        min={0}
-        step={1}
-        value={value}
-        disabled={disabled}
-        onChange={(event) => onChange(toMoneyValue(event.target.value))}
-      />
+    <div className="flex items-center justify-between gap-4">
+      <Label htmlFor={id} className="mb-0 font-normal text-fg-muted">
+        {label}
+      </Label>
+      <div className="w-40 shrink-0">
+        <Input
+          id={id}
+          type="number"
+          min={0}
+          step={1}
+          value={value}
+          disabled={disabled}
+          onChange={(event) => onChange(toMoneyValue(event.target.value))}
+          className="h-9 text-end"
+        />
+      </div>
     </div>
   );
 }

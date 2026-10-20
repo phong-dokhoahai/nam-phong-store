@@ -10,18 +10,26 @@
     "seeAll": "Alle anzeigen",
     "pagination": {
       "label": "Seitennavigation",
-      "range": "{{from}}–{{to}} von {{total}}",
+      "range": "{from}–{to} von {total}",
       "previous": "Zurück",
       "next": "Weiter",
-      "page": "Seite {{page}} von {{pages}}"
-    }
+      "page": "Seite {page} von {pages}"
+    },
+    "breadcrumb": "Brotkrümelnavigation",
+    "dataSource": {
+      "live": "Supabase-Daten",
+      "demo": "Demodaten"
+    },
+    "retry": "Erneut versuchen"
   },
   "sidebar": {
     "groups": {
       "menu": "Menue",
       "support": "Support",
       "others": "Sonstiges",
-      "reports": "Berichte"
+      "reports": "Berichte",
+      "operations": "Lagerbetrieb",
+      "catalog": "Stammdaten"
     },
     "badges": {
       "new": "neu",
@@ -40,7 +48,7 @@
       "sales": "Sales",
       "finance": "Finance",
       "inventory": "Bestand",
-      "inventoryOverview": "Inventory Overview",
+      "inventoryOverview": "Bestandsübersicht",
       "materials": "Materialien",
       "categories": "Kategorien",
       "units": "Einheiten",
@@ -136,34 +144,27 @@
       "email": "Email",
       "inbox": "Inbox",
       "inboxDetails": "Details",
-      "stockReceipts": "Stock Receipts",
-      "stockIssues": "Stock Issues",
-      "payments": "Thanh toán & công nợ",
-      "reportsLowStock": "Low stock report",
-      "reportsRevenue": "Revenue report",
-      "reportsPurchase": "Stock receipt report",
-      "reportsSales": "Stock issue report",
-      "reportsInventory": "Inventory period report",
-      "reportsCustomerDebt": "Customer debt report",
-      "reportsSupplierDebt": "Supplier debt report"
+      "stockReceipts": "Wareneingänge",
+      "stockIssues": "Warenausgänge",
+      "payments": "Zahlungen & Schulden",
+      "reportsLowStock": "Niedriger Bestand",
+      "reportsRevenue": "Umsatz",
+      "reportsPurchase": "Wareneingänge",
+      "reportsSales": "Warenausgänge",
+      "reportsInventory": "Bestand nach Zeitraum",
+      "reportsCustomerDebt": "Kundenschulden",
+      "reportsSupplierDebt": "Lieferantenschulden"
     },
     "widget": {
       "title": "Tailwind CSS Dashboard #1",
       "description": "Fuehrende Tailwind-CSS-Adminvorlage mit ueber 500 UI-Komponenten und Seiten.",
       "purchasePlan": "Plan kaufen"
-    }
+    },
+    "navLabel": "Hauptnavigation"
   },
   "header": {
-    "searchPlaceholder": "Suchen oder Befehl eingeben...",
     "toggleSidebar": "Seitenleiste umschalten",
-    "notifications": {
-      "title": "Benachrichtigung",
-      "requestsPermission": "requests permission to change",
-      "project": "Projekt",
-      "minAgo": "vor {count} Min.",
-      "hrAgo": "vor {count} Std.",
-      "viewAll": "Alle Benachrichtigungen anzeigen"
-    }
+    "toggleTheme": "Hell- / Dunkelmodus wechseln"
   },
   "userDropdown": {
     "editProfile": "Profil bearbeiten",
@@ -172,28 +173,25 @@
     "language": "Sprache",
     "account": "Konto",
     "noEmail": "Keine E-Mail verfuegbar",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "roles": {
+      "ADMIN": "Administrator",
+      "WAREHOUSE_STAFF": "Lagermitarbeiter"
+    }
   },
   "auth": {
     "signIn": {
-      "backToDashboard": "Back to dashboard",
       "title": "Sign In",
       "subtitle": "Enter your email and password to sign in.",
-      "google": "Sign in with Google",
-      "x": "Sign in with X",
-      "or": "Or",
       "email": "Email",
       "emailPlaceholder": "info@example.com",
       "password": "Password",
       "passwordPlaceholder": "Enter your password",
       "showPassword": "Show password",
       "hidePassword": "Hide password",
-      "keepLoggedIn": "Keep me logged in",
-      "forgotPassword": "Forgot password?",
       "submit": "Sign in",
       "signingIn": "Signing in...",
-      "noAccount": "Don't have an account?",
-      "signUp": "Sign Up"
+      "accountHelp": "Noch kein Konto oder Passwort vergessen? Wenden Sie sich an Ihren Lageradministrator."
     },
     "errors": {
       "configMissing": "Supabase authentication is not configured. Add the public URL and anon key before signing in.",
@@ -220,9 +218,7 @@
     "toolbar": {
       "searchPlaceholder": "Search by name or SKU...",
       "allCategories": "All categories",
-      "allStatuses": "All statuses",
-      "liveSource": "Supabase data",
-      "demoSource": "Demo data"
+      "allStatuses": "All statuses"
     },
     "table": {
       "material": "Material",
@@ -281,7 +277,8 @@
       "save": "Unable to save material.",
       "deactivate": "Unable to deactivate material.",
       "duplicateSku": "Another material already uses this SKU."
-    }
+    },
+    "description": "Materialien mit Standardpreisen und Mindestbeständen."
   },
   "inventory": {
     "title": "Inventory",
@@ -295,11 +292,7 @@
     },
     "toolbar": {
       "searchLabel": "Search inventory",
-      "searchPlaceholder": "Search by name or SKU...",
-      "allCategories": "All categories",
-      "allStatuses": "All statuses",
-      "liveSource": "Supabase data",
-      "demoSource": "Demo data"
+      "searchPlaceholder": "Search by name or SKU..."
     },
     "table": {
       "material": "Material",
@@ -314,19 +307,13 @@
     },
     "errors": {
       "load": "Unable to load inventory."
-    }
+    },
+    "description": "Aktueller Bestand je Material im Vergleich zum Mindestbestand."
   },
   "masterData": {
     "common": {
-      "stats": {
-        "total": "Datensaetze gesamt",
-        "active": "Aktiv",
-        "inactive": "Inaktiv"
-      },
       "toolbar": {
-        "allStatuses": "Alle Status",
-        "liveSource": "Supabase-Daten",
-        "demoSource": "Demo-Daten"
+        "allStatuses": "Alle Status"
       },
       "table": {
         "record": "Datensatz",
@@ -394,7 +381,8 @@
         "deactivate": "Unable to deactivate category.",
         "duplicateCode": "Another category already uses this code.",
         "protectedRecord": "This category is protected."
-      }
+      },
+      "description": "Materialgruppen zum Filtern von Listen und Berichten."
     },
     "units": {
       "title": "Einheiten",
@@ -436,7 +424,8 @@
         "deactivate": "Unable to deactivate unit.",
         "duplicateCode": "Another unit already uses this code.",
         "protectedRecord": "This unit is protected."
-      }
+      },
+      "description": "Mengeneinheiten und erlaubte Nachkommastellen."
     },
     "customers": {
       "title": "Kunden",
@@ -479,7 +468,8 @@
         "deactivate": "Unable to deactivate customer.",
         "duplicateCode": "Another customer already uses this code.",
         "protectedRecord": "The walk-in customer is a protected system record and cannot be deactivated."
-      }
+      },
+      "description": "Kunden für Warenausgänge und Forderungen."
     },
     "suppliers": {
       "title": "Lieferanten",
@@ -525,7 +515,8 @@
         "deactivate": "Unable to deactivate supplier.",
         "duplicateCode": "Another supplier already uses this code.",
         "protectedRecord": "This supplier is protected."
-      }
+      },
+      "description": "Lieferanten für Wareneingänge und Verbindlichkeiten."
     }
   },
   "ecommerce": {
@@ -1266,9 +1257,7 @@
       "searchLabel": "Search stock receipts",
       "statusLabel": "Filter stock receipts by status",
       "searchPlaceholder": "Search by receipt, supplier, or invoice...",
-      "allStatuses": "All statuses",
-      "liveSource": "Supabase data",
-      "demoSource": "Demo data"
+      "allStatuses": "All statuses"
     },
     "table": {
       "receipt": "Receipt",
@@ -1319,7 +1308,8 @@
       "quantity": "Quantity",
       "unitPrice": "Unit price",
       "discount": "Discount",
-      "remove": "Remove line"
+      "remove": "Remove line",
+      "lineTotal": "Zeilensumme"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1335,7 +1325,6 @@
     },
     "errors": {
       "load": "Unable to load stock receipts.",
-      "retry": "Try again",
       "save": "Unable to save stock receipt.",
       "confirm": "Unable to confirm stock receipt.",
       "requiredHeader": "Supplier and receipt date are required.",
@@ -1347,7 +1336,8 @@
       "lineDiscount": "Discount must be 0 or higher.",
       "lineDiscountTooHigh": "Discount cannot exceed this line total.",
       "duplicateMaterial": "Each material can only appear once on a receipt."
-    }
+    },
+    "description": "Wareneingänge von Lieferanten. Bestätigen bucht sie in den Bestand."
   },
   "stockIssues": {
     "title": "Stock Issues",
@@ -1357,9 +1347,7 @@
       "searchLabel": "Search stock issues",
       "statusLabel": "Filter stock issues by status",
       "searchPlaceholder": "Search by code, customer, or delivery address...",
-      "allStatuses": "All statuses",
-      "liveSource": "Supabase data",
-      "demoSource": "Demo data"
+      "allStatuses": "All statuses"
     },
     "table": {
       "issue": "Issue",
@@ -1411,7 +1399,8 @@
       "unitPrice": "Sale price",
       "discount": "Discount",
       "remove": "Remove line",
-      "available": "Available: {quantity} {unit}"
+      "available": "Available: {quantity} {unit}",
+      "lineTotal": "Zeilensumme"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1429,7 +1418,6 @@
       "load": "Unable to load stock issues.",
       "save": "Unable to save stock issue.",
       "confirm": "Unable to confirm stock issue.",
-      "retry": "Retry",
       "requiredHeader": "Customer and issue date are required.",
       "requiredLines": "Add at least one material line.",
       "invalidLine": "Fix invalid material lines before saving.",
@@ -1440,7 +1428,8 @@
       "lineDiscountTooHigh": "Discount cannot exceed line subtotal.",
       "duplicateMaterial": "Each material can only appear once.",
       "insufficientStock": "Not enough stock. Available: {available}."
-    }
+    },
+    "description": "Warenausgänge an Kunden. Bestätigen bucht sie aus dem Bestand aus."
   },
   "payments": {
     "title": "Thanh toán & công nợ",
@@ -1454,9 +1443,7 @@
       "searchLabel": "Tìm thanh toán",
       "directionLabel": "Lọc theo loại công nợ",
       "searchPlaceholder": "Tìm theo chứng từ hoặc đối tượng...",
-      "allDirections": "Tất cả loại công nợ",
-      "liveSource": "Dữ liệu Supabase",
-      "demoSource": "Dữ liệu mẫu"
+      "allDirections": "Tất cả loại công nợ"
     },
     "direction": {
       "customer": "Công nợ khách hàng",
@@ -1520,13 +1507,13 @@
     },
     "errors": {
       "load": "Không thể tải dữ liệu thanh toán.",
-      "retry": "Thử lại",
       "save": "Không thể ghi nhận thanh toán.",
       "required": "Bắt buộc chọn chứng từ và ngày thanh toán.",
       "documentNotFound": "Không tìm thấy chứng từ đã chọn.",
       "amountPositive": "Số tiền thanh toán phải lớn hơn 0.",
       "amountTooHigh": "Số tiền thanh toán không được vượt quá công nợ còn lại ({amount})."
-    }
+    },
+    "description": "Kundenzahlungen und Lieferantenzahlungen je Beleg erfassen."
   },
   "reports": {
     "loading": "Loading report...",
@@ -1560,9 +1547,9 @@
       "exporting": "Exporting...",
       "error": "Unable to export the PDF.",
       "page": "Page",
-      "generatedAt": "Generated at {{time}}",
+      "generatedAt": "Generated at {time}",
       "companyName": "Nam Phong Storage",
-      "items": "Items: {{count}}",
+      "items": "Items: {count}",
       "total": "Total"
     },
     "revenue": {
@@ -1571,7 +1558,7 @@
       "from": "From",
       "to": "To",
       "groupByLabel": "Group by",
-      "pdfPeriod": "Period: {{from}} to {{to}}",
+      "pdfPeriod": "Period: {from} to {to}",
       "note": "Net revenue = confirmed sales totals minus confirmed customer returns. It is not cash flow or debt.",
       "groupBy": {
         "day": "Day",
@@ -1663,7 +1650,7 @@
       "category": "Category",
       "allCategories": "All categories",
       "hideEmpty": "Hide materials without stock or movements",
-      "mismatch": "{{count}} material(s) have a closing stock that differs from the current stock. Check the inventory history.",
+      "mismatch": "{count} material(s) have a closing stock that differs from the current stock. Check the inventory history.",
       "formula": "Closing = opening + import + customer returns + adjustments in − export − supplier returns − adjustments out. Reversed documents are netted into their original column.",
       "table": {
         "material": "Material",
@@ -1717,5 +1704,9 @@
         "load": "Unable to load the debt report."
       }
     }
+  },
+  "app": {
+    "name": "Nam Phong",
+    "tagline": "Materiallager"
   }
 }

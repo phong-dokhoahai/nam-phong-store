@@ -1,11 +1,13 @@
-import TableSkeleton from "@/components/common/TableSkeleton";
-import ComponentCard from "@/components/common/ComponentCard";
-import InlineAlert from "@/components/common/InlineAlert";
-import Button from "@/components/ui/button/Button";
+import AsyncContent from "@/components/common/AsyncContent";
+import DataSourceBadge from "@/components/common/DataSourceBadge";
 import ListPagination from "@/components/common/ListPagination";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
+import Button from "@/components/ui/button/Button";
+import { PlusIcon } from "@/icons";
 import ConfirmStockIssueModal from "@/components/stock-issues/ConfirmStockIssueModal";
 import StockIssueFormModal from "@/components/stock-issues/StockIssueFormModal";
+import StockIssuesTable from "@/components/stock-issues/StockIssuesTable";
+import StockIssuesToolbar from "@/components/stock-issues/StockIssuesToolbar";
 import {
   confirmDemoStockIssue,
   confirmStockIssue,
@@ -15,19 +17,18 @@ import {
   getEmptyDraftValues,
   updateStockIssue,
 } from "@/components/stock-issues/StockIssuesRepository";
-import StockIssuesTable from "@/components/stock-issues/StockIssuesTable";
-import StockIssuesToolbar from "@/components/stock-issues/StockIssuesToolbar";
 import type {
   StockIssue,
-  StockIssueCustomerLookup,
   StockIssueDraftValues,
-  StockIssueMaterialLookup,
-  StockIssueSource,
+  StockIssuePayload,
   StockIssueStatus,
 } from "@/components/stock-issues/types";
-import { useModal } from "@/hooks/useModal";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useModal } from "@/hooks/useModal";
+import { DEFAULT_PAGE_SIZE, useResettablePage } from "@/hooks/usePagination";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const getDraftFromIssue = (issue: StockIssue): StockIssueDraftValues => ({
@@ -40,14 +41,18 @@ const getDraftFromIssue = (issue: StockIssue): StockIssueDraftValues => ({
   note: issue.note,
   lines: issue.lines,
 });
-const PAGE_SIZE = 20;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
+
+const emptyPayload: StockIssuePayload = {
+  source: "demo",
+  issues: [],
+  totalCount: 0,
+  customers: [],
+  materials: [],
+};
 
 export default function StockIssues() {
   const { t } = useTranslation();
-  const [issues, setIssues] = useState<StockIssue[]>([]);
-  const [customers, setCustomers] = useState<StockIssueCustomerLookup[]>([]);
-  const [materials, setMaterials] = useState<StockIssueMaterialLookup[]>([]);
-  const [source, setSource] = useState<StockIssueSource>("demo");
   const [selectedIssue, setSelectedIssue] = useState<StockIssue | null>(null);
   const [confirmingIssue, setConfirmingIssue] = useState<StockIssue | null>(
     null,
@@ -56,69 +61,48 @@ export default function StockIssues() {
     useState<StockIssueDraftValues>(getEmptyDraftValues);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | StockIssueStatus>("all");
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useResettablePage(`${search}|${status}`);
   const debouncedSearch = useDebouncedValue(search);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [loadError, setLoadError] = useState("");
   const [error, setError] = useState("");
 
   const confirmModal = useModal();
   const editorModal = useModal();
 
   const loadIssues = useCallback(
-    async (isMounted: () => boolean = () => true) => {
-      setIsLoading(true);
-      setLoadError("");
-      setError("");
-
-      try {
-        const payload = await fetchStockIssuesPayload({
-          page,
-          pageSize: PAGE_SIZE,
-          search: debouncedSearch,
-          status,
-        });
-        if (!isMounted()) return;
-        setIssues(payload.issues);
-        setTotalCount(payload.totalCount);
-        setCustomers(payload.customers);
-        setMaterials(payload.materials);
-        setSource(payload.source);
-
-        const firstDraft =
-          payload.issues.find((issue) => issue.status === "DRAFT") ||
-          payload.issues[0] ||
-          null;
-        setSelectedIssue(firstDraft);
-        setDraft(
-          firstDraft ? getDraftFromIssue(firstDraft) : getEmptyDraftValues(),
-        );
-      } catch (loadError) {
-        if (!isMounted()) return;
-        setLoadError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("stockIssues.errors.load"),
-        );
-      } finally {
-        if (isMounted()) setIsLoading(false);
-      }
-    },
-    [debouncedSearch, page, status, t],
+    () =>
+      fetchStockIssuesPayload({
+        page,
+        pageSize: PAGE_SIZE,
+        search: debouncedSearch,
+        status,
+      }),
+    [debouncedSearch, page, status],
   );
+  const {
+    data: payload,
+    isLoading,
+    error: loadError,
+    reload,
+    setData,
+  } = useAsyncData(loadIssues, {
+    initialData: emptyPayload,
+    errorMessage: t("stockIssues.errors.load"),
+    onSuccess: (loaded) => {
+      const firstDraft =
+        loaded.issues.find((issue) => issue.status === "DRAFT") ||
+        loaded.issues[0] ||
+        null;
+      setError("");
+      setSelectedIssue(firstDraft);
+      setDraft(
+        firstDraft ? getDraftFromIssue(firstDraft) : getEmptyDraftValues(),
+      );
+    },
+  });
+  const { issues, customers, materials, source } = payload;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    void Promise.resolve().then(() => loadIssues(() => isMounted));
-
-    return () => {
-      isMounted = false;
-    };
-  }, [loadIssues]);
-
+  // Demo data is filtered and paged here; Supabase does it server-side.
   const filteredIssues = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
@@ -139,13 +123,29 @@ export default function StockIssues() {
       ? filteredIssues
       : filteredIssues.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  useEffect(() => setPage(1), [search, status]);
+  const openCreateDraft = () => {
+    setSelectedIssue(null);
+    setDraft(getEmptyDraftValues());
+    setError("");
+    editorModal.openModal();
+  };
+
+  const selectIssue = (issue: StockIssue) => {
+    setSelectedIssue(issue);
+    setDraft(getDraftFromIssue(issue));
+    setError("");
+    editorModal.openModal();
+  };
 
   const upsertIssueInList = (issue: StockIssue) => {
-    setIssues((current) => {
-      const hasIssue = current.some((item) => item.id === issue.id);
-      if (!hasIssue) return [issue, ...current];
-      return current.map((item) => (item.id === issue.id ? issue : item));
+    setData((current) => {
+      const hasIssue = current.issues.some((item) => item.id === issue.id);
+      return {
+        ...current,
+        issues: hasIssue
+          ? current.issues.map((item) => (item.id === issue.id ? issue : item))
+          : [issue, ...current.issues],
+      };
     });
     setSelectedIssue(issue);
     setDraft(getDraftFromIssue(issue));
@@ -179,23 +179,11 @@ export default function StockIssues() {
       (materialId, index) => materialIds.indexOf(materialId) !== index,
     );
 
-    return hasDuplicateMaterial
-      ? t("stockIssues.errors.duplicateMaterial")
-      : "";
-  };
+    if (hasDuplicateMaterial) {
+      return t("stockIssues.errors.duplicateMaterial");
+    }
 
-  const openCreateDraft = () => {
-    setSelectedIssue(null);
-    setDraft(getEmptyDraftValues());
-    setError("");
-    editorModal.openModal();
-  };
-
-  const selectIssue = (issue: StockIssue) => {
-    setSelectedIssue(issue);
-    setDraft(getDraftFromIssue(issue));
-    setError("");
-    editorModal.openModal();
+    return "";
   };
 
   const handleSave = async () => {
@@ -216,11 +204,7 @@ export default function StockIssues() {
       upsertIssueInList(savedIssue);
       editorModal.closeModal();
     } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : t("stockIssues.errors.save"),
-      );
+      setError(getErrorMessage(saveError, t("stockIssues.errors.save")));
     } finally {
       setIsSaving(false);
     }
@@ -249,13 +233,10 @@ export default function StockIssues() {
       setConfirmingIssue(null);
       confirmModal.closeModal();
       editorModal.closeModal();
-      void loadIssues();
+      // Confirming changes available stock; refresh materials and the list.
+      reload();
     } catch (confirmError) {
-      setError(
-        confirmError instanceof Error
-          ? confirmError.message
-          : t("stockIssues.errors.confirm"),
-      );
+      setError(getErrorMessage(confirmError, t("stockIssues.errors.confirm")));
     } finally {
       setIsSaving(false);
     }
@@ -263,56 +244,50 @@ export default function StockIssues() {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t("stockIssues.title")} />
+      <PageHeader
+        title={t("stockIssues.title")}
+        description={t("stockIssues.description")}
+        meta={!isLoading && <DataSourceBadge source={source} />}
+        actions={
+          <Button
+            startIcon={<PlusIcon className="size-5" />}
+            onClick={openCreateDraft}
+          >
+            {t("stockIssues.actions.create")}
+          </Button>
+        }
+      />
 
-      <ComponentCard title={t("stockIssues.listTitle")}>
-        <div className="space-y-5">
-          <StockIssuesToolbar
-            search={search}
-            status={status}
-            source={source}
-            onSearchChange={setSearch}
-            onStatusChange={setStatus}
-            onCreate={openCreateDraft}
+      <section aria-label={t("stockIssues.listTitle")} className="space-y-4">
+        <StockIssuesToolbar
+          search={search}
+          status={status}
+          onSearchChange={setSearch}
+          onStatusChange={setStatus}
+        />
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={loadError}
+          onRetry={reload}
+          loadingLabel={t("stockIssues.loading")}
+        >
+          <StockIssuesTable
+            issues={visibleIssues}
+            selectedIssueId={selectedIssue?.id || ""}
+            onSelect={selectIssue}
+            onConfirm={openConfirmModal}
           />
-
-          {isLoading ? (
-            <TableSkeleton label={t("stockIssues.loading")} />
-          ) : loadError ? (
-            <InlineAlert
-              layout="panel"
-              action={
-                <Button
-                  variant="errorOutline"
-                  size="sm"
-                  onClick={() => loadIssues()}
-                >
-                  {t("stockIssues.errors.retry")}
-                </Button>
-              }
-            >
-              {loadError}
-            </InlineAlert>
-          ) : (
-            <StockIssuesTable
-              issues={visibleIssues}
-              selectedIssueId={selectedIssue?.id || ""}
-              onSelect={selectIssue}
-              onConfirm={openConfirmModal}
-            />
-          )}
-          {!isLoading && !loadError && (
-            <ListPagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              totalItems={
-                source === "supabase" ? totalCount : filteredIssues.length
-              }
-              onPageChange={setPage}
-            />
-          )}
-        </div>
-      </ComponentCard>
+          <ListPagination
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalItems={
+              source === "supabase" ? payload.totalCount : filteredIssues.length
+            }
+            onPageChange={setPage}
+          />
+        </AsyncContent>
+      </section>
 
       <StockIssueFormModal
         isOpen={editorModal.isOpen}

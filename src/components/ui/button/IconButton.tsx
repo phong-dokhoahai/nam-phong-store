@@ -12,7 +12,7 @@ interface IconButtonProps extends Omit<
   label: string;
   /** Hover color hinting what the action does. */
   tone?: IconButtonTone;
-  /** sm (36px) for table rows, md (44px) to align with form inputs. */
+  /** sm (32px) for table rows, md (44px) to align with form inputs. */
   size?: "sm" | "md";
 }
 
@@ -39,8 +39,8 @@ const IconButton: React.FC<IconButtonProps> = ({
     aria-label={label}
     title={label}
     className={cn(
-      "inline-flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-800 dark:text-gray-400",
-      size === "sm" ? "size-9" : "size-11",
+      "inline-flex shrink-0 items-center justify-center rounded-lg border border-line text-fg-muted transition-colors focus-visible:ring-3 focus-visible:ring-brand-500/30 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40",
+      size === "sm" ? "size-8" : "size-11",
       toneClasses[tone],
       className,
     )}

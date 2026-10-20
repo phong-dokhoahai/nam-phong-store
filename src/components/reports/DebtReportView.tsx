@@ -1,9 +1,8 @@
-import ComponentCard from "@/components/common/ComponentCard";
+import AsyncContent from "@/components/common/AsyncContent";
 import EmptyState from "@/components/common/EmptyState";
-import InlineAlert from "@/components/common/InlineAlert";
+import FieldError from "@/components/common/FieldError";
 import ListPagination from "@/components/common/ListPagination";
-import LoadingState from "@/components/common/LoadingState";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
 import SearchInput from "@/components/common/SearchInput";
 import StatCard from "@/components/common/StatCard";
 import Label from "@/components/form/Label";
@@ -11,11 +10,15 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { usePagedItems } from "@/hooks/usePagination";
+import { cn } from "@/utils";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DateRangeFields from "./DateRangeFields";
 import { debtColumns } from "./debtColumns";
@@ -25,10 +28,7 @@ import { defaultDateRange, isDateRangeValid } from "./reportDates";
 import { fetchDebtPeriod } from "./reportsRepository";
 import type { DebtPeriodRow, DebtReportKind } from "./types";
 
-const PAGE_SIZE = 20;
-
-const headerClass =
-  "px-3 py-3 text-end text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400";
+const noRows: DebtPeriodRow[] = [];
 
 const sumColumns = (rows: DebtPeriodRow[]) =>
   Object.fromEntries(
@@ -42,45 +42,24 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
   const { t } = useTranslation();
   const [range, setRange] = useState(defaultDateRange);
   const [search, setSearch] = useState("");
-  const [rows, setRows] = useState<DebtPeriodRow[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
 
   const isRangeValid = isDateRangeValid(range);
   const prefix = `reports.debt.${kind}`;
 
-  useEffect(() => {
-    if (!isRangeValid) return;
-    let isMounted = true;
-
-    const loadReport = async () => {
-      setIsLoading(true);
-      setError("");
-      setPage(1);
-
-      try {
-        const data = await fetchDebtPeriod(kind, range.from, range.to);
-        if (isMounted) setRows(data);
-      } catch (loadError) {
-        if (!isMounted) return;
-        setRows([]);
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("reports.debt.errors.load"),
-        );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadReport();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [isRangeValid, kind, range.from, range.to, t]);
+  const loadRows = useMemo(
+    () =>
+      isRangeValid ? () => fetchDebtPeriod(kind, range.from, range.to) : null,
+    [isRangeValid, kind, range.from, range.to],
+  );
+  const {
+    data: rows,
+    isLoading,
+    error,
+    reload,
+  } = useAsyncData(loadRows, {
+    initialData: noRows,
+    errorMessage: t("reports.debt.errors.load"),
+  });
 
   const filteredRows = useMemo(() => {
     if (!isRangeValid) return [];
@@ -95,9 +74,9 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
   }, [isRangeValid, rows, search]);
 
   const totals = useMemo(() => sumColumns(filteredRows), [filteredRows]);
-  const pagedRows = filteredRows.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
+  const paging = usePagedItems(
+    filteredRows,
+    `${range.from}|${range.to}|${search}`,
   );
 
   const buildPdfData = (): ReportPdfData => ({
@@ -143,51 +122,52 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t(`${prefix}.title`)} />
+      <PageHeader
+        title={t(`${prefix}.title`)}
+        description={t(`${prefix}.listTitle`)}
+        actions={
+          <ExportPdfButton
+            buildData={buildPdfData}
+            fileName={`${kind}-debt-report-${range.from}-${range.to}`}
+            disabled={isLoading || filteredRows.length === 0}
+          />
+        }
+      />
 
-      <ComponentCard title={t(`${prefix}.listTitle`)}>
-        <div className="space-y-5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <DateRangeFields value={range} onChange={setRange} />
-              <div>
-                <Label htmlFor={`${kind}-debt-search`}>
-                  {t(`${prefix}.search`)}
-                </Label>
-                <SearchInput
-                  id={`${kind}-debt-search`}
-                  value={search}
-                  onChange={(value) => {
-                    setSearch(value);
-                    setPage(1);
-                  }}
-                />
-              </div>
-            </div>
-            <ExportPdfButton
-              buildData={buildPdfData}
-              fileName={`${kind}-debt-report-${range.from}-${range.to}`}
-              disabled={isLoading || filteredRows.length === 0}
+      <section className="space-y-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:max-w-3xl">
+          <DateRangeFields value={range} onChange={setRange} />
+          <div>
+            <Label htmlFor={`${kind}-debt-search`}>
+              {t(`${prefix}.search`)}
+            </Label>
+            <SearchInput
+              id={`${kind}-debt-search`}
+              value={search}
+              onChange={setSearch}
             />
           </div>
+        </div>
 
-          {!isRangeValid && (
-            <p className="text-sm text-error-600 dark:text-error-400">
-              {t("reports.revenue.errors.range")}
-            </p>
-          )}
-          {error && <InlineAlert>{error}</InlineAlert>}
+        {!isRangeValid && (
+          <FieldError>{t("reports.revenue.errors.range")}</FieldError>
+        )}
 
-          {isLoading ? (
-            <LoadingState label={t("reports.loading")} />
-          ) : filteredRows.length === 0 ? (
+        <AsyncContent
+          isLoading={isLoading}
+          error={error}
+          onRetry={reload}
+          loadingLabel={t("reports.loading")}
+          placeholder="box"
+        >
+          {filteredRows.length === 0 ? (
             <EmptyState
               title={t("reports.debt.empty.title")}
               description={t("reports.debt.empty.description")}
             />
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {summaryCards.map((card) => (
                   <StatCard
                     key={card.column}
@@ -197,76 +177,65 @@ export default function DebtReportView({ kind }: { kind: DebtReportKind }) {
                 ))}
               </div>
 
-              <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
-                <div className="max-w-full overflow-x-auto">
-                  <Table>
-                    <TableHeader className="border-b border-gray-100 dark:border-white/5">
-                      <TableRow>
+              <TableContainer>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableCell isHeader>{t(`${prefix}.party`)}</TableCell>
+                      {debtColumns.map((column) => (
                         <TableCell
+                          key={column}
                           isHeader
-                          className="px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400"
+                          align="end"
+                          className="px-3"
                         >
-                          {t(`${prefix}.party`)}
+                          {t(`reports.debt.table.${column}`)}
+                        </TableCell>
+                      ))}
+                      <TableCell isHeader align="end" className="px-3">
+                        {t("reports.debt.table.overdueDebt")}
+                      </TableCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paging.pageItems.map((row) => (
+                      <TableRow key={row.partyId}>
+                        <TableCell>
+                          <p className="font-medium text-fg">{row.partyName}</p>
+                          <p className="mt-1 text-theme-xs">{row.partyCode}</p>
                         </TableCell>
                         {debtColumns.map((column) => (
                           <TableCell
                             key={column}
-                            isHeader
-                            className={headerClass}
+                            align="end"
+                            className={cn(
+                              "px-3",
+                              column === "closingDebt" &&
+                                "font-semibold text-fg",
+                            )}
                           >
-                            {t(`reports.debt.table.${column}`)}
+                            {formatCurrency(row[column])}
                           </TableCell>
                         ))}
-                        <TableCell isHeader className={headerClass}>
-                          {t("reports.debt.table.overdueDebt")}
+                        <TableCell
+                          align="end"
+                          className="px-3 text-gray-400 dark:text-gray-500"
+                        >
+                          —
                         </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-                      {pagedRows.map((row) => (
-                        <TableRow key={row.partyId}>
-                          <TableCell className="px-4 py-4 text-start">
-                            <p className="font-medium text-gray-800 dark:text-white/90">
-                              {row.partyName}
-                            </p>
-                            <p className="mt-1 text-theme-xs text-gray-500 dark:text-gray-400">
-                              {row.partyCode}
-                            </p>
-                          </TableCell>
-                          {debtColumns.map((column) => (
-                            <TableCell
-                              key={column}
-                              className={`px-3 py-4 text-end text-theme-sm ${
-                                column === "closingDebt"
-                                  ? "font-semibold text-gray-800 dark:text-white/90"
-                                  : "text-gray-500 dark:text-gray-400"
-                              }`}
-                            >
-                              {formatCurrency(row[column])}
-                            </TableCell>
-                          ))}
-                          <TableCell className="px-3 py-4 text-end text-theme-sm text-gray-400 dark:text-gray-500">
-                            —
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-              <ListPagination
-                page={page}
-                pageSize={PAGE_SIZE}
-                totalItems={filteredRows.length}
-                onPageChange={setPage}
-              />
-              <p className="text-theme-xs text-gray-500 dark:text-gray-400">
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <ListPagination {...paging.pagination} />
+              <p className="text-theme-xs text-fg-muted">
                 {t("reports.debt.formula")} {t("reports.debt.overdueNote")}
               </p>
             </>
           )}
-        </div>
-      </ComponentCard>
+        </AsyncContent>
+      </section>
     </div>
   );
 }

@@ -1,51 +1,33 @@
-import ComponentCard from "@/components/common/ComponentCard";
-import InlineAlert from "@/components/common/InlineAlert";
+import AsyncContent from "@/components/common/AsyncContent";
+import FilterToolbar from "@/components/common/FilterToolbar";
 import ListPagination from "@/components/common/ListPagination";
-import LoadingState from "@/components/common/LoadingState";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
 import SearchInput from "@/components/common/SearchInput";
-import { formatQuantity } from "@/components/materials/materialStatus";
 import ExportPdfButton from "@/components/reports/ExportPdfButton";
 import type { ReportPdfData } from "@/components/reports/pdf/ReportPdfDocument";
 import LowStockTable from "@/components/reports/LowStockTable";
 import { fetchLowStockReport } from "@/components/reports/reportsRepository";
 import type { LowStockRow } from "@/components/reports/types";
-import { useEffect, useState } from "react";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { usePagedItems } from "@/hooks/usePagination";
+import { formatQuantity } from "@/utils/formatQuantity";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const PAGE_SIZE = 20;
+const noRows: LowStockRow[] = [];
 
 export default function LowStockReport() {
   const { t } = useTranslation();
-  const [rows, setRows] = useState<LowStockRow[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    fetchLowStockReport()
-      .then((data) => {
-        if (isMounted) setRows(data);
-      })
-      .catch((loadError) => {
-        if (!isMounted) return;
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("reports.lowStock.errors.load"),
-        );
-      })
-      .finally(() => {
-        if (isMounted) setIsLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [t]);
+  const {
+    data: rows,
+    isLoading,
+    error,
+    reload,
+  } = useAsyncData(fetchLowStockReport, {
+    initialData: noRows,
+    errorMessage: t("reports.lowStock.errors.load"),
+  });
 
   const keyword = search.trim().toLowerCase();
   const filteredRows = rows.filter(
@@ -54,10 +36,7 @@ export default function LowStockReport() {
       row.name.toLowerCase().includes(keyword) ||
       row.sku.toLowerCase().includes(keyword),
   );
-  const visibleRows = filteredRows.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
+  const paging = usePagedItems(filteredRows, search);
 
   const buildPdfData = (): ReportPdfData => ({
     title: t("reports.lowStock.title"),
@@ -104,46 +83,40 @@ export default function LowStockReport() {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t("reports.lowStock.title")} />
+      <PageHeader
+        title={t("reports.lowStock.title")}
+        description={t("reports.lowStock.listTitle")}
+        actions={
+          <ExportPdfButton
+            buildData={buildPdfData}
+            fileName="low-stock-report"
+            disabled={isLoading || filteredRows.length === 0}
+          />
+        }
+      />
 
-      <ComponentCard title={t("reports.lowStock.listTitle")}>
-        <div className="space-y-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="w-full sm:max-w-sm">
-              <SearchInput
-                value={search}
-                onChange={(value) => {
-                  setSearch(value);
-                  setPage(1);
-                }}
-                aria-label={t("reports.lowStock.searchLabel")}
-                placeholder={t("reports.lowStock.searchPlaceholder")}
-              />
-            </div>
-            <ExportPdfButton
-              buildData={buildPdfData}
-              fileName="low-stock-report"
-              disabled={isLoading || filteredRows.length === 0}
+      <section className="space-y-4">
+        <FilterToolbar
+          search={
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              aria-label={t("reports.lowStock.searchLabel")}
+              placeholder={t("reports.lowStock.searchPlaceholder")}
             />
-          </div>
+          }
+        />
 
-          {error && <InlineAlert>{error}</InlineAlert>}
-
-          {isLoading ? (
-            <LoadingState label={t("reports.loading")} />
-          ) : (
-            <LowStockTable rows={visibleRows} />
-          )}
-          {!isLoading && (
-            <ListPagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              totalItems={filteredRows.length}
-              onPageChange={setPage}
-            />
-          )}
-        </div>
-      </ComponentCard>
+        <AsyncContent
+          isLoading={isLoading}
+          error={error}
+          onRetry={reload}
+          loadingLabel={t("reports.loading")}
+        >
+          <LowStockTable rows={paging.pageItems} />
+          <ListPagination {...paging.pagination} />
+        </AsyncContent>
+      </section>
     </div>
   );
 }

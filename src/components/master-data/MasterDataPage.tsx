@@ -1,9 +1,15 @@
-import StatCard from "@/components/common/StatCard";
-import ComponentCard from "@/components/common/ComponentCard";
+import AsyncContent from "@/components/common/AsyncContent";
+import DataSourceBadge from "@/components/common/DataSourceBadge";
+import InlineAlert from "@/components/common/InlineAlert";
 import ListPagination from "@/components/common/ListPagination";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
+import Button from "@/components/ui/button/Button";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import { useModal } from "@/hooks/useModal";
-import { useEffect, useMemo, useState } from "react";
+import { usePagedItems } from "@/hooks/usePagination";
+import { PlusIcon } from "@/icons";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DeactivateMasterDataModal from "./DeactivateMasterDataModal";
 import MasterDataFormModal from "./MasterDataFormModal";
@@ -19,27 +25,21 @@ import MasterDataToolbar from "./MasterDataToolbar";
 import type {
   MasterDataFormValues,
   MasterDataKind,
+  MasterDataPayload,
   MasterDataRecord,
-  MasterDataSource,
   MasterDataStatus,
 } from "./types";
-import LoadingState from "@/components/common/LoadingState";
-import InlineAlert from "@/components/common/InlineAlert";
 
 type MasterDataPageProps = {
   kind: MasterDataKind;
 };
 
-const PAGE_SIZE = 20;
+const emptyPayload: MasterDataPayload = { source: "demo", records: [] };
 
 export default function MasterDataPage({ kind }: MasterDataPageProps) {
   const { t } = useTranslation();
-  const [records, setRecords] = useState<MasterDataRecord[]>([]);
-  const [source, setSource] = useState<MasterDataSource>("demo");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<MasterDataStatus>("all");
-  const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [formVersion, setFormVersion] = useState(0);
@@ -50,36 +50,20 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
   const formModal = useModal();
   const deactivateModal = useModal();
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadRecords = async () => {
-      setIsLoading(true);
-      setError("");
-
-      try {
-        const payload = await fetchMasterData(kind);
-        if (!isMounted) return;
-        setRecords(payload.records);
-        setSource(payload.source);
-      } catch (loadError) {
-        if (!isMounted) return;
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t(`masterData.${kind}.errors.load`),
-        );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadRecords();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [kind, t]);
+  const loadRecords = useCallback(() => fetchMasterData(kind), [kind]);
+  const {
+    data: { records, source },
+    isLoading,
+    error: loadError,
+    reload,
+    setData,
+  } = useAsyncData(loadRecords, {
+    initialData: emptyPayload,
+    errorMessage: t(`masterData.${kind}.errors.load`),
+  });
+  const setRecords = (
+    update: (current: MasterDataRecord[]) => MasterDataRecord[],
+  ) => setData((current) => ({ ...current, records: update(current.records) }));
 
   const filteredRecords = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -100,21 +84,7 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
       return matchesSearch && matchesStatus;
     });
   }, [records, search, status]);
-  const visibleRecords = filteredRecords.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
-
-  useEffect(() => setPage(1), [kind, search, status]);
-
-  const stats = useMemo(
-    () => ({
-      total: records.length,
-      active: records.filter((record) => record.isActive).length,
-      inactive: records.filter((record) => !record.isActive).length,
-    }),
-    [records],
-  );
+  const paging = usePagedItems(filteredRecords, `${kind}|${search}|${status}`);
 
   const openCreateModal = () => {
     setSelectedRecord(null);
@@ -187,11 +157,7 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
       formModal.closeModal();
       setSelectedRecord(null);
     } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : t(`masterData.${kind}.errors.save`),
-      );
+      setError(getErrorMessage(saveError, t(`masterData.${kind}.errors.save`)));
     } finally {
       setIsSaving(false);
     }
@@ -222,9 +188,10 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
       setSelectedRecord(null);
     } catch (deactivateError) {
       setError(
-        deactivateError instanceof Error
-          ? deactivateError.message
-          : t(`masterData.${kind}.errors.deactivate`),
+        getErrorMessage(
+          deactivateError,
+          t(`masterData.${kind}.errors.deactivate`),
+        ),
       );
     } finally {
       setIsSaving(false);
@@ -233,59 +200,51 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t(`masterData.${kind}.title`)} />
+      <PageHeader
+        title={t(`masterData.${kind}.title`)}
+        description={t(`masterData.${kind}.description`)}
+        meta={!isLoading && <DataSourceBadge source={source} />}
+        actions={
+          <Button
+            startIcon={<PlusIcon className="size-5" />}
+            onClick={openCreateModal}
+          >
+            {t(`masterData.${kind}.actions.add`)}
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard
-          label={t("masterData.common.stats.total")}
-          value={stats.total}
+      <section
+        aria-label={t(`masterData.${kind}.listTitle`)}
+        className="space-y-4"
+      >
+        <MasterDataToolbar
+          kind={kind}
+          search={search}
+          status={status}
+          onSearchChange={setSearch}
+          onStatusChange={setStatus}
         />
-        <StatCard
-          label={t("masterData.common.stats.active")}
-          value={stats.active}
-        />
-        <StatCard
-          label={t("masterData.common.stats.inactive")}
-          value={stats.inactive}
-        />
-      </div>
 
-      <ComponentCard title={t(`masterData.${kind}.listTitle`)}>
-        <div className="space-y-5">
-          <MasterDataToolbar
+        {error && !formModal.isOpen && !deactivateModal.isOpen && (
+          <InlineAlert>{error}</InlineAlert>
+        )}
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={loadError}
+          onRetry={reload}
+          loadingLabel={t(`masterData.${kind}.loading`)}
+        >
+          <MasterDataTable
             kind={kind}
-            search={search}
-            status={status}
-            source={source}
-            onSearchChange={setSearch}
-            onStatusChange={setStatus}
-            onCreate={openCreateModal}
+            records={paging.pageItems}
+            onEdit={openEditModal}
+            onDeactivate={openDeactivateModal}
           />
-
-          {error && !formModal.isOpen && !deactivateModal.isOpen && (
-            <InlineAlert>{error}</InlineAlert>
-          )}
-
-          {isLoading ? (
-            <LoadingState label={t(`masterData.${kind}.loading`)} />
-          ) : (
-            <MasterDataTable
-              kind={kind}
-              records={visibleRecords}
-              onEdit={openEditModal}
-              onDeactivate={openDeactivateModal}
-            />
-          )}
-          {!isLoading && (
-            <ListPagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              totalItems={filteredRecords.length}
-              onPageChange={setPage}
-            />
-          )}
-        </div>
-      </ComponentCard>
+          <ListPagination {...paging.pagination} />
+        </AsyncContent>
+      </section>
 
       <MasterDataFormModal
         key={`${kind}-form-${formVersion}`}

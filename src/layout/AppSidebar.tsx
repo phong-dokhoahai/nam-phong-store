@@ -1,132 +1,94 @@
 import { useAuth } from "@/auth";
 import { useSidebar } from "@/context/SidebarContext";
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { ComponentType, SVGProps } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import {
+  BoltIcon,
   BoxCubeIcon,
-  CalenderIcon,
-  ChevronDownIcon,
-  GridIcon,
-  HorizontaLDots,
+  ChartAltIcon,
+  DashboardAltIcon,
+  DollarLineIcon,
+  FolderIcon,
+  GroupIcon,
+  InboxAltIcon,
   ListIcon,
+  PageIcon,
   PieChartIcon,
   TableIcon,
+  UserIcon,
 } from "../icons";
 import { cn } from "../utils";
-import SidebarWidget from "./SidebarWidget";
+import BrandMark from "./BrandMark";
 
 type NavItem = {
-  name: string;
-  key?: string;
-  icon: React.ReactNode;
-  path?: string;
-  new?: boolean;
+  /** Key under `sidebar.items`. */
+  key: string;
+  path: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
   adminOnly?: boolean;
-  target?: string;
-  subItems?: {
-    name: string;
-    key?: string;
-    path: string;
-    pro?: boolean;
-    new?: boolean;
-    target?: string;
-  }[];
 };
 
-const navItems: NavItem[] = [
-  // {
-  //   icon: <GridIcon />,
-  //   name: "Dashboard",
-  //   key: "dashboard",
-  //   subItems: [{ name: "Ecommerce", key: "ecommerceHome", path: "/" }],
-  // },
-  // {
-  //   name: "Inventory",
-  //   key: "inventory",
-  //   icon: <BoxCubeIcon />,
-   
-  // },
-    { name: "Inventory", key: "inventoryOverview", path: "/inventory",icon: <BoxCubeIcon /> },
-      { name: "Materials", key: "materials", path: "/materials" ,icon: <BoxCubeIcon />},
-      { name: "Categories", key: "categories", path: "/categories" ,icon: <BoxCubeIcon />},
-      { name: "Units", key: "units", path: "/units" ,icon: <BoxCubeIcon />},
-      { name: "Suppliers", key: "suppliers", path: "/suppliers" ,icon: <BoxCubeIcon />},
-      { name: "Customers", key: "customers", path: "/customers" ,icon: <BoxCubeIcon />},
-      { name: "Stock Receipts", key: "stockReceipts", path: "/stock-receipts" ,icon: <BoxCubeIcon />},
-      { name: "Stock Issues", key: "stockIssues", path: "/stock-issues" ,icon: <BoxCubeIcon />},
-      { name: "Payments", key: "payments", path: "/payments", icon: <BoxCubeIcon /> },
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "Calendar",
-  //   key: "calendar",
-  //   path: "/calendar",
-  // },
-  // {
-  //   name: "Forms",
-  //   key: "forms",
-  //   icon: <ListIcon />,
-  //   subItems: [
-  //     {
-  //       name: "Form Elements",
-  //       key: "formElements",
-  //       path: "/form-elements",
-  //       pro: false,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Tables",
-  //   key: "tables",
-  //   icon: <TableIcon />,
-  //   subItems: [
-  //     {
-  //       name: "Basic Tables",
-  //       key: "basicTables",
-  //       path: "/basic-tables",
-  //       pro: false,
-  //     },
-  //   ],
-  // },
-];
+type NavGroup = {
+  /** Key under `sidebar.groups`. */
+  key: string;
+  items: NavItem[];
+};
 
-const reportItems: NavItem[] = [
-  { name: "Inventory Report", key: "reportsInventory", path: "/reports/inventory", icon: <PieChartIcon /> },
-  { name: "Stock Receipt Report", key: "reportsPurchase", path: "/reports/purchases", icon: <PieChartIcon /> },
-  { name: "Stock Issue Report", key: "reportsSales", path: "/reports/sales", icon: <PieChartIcon /> },
-  { name: "Low Stock Report", key: "reportsLowStock", path: "/reports/low-stock", icon: <PieChartIcon /> },
-  { name: "Revenue Report", key: "reportsRevenue", path: "/reports/revenue", icon: <PieChartIcon />, adminOnly: true },
-  { name: "Customer Debt Report", key: "reportsCustomerDebt", path: "/reports/customer-debt", icon: <PieChartIcon />, adminOnly: true },
-  { name: "Supplier Debt Report", key: "reportsSupplierDebt", path: "/reports/supplier-debt", icon: <PieChartIcon />, adminOnly: true },
-];
-
-const othersItems: NavItem[] = [
+// Grouped by the user's task: day-to-day stock work, reference data, reports.
+const navGroups: NavGroup[] = [
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    key: "charts",
-    new: true,
-    subItems: [
-      { name: "Line Chart", key: "lineChart", path: "/line-chart" },
-      { name: "Bar Chart", key: "barChart", path: "/bar-chart" },
+    key: "operations",
+    items: [
+      { key: "inventoryOverview", path: "/inventory", icon: DashboardAltIcon },
+      { key: "stockReceipts", path: "/stock-receipts", icon: InboxAltIcon },
+      { key: "stockIssues", path: "/stock-issues", icon: PageIcon },
+      { key: "payments", path: "/payments", icon: DollarLineIcon },
     ],
   },
   {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    key: "uiElements",
-    subItems: [
-      { name: "Alerts", key: "alerts", path: "/alerts", pro: false },
-      { name: "Avatar", key: "avatar", path: "/avatars", pro: false },
-      { name: "Badge", key: "badge", path: "/badge", pro: false },
-      { name: "Buttons", key: "buttons", path: "/buttons", pro: false },
-      { name: "Images", key: "images", path: "/images", pro: false },
-      { name: "Videos", key: "videos", path: "/videos", pro: false },
+    key: "catalog",
+    items: [
+      { key: "materials", path: "/materials", icon: BoxCubeIcon },
+      { key: "categories", path: "/categories", icon: FolderIcon },
+      { key: "units", path: "/units", icon: ListIcon },
+      { key: "suppliers", path: "/suppliers", icon: GroupIcon },
+      { key: "customers", path: "/customers", icon: UserIcon },
+    ],
+  },
+  {
+    key: "reports",
+    items: [
+      {
+        key: "reportsInventory",
+        path: "/reports/inventory",
+        icon: PieChartIcon,
+      },
+      { key: "reportsPurchase", path: "/reports/purchases", icon: TableIcon },
+      { key: "reportsSales", path: "/reports/sales", icon: TableIcon },
+      { key: "reportsLowStock", path: "/reports/low-stock", icon: BoltIcon },
+      {
+        key: "reportsRevenue",
+        path: "/reports/revenue",
+        icon: ChartAltIcon,
+        adminOnly: true,
+      },
+      {
+        key: "reportsCustomerDebt",
+        path: "/reports/customer-debt",
+        icon: DollarLineIcon,
+        adminOnly: true,
+      },
+      {
+        key: "reportsSupplierDebt",
+        path: "/reports/supplier-debt",
+        icon: DollarLineIcon,
+        adminOnly: true,
+      },
     ],
   },
 ];
-
-const supportItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
   const { profile } = useAuth();
@@ -134,16 +96,9 @@ const AppSidebar: React.FC = () => {
     useSidebar();
   const { t } = useTranslation();
   const location = useLocation();
-  const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "reports" | "support" | "others";
-    index: number;
-  } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {},
-  );
-  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const showLabels = isExpanded || isHovered || isMobileOpen;
 
-  // Auto-close sidebar on mobile after route change
+  // Auto-close the mobile drawer after navigating.
   useEffect(() => {
     if (isMobileOpen) {
       setIsMobileOpen(false);
@@ -151,226 +106,14 @@ const AppSidebar: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  // const isActive = (path: string) => location.pathname === path;
-  const isActive = useCallback(
-    (path: string) => location.pathname === path,
-    [location.pathname],
-  );
-
-  useEffect(() => {
-    let submenuMatched = false;
-
-    ["main", "support", "others"].forEach((menuType) => {
-      const items =
-        menuType === "main"
-          ? navItems
-          : menuType === "support"
-            ? supportItems
-            : othersItems;
-
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType as "main" | "support" | "others",
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-  }, [location, isActive]);
-
-  useEffect(() => {
-    if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
-    }
-  }, [openSubmenu]);
-
-  const handleSubmenuToggle = (
-    index: number,
-    menuType: "main" | "reports" | "support" | "others",
-  ) => {
-    setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === menuType &&
-        prevOpenSubmenu.index === index
-      ) {
-        return null;
-      }
-      return { type: menuType, index };
-    });
-  };
-
   const canSee = (item: NavItem) =>
     !item.adminOnly || profile?.role === "ADMIN";
-
-  const renderMenuItems = (
-    items: NavItem[],
-    menuType: "main" | "reports" | "support" | "others",
-  ) => (
-    <ul className="flex flex-col gap-1">
-      {items.map((nav, index) => (
-        <li key={nav.name}>
-          {nav.subItems ? (
-            <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`group menu-item ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              } cursor-pointer ${
-                !isExpanded && !isHovered
-                  ? "xl:justify-center"
-                  : "xl:justify-start"
-              }`}
-            >
-              <span
-                className={`menu-item-icon-size ${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
-                }`}
-              >
-                {nav.icon}
-              </span>
-
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">
-                  {nav.key ? t(`sidebar.items.${nav.key}`) : nav.name}
-                </span>
-              )}
-              {nav.new && (isExpanded || isHovered || isMobileOpen) && (
-                <span
-                  className={`absolute inset-e-10 ms-auto ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "menu-dropdown-badge-active"
-                      : "menu-dropdown-badge-inactive"
-                  } menu-dropdown-badge`}
-                >
-                  {t("sidebar.badges.new")}
-                </span>
-              )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ms-auto h-5 w-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
-              )}
-            </button>
-          ) : (
-            nav.path && (
-              <Link
-                to={nav.path}
-                target={nav.target}
-                className={`group menu-item ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
-              >
-                <span
-                  className={`menu-item-icon-size ${
-                    isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
-                  }`}
-                >
-                  {nav.icon}
-                </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">
-                    {nav.key ? t(`sidebar.items.${nav.key}`) : nav.name}
-                  </span>
-                )}
-              </Link>
-            )
-          )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
-            <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
-              className="overflow-hidden transition-all duration-300"
-              style={{
-                height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : "0px",
-              }}
-            >
-              <ul className="ms-9 mt-2 space-y-1">
-                {nav.subItems.map((subItem) => (
-                  <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
-                      target={subItem.target}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.key
-                        ? t(`sidebar.items.${subItem.key}`)
-                        : subItem.name}
-                      <span className="ms-auto flex items-center gap-1">
-                        {subItem.new && (
-                          <span
-                            className={`ms-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            {t("sidebar.badges.new")}
-                          </span>
-                        )}
-                        {subItem.pro && (
-                          <span
-                            className={`ms-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-pro-active"
-                                : "menu-dropdown-badge-pro-inactive"
-                            } menu-dropdown-badge-pro`}
-                          >
-                            {t("sidebar.badges.pro")}
-                          </span>
-                        )}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
 
   return (
     <aside
       className={cn(
-        "fixed inset-s-0 top-0 z-50 flex h-screen flex-col border-e border-gray-200 bg-white px-5 text-gray-900 transition-all duration-300 ease-in-out xl:translate-x-0 xl:rtl:translate-x-0 dark:border-gray-800 dark:bg-gray-900",
-        isExpanded || isMobileOpen ? "w-72.5" : isHovered ? "w-72.5" : "w-22.5",
+        "fixed inset-s-0 top-0 z-50 flex h-screen flex-col border-e border-line bg-white transition-all duration-300 ease-in-out xl:translate-x-0 xl:rtl:translate-x-0 dark:bg-gray-900",
+        showLabels ? "w-64" : "w-20",
         isMobileOpen
           ? "translate-x-0"
           : "-translate-x-full rtl:translate-x-full",
@@ -380,115 +123,75 @@ const AppSidebar: React.FC = () => {
     >
       <div
         className={cn(
-          "flex py-8",
-          !isExpanded && !isHovered ? "xl:justify-center" : "justify-start",
+          "flex h-16 shrink-0 items-center border-b border-line px-5",
+          !showLabels && "xl:justify-center xl:px-0",
         )}
       >
-        <Link to="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <img
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <img
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
-          ) : (
-            <img
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
-          )}
-        </Link>
+        <BrandMark compact={!showLabels} />
       </div>
 
-      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
-        <nav className="mb-6">
-          <div className="flex flex-col gap-4">
-            <div>
+      <nav
+        aria-label={t("sidebar.navLabel")}
+        className="no-scrollbar flex-1 overflow-y-auto px-3 py-4"
+      >
+        {navGroups.map((group) => {
+          const items = group.items.filter(canSee);
+          if (items.length === 0) return null;
+
+          return (
+            <div key={group.key} className="mb-5 last:mb-0">
               <h2
-                className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  t("sidebar.groups.menu")
-                ) : (
-                  <HorizontaLDots className="size-6" />
+                className={cn(
+                  "mb-1.5 px-3 text-xs font-medium text-fg-subtle",
+                  !showLabels && "xl:sr-only",
                 )}
+              >
+                {t(`sidebar.groups.${group.key}`)}
               </h2>
-              {renderMenuItems(navItems.filter(canSee), "main")}
+              <ul className="flex flex-col gap-0.5">
+                {items.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  const Icon = item.icon;
+                  const label = t(`sidebar.items.${item.key}`);
+
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        aria-current={isActive ? "page" : undefined}
+                        title={showLabels ? undefined : label}
+                        className={cn(
+                          "group menu-item",
+                          isActive ? "menu-item-active" : "menu-item-inactive",
+                          !showLabels && "xl:justify-center",
+                        )}
+                      >
+                        <Icon
+                          aria-hidden="true"
+                          className={cn(
+                            "size-5 shrink-0",
+                            isActive
+                              ? "menu-item-icon-active"
+                              : "menu-item-icon-inactive",
+                          )}
+                        />
+                        <span
+                          className={cn(
+                            "truncate",
+                            !showLabels && "xl:sr-only",
+                          )}
+                        >
+                          {label}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-
-            <div>
-              <h2
-                className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  t("sidebar.groups.reports")
-                ) : (
-                  <HorizontaLDots className="size-6" />
-                )}
-              </h2>
-              {renderMenuItems(reportItems.filter(canSee), "reports")}
-            </div>
-
-            {supportItems.length > 0 && (
-              <div>
-                <h2
-                  className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${
-                    !isExpanded && !isHovered
-                      ? "xl:justify-center"
-                      : "justify-start"
-                  }`}
-                >
-                  {isExpanded || isHovered || isMobileOpen ? (
-                    t("sidebar.groups.support")
-                  ) : (
-                    <HorizontaLDots className="size-6" />
-                  )}
-                </h2>
-                {renderMenuItems(supportItems, "support")}
-              </div>
-            )}
-
-             {/* <div>
-              <h2
-                className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  t("sidebar.groups.others")
-                ) : (
-                  <HorizontaLDots className="size-6" />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>  */}
-          </div>
-        </nav>
-
-      </div>
+          );
+        })}
+      </nav>
     </aside>
   );
 };

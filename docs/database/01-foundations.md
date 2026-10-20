@@ -86,7 +86,7 @@ Quy tắc:
 Ví dụ:
 
 ```bash
-supabase gen types typescript --project-id <project-id> > src/types/database.types.ts
+supabase gen types typescript --project-id <project-id> > src/lib/supabase/database.types.ts
 ```
 
 Không commit access token, database password hoặc service-role key.

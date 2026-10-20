@@ -35,7 +35,7 @@ export default function StockIssueFormModal({
   onConfirm,
 }: StockIssueFormModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-7xl p-4 sm:p-6">
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <StockIssueEditor
         draft={draft}
         selectedIssue={selectedIssue}

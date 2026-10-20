@@ -1,9 +1,9 @@
-import TableSkeleton from "@/components/common/TableSkeleton";
-import ComponentCard from "@/components/common/ComponentCard";
-import InlineAlert from "@/components/common/InlineAlert";
-import Button from "@/components/ui/button/Button";
+import AsyncContent from "@/components/common/AsyncContent";
+import DataSourceBadge from "@/components/common/DataSourceBadge";
 import ListPagination from "@/components/common/ListPagination";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
+import Button from "@/components/ui/button/Button";
+import { PlusIcon } from "@/icons";
 import ConfirmStockReceiptModal from "@/components/stock-receipts/ConfirmStockReceiptModal";
 import StockReceiptFormModal from "@/components/stock-receipts/StockReceiptFormModal";
 import StockReceiptsTable from "@/components/stock-receipts/StockReceiptsTable";
@@ -20,14 +20,15 @@ import {
 import type {
   StockReceipt,
   StockReceiptDraftValues,
-  StockReceiptMaterialLookup,
-  StockReceiptSource,
+  StockReceiptPayload,
   StockReceiptStatus,
-  StockReceiptSupplierLookup,
 } from "@/components/stock-receipts/types";
-import { useModal } from "@/hooks/useModal";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useModal } from "@/hooks/useModal";
+import { DEFAULT_PAGE_SIZE, useResettablePage } from "@/hooks/usePagination";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const getDraftFromReceipt = (
@@ -42,14 +43,18 @@ const getDraftFromReceipt = (
   note: receipt.note,
   lines: receipt.lines,
 });
-const PAGE_SIZE = 20;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
+
+const emptyPayload: StockReceiptPayload = {
+  source: "demo",
+  receipts: [],
+  totalCount: 0,
+  suppliers: [],
+  materials: [],
+};
 
 export default function StockReceipts() {
   const { t } = useTranslation();
-  const [receipts, setReceipts] = useState<StockReceipt[]>([]);
-  const [suppliers, setSuppliers] = useState<StockReceiptSupplierLookup[]>([]);
-  const [materials, setMaterials] = useState<StockReceiptMaterialLookup[]>([]);
-  const [source, setSource] = useState<StockReceiptSource>("demo");
   const [selectedReceipt, setSelectedReceipt] = useState<StockReceipt | null>(
     null,
   );
@@ -59,69 +64,48 @@ export default function StockReceipts() {
     useState<StockReceiptDraftValues>(getEmptyDraftValues);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | StockReceiptStatus>("all");
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useResettablePage(`${search}|${status}`);
   const debouncedSearch = useDebouncedValue(search);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [loadError, setLoadError] = useState("");
   const [error, setError] = useState("");
 
   const confirmModal = useModal();
   const editorModal = useModal();
 
   const loadReceipts = useCallback(
-    async (isMounted: () => boolean = () => true) => {
-      setIsLoading(true);
-      setLoadError("");
-      setError("");
-
-      try {
-        const payload = await fetchStockReceiptsPayload({
-          page,
-          pageSize: PAGE_SIZE,
-          search: debouncedSearch,
-          status,
-        });
-        if (!isMounted()) return;
-        setReceipts(payload.receipts);
-        setTotalCount(payload.totalCount);
-        setSuppliers(payload.suppliers);
-        setMaterials(payload.materials);
-        setSource(payload.source);
-
-        const firstDraft =
-          payload.receipts.find((receipt) => receipt.status === "DRAFT") ||
-          payload.receipts[0] ||
-          null;
-        setSelectedReceipt(firstDraft);
-        setDraft(
-          firstDraft ? getDraftFromReceipt(firstDraft) : getEmptyDraftValues(),
-        );
-      } catch (loadError) {
-        if (!isMounted()) return;
-        setLoadError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("stockReceipts.errors.load"),
-        );
-      } finally {
-        if (isMounted()) setIsLoading(false);
-      }
-    },
-    [debouncedSearch, page, status, t],
+    () =>
+      fetchStockReceiptsPayload({
+        page,
+        pageSize: PAGE_SIZE,
+        search: debouncedSearch,
+        status,
+      }),
+    [debouncedSearch, page, status],
   );
+  const {
+    data: payload,
+    isLoading,
+    error: loadError,
+    reload,
+    setData,
+  } = useAsyncData(loadReceipts, {
+    initialData: emptyPayload,
+    errorMessage: t("stockReceipts.errors.load"),
+    onSuccess: (loaded) => {
+      const firstDraft =
+        loaded.receipts.find((receipt) => receipt.status === "DRAFT") ||
+        loaded.receipts[0] ||
+        null;
+      setError("");
+      setSelectedReceipt(firstDraft);
+      setDraft(
+        firstDraft ? getDraftFromReceipt(firstDraft) : getEmptyDraftValues(),
+      );
+    },
+  });
+  const { receipts, suppliers, materials, source } = payload;
 
-  useEffect(() => {
-    let isMounted = true;
-
-    void Promise.resolve().then(() => loadReceipts(() => isMounted));
-
-    return () => {
-      isMounted = false;
-    };
-  }, [loadReceipts]);
-
+  // Demo data is filtered and paged here; Supabase does it server-side.
   const filteredReceipts = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
@@ -142,8 +126,6 @@ export default function StockReceipts() {
       ? filteredReceipts
       : filteredReceipts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  useEffect(() => setPage(1), [search, status]);
-
   const openCreateDraft = () => {
     setSelectedReceipt(null);
     setDraft(getEmptyDraftValues());
@@ -159,10 +141,18 @@ export default function StockReceipts() {
   };
 
   const upsertReceiptInList = (receipt: StockReceipt) => {
-    setReceipts((current) => {
-      const hasReceipt = current.some((item) => item.id === receipt.id);
-      if (!hasReceipt) return [receipt, ...current];
-      return current.map((item) => (item.id === receipt.id ? receipt : item));
+    setData((current) => {
+      const hasReceipt = current.receipts.some(
+        (item) => item.id === receipt.id,
+      );
+      return {
+        ...current,
+        receipts: hasReceipt
+          ? current.receipts.map((item) =>
+              item.id === receipt.id ? receipt : item,
+            )
+          : [receipt, ...current.receipts],
+      };
     });
     setSelectedReceipt(receipt);
     setDraft(getDraftFromReceipt(receipt));
@@ -222,11 +212,7 @@ export default function StockReceipts() {
       upsertReceiptInList(savedReceipt);
       editorModal.closeModal();
     } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : t("stockReceipts.errors.save"),
-      );
+      setError(getErrorMessage(saveError, t("stockReceipts.errors.save")));
     } finally {
       setIsSaving(false);
     }
@@ -257,9 +243,7 @@ export default function StockReceipts() {
       editorModal.closeModal();
     } catch (confirmError) {
       setError(
-        confirmError instanceof Error
-          ? confirmError.message
-          : t("stockReceipts.errors.confirm"),
+        getErrorMessage(confirmError, t("stockReceipts.errors.confirm")),
       );
     } finally {
       setIsSaving(false);
@@ -268,56 +252,52 @@ export default function StockReceipts() {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t("stockReceipts.title")} />
+      <PageHeader
+        title={t("stockReceipts.title")}
+        description={t("stockReceipts.description")}
+        meta={!isLoading && <DataSourceBadge source={source} />}
+        actions={
+          <Button
+            startIcon={<PlusIcon className="size-5" />}
+            onClick={openCreateDraft}
+          >
+            {t("stockReceipts.actions.create")}
+          </Button>
+        }
+      />
 
-      <ComponentCard title={t("stockReceipts.listTitle")}>
-        <div className="space-y-5">
-          <StockReceiptsToolbar
-            search={search}
-            status={status}
-            source={source}
-            onSearchChange={setSearch}
-            onStatusChange={setStatus}
-            onCreate={openCreateDraft}
+      <section aria-label={t("stockReceipts.listTitle")} className="space-y-4">
+        <StockReceiptsToolbar
+          search={search}
+          status={status}
+          onSearchChange={setSearch}
+          onStatusChange={setStatus}
+        />
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={loadError}
+          onRetry={reload}
+          loadingLabel={t("stockReceipts.loading")}
+        >
+          <StockReceiptsTable
+            receipts={visibleReceipts}
+            selectedReceiptId={selectedReceipt?.id || ""}
+            onSelect={selectReceipt}
+            onConfirm={openConfirmModal}
           />
-
-          {isLoading ? (
-            <TableSkeleton label={t("stockReceipts.loading")} />
-          ) : loadError ? (
-            <InlineAlert
-              layout="panel"
-              action={
-                <Button
-                  variant="errorOutline"
-                  size="sm"
-                  onClick={() => loadReceipts()}
-                >
-                  {t("stockReceipts.errors.retry")}
-                </Button>
-              }
-            >
-              {loadError}
-            </InlineAlert>
-          ) : (
-            <StockReceiptsTable
-              receipts={visibleReceipts}
-              selectedReceiptId={selectedReceipt?.id || ""}
-              onSelect={selectReceipt}
-              onConfirm={openConfirmModal}
-            />
-          )}
-          {!isLoading && !loadError && (
-            <ListPagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              totalItems={
-                source === "supabase" ? totalCount : filteredReceipts.length
-              }
-              onPageChange={setPage}
-            />
-          )}
-        </div>
-      </ComponentCard>
+          <ListPagination
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalItems={
+              source === "supabase"
+                ? payload.totalCount
+                : filteredReceipts.length
+            }
+            onPageChange={setPage}
+          />
+        </AsyncContent>
+      </section>
 
       <StockReceiptFormModal
         isOpen={editorModal.isOpen}

@@ -1,4 +1,4 @@
-import { ChevronDownSmIcon, SignOutIcon, UserCircleLineIcon } from "@/icons";
+import { ChevronDownSmIcon, GlobeIcon, SignOutIcon } from "@/icons";
 import { useAuth } from "@/auth";
 import { useLanguage } from "@/context/LanguageContext";
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -19,6 +19,15 @@ export default function UserDropdown() {
   const { language: locale, setLanguage } = useLanguage();
   const currentLang = getLanguage(locale as Locale);
   const CurrentFlagIcon = currentLang.FlagIcon;
+  const displayName =
+    profile?.fullName || user?.email || t("userDropdown.account");
+  // Up to two initials, from the last words of a Vietnamese full name.
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(-2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
 
   useClickOutside(subDropdownRef, () => {
     setIsSubDropdownOpen(false);
@@ -55,15 +64,27 @@ export default function UserDropdown() {
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={toggleDropdown}
-        className="dropdown-toggle flex items-center text-gray-700 dark:text-gray-400"
+        aria-expanded={isOpen}
+        className="dropdown-toggle flex items-center gap-2 rounded-lg p-1 text-fg transition-colors hover:bg-surface-muted focus-visible:ring-3 focus-visible:ring-brand-500/30 focus-visible:outline-none"
       >
-        <span className="me-3 h-11 w-11 overflow-hidden rounded-full">
-          <img src="/images/user/owner.png" alt="User" />
+        <span
+          aria-hidden="true"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300"
+        >
+          {initials}
         </span>
 
-        <span className="me-1 block text-theme-sm font-medium">
-          {profile?.fullName || user?.email || t("userDropdown.account")}
+        <span className="hidden min-w-0 text-start leading-tight sm:block">
+          <span className="block max-w-40 truncate text-theme-sm font-medium">
+            {displayName}
+          </span>
+          {profile && (
+            <span className="block text-theme-xs text-fg-muted">
+              {t(`userDropdown.roles.${profile.role}`)}
+            </span>
+          )}
         </span>
         <ChevronDownSmIcon
           className={`stroke-gray-500 transition-transform duration-200 dark:stroke-gray-400 ${
@@ -99,7 +120,7 @@ export default function UserDropdown() {
               )}
             >
               <span className="flex items-center gap-3 text-theme-sm">
-                <UserCircleLineIcon />
+                <GlobeIcon className="size-5" />
 
                 <span>{t("userDropdown.language")}</span>
               </span>

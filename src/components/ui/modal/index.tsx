@@ -1,24 +1,43 @@
 import { CloseIcon } from "@/icons";
-import { useEffect, useRef } from "react";
+import { cn } from "@/utils";
+import { useEffect, useId, useRef } from "react";
+import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { ModalTitleIdContext, useModalTitleId } from "./modalTitle";
+
+/** sm: confirmations · md: short forms · lg: wide forms · xl: document editors. */
+export type ModalSize = "sm" | "md" | "lg" | "xl";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Width and padding preset. Omit to style the panel entirely via `className`. */
+  size?: ModalSize;
   className?: string;
   children: React.ReactNode;
-  showCloseButton?: boolean; // New prop to control close button visibility
-  isFullscreen?: boolean; // Default to false for backwards compatibility
+  showCloseButton?: boolean;
+  isFullscreen?: boolean;
 }
+
+const sizeClasses: Record<ModalSize, string> = {
+  sm: "max-w-md p-6",
+  md: "max-w-2xl p-6",
+  lg: "max-w-3xl p-6",
+  xl: "max-w-6xl p-5 sm:p-6",
+};
 
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
+  size,
   children,
   className,
-  showCloseButton = true, // Default to true for backwards compatibility
+  showCloseButton = true,
   isFullscreen = false,
 }) => {
+  const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -50,33 +69,93 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  const contentClasses = isFullscreen
-    ? "w-full h-full"
-    : "relative w-full rounded-3xl bg-white  dark:bg-gray-900";
-
   return (
-    <div className="modal fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto">
+    <div className="modal fixed inset-0 z-99999 overflow-y-auto">
       {!isFullscreen && (
         <div
-          className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"
-          onClick={onClose}
+          className="fixed inset-0 h-full w-full bg-gray-950/40 backdrop-blur-[2px]"
+          aria-hidden="true"
         ></div>
       )}
+      {/* min-h-full + items-center: centered when short, scrollable from the
+          top when taller than the viewport (no clipped dialog headers). */}
       <div
-        ref={modalRef}
-        className={`${contentClasses} ${className}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {showCloseButton && (
-          <button
-            onClick={onClose}
-            className="absolute inset-e-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 sm:inset-e-6 sm:top-6 sm:h-11 sm:w-11 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <CloseIcon />
-          </button>
+        className={cn(
+          "relative flex min-h-full items-center justify-center",
+          !isFullscreen && "p-4 sm:p-6",
         )}
-        <div>{children}</div>
+        onClick={isFullscreen ? undefined : onClose}
+      >
+        <div
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          className={cn(
+            isFullscreen
+              ? "h-full w-full"
+              : "relative w-full rounded-2xl bg-white shadow-theme-xl dark:bg-gray-900",
+            size && sizeClasses[size],
+            className,
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {showCloseButton && (
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t("common.close")}
+              className="absolute inset-e-4 top-4 z-999 flex size-9 items-center justify-center rounded-lg text-fg-muted transition-colors hover:bg-surface-muted hover:text-fg focus-visible:ring-3 focus-visible:ring-brand-500/30 focus-visible:outline-none"
+            >
+              <CloseIcon className="size-5" />
+            </button>
+          )}
+          <ModalTitleIdContext.Provider value={titleId}>
+            <div>{children}</div>
+          </ModalTitleIdContext.Provider>
+        </div>
       </div>
     </div>
   );
 };
+
+interface ModalHeaderProps {
+  title: ReactNode;
+  description?: ReactNode;
+  className?: string;
+}
+
+/** Dialog title (names the dialog for screen readers) + optional subtitle. */
+export const ModalHeader: React.FC<ModalHeaderProps> = ({
+  title,
+  description,
+  className,
+}) => {
+  const titleId = useModalTitleId();
+
+  return (
+    <div className={cn("pe-12", className)}>
+      <h2 id={titleId} className="text-lg font-semibold text-fg">
+        {title}
+      </h2>
+      {description && (
+        <p className="mt-1 text-sm text-fg-muted">{description}</p>
+      )}
+    </div>
+  );
+};
+
+/** Action row: buttons stack on mobile (primary on top), align end from `sm`. */
+export const ModalFooter: React.FC<{
+  children: ReactNode;
+  className?: string;
+}> = ({ children, className }) => (
+  <div
+    className={cn(
+      "flex flex-col-reverse gap-3 sm:flex-row sm:justify-end",
+      className,
+    )}
+  >
+    {children}
+  </div>
+);

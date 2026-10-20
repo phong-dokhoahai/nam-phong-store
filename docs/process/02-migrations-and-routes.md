@@ -21,7 +21,8 @@ Migration mới phải đặt tên `YYYYMMDDNNNN_<mô_tả>.sql`, lớn hơn mig
 
 ## 3. Route đã đăng ký (`src/App.tsx`)
 
+- `/` chuyển hướng tới `/inventory` (2026-10-19; trước đó là dashboard demo bán hàng của template).
 - Mọi user đã đăng nhập: `/inventory`, `/materials`, `/categories`, `/units`, `/suppliers`, `/customers`, `/stock-receipts`, `/stock-issues`, `/payments`, `/reports/inventory`, `/reports/low-stock`, `/reports/purchases`, `/reports/sales`.
 - Chỉ ADMIN (`AdminRoute`): `/reports/revenue`, `/reports/customer-debt`, `/reports/supplier-debt`.
-- Công khai: `/signin`, `/signup`.
+- Công khai: `/signin`, `/signup`. `/signup` vẫn là form mẫu của template, không gửi dữ liệu; trang đăng nhập đã bỏ link tới nó (tài khoản do ADMIN tạo).
 - Các route demo của template (`/calendar`, `/blank`, `/form-elements`, `/basic-tables`, `/alerts`…, `/line-chart`, `/bar-chart`) vẫn còn, không thuộc nghiệp vụ; có thể dọn khi được yêu cầu.

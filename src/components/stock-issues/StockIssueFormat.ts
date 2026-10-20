@@ -1,8 +1,3 @@
-export const formatQuantity = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 3,
-  }).format(value);
-
 export const calculateLineTotal = (
   quantity: number,
   unitPrice: number,

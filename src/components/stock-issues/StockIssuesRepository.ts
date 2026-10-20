@@ -12,7 +12,6 @@ import type {
   StockIssueLine,
   StockIssueMaterialLookup,
   StockIssuePayload,
-  StockIssueSource,
 } from "./types";
 
 type CustomerRelation =
@@ -387,8 +386,3 @@ export const getEmptyDraftValues = (): StockIssueDraftValues => ({
   note: "",
   lines: [],
 });
-
-export const getSourceLabelKey = (source: StockIssueSource) =>
-  source === "supabase"
-    ? "stockIssues.toolbar.liveSource"
-    : "stockIssues.toolbar.demoSource";

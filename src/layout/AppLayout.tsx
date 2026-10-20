@@ -16,12 +16,12 @@ const LayoutContent: React.FC = () => {
       <div
         className={cn(
           "flex-1 transition-[margin] duration-300 ease-in-out",
-          isExpanded || isHovered ? "xl:ms-72.5" : "xl:ms-22.5",
+          isExpanded || isHovered ? "xl:ms-64" : "xl:ms-20",
           isMobileOpen ? "ms-0" : "",
         )}
       >
         <AppHeader />
-        <main className="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+        <main className="mx-auto max-w-(--breakpoint-2xl) px-4 py-5 md:px-6 md:py-6">
           <Outlet />
         </main>
       </div>

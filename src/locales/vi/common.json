@@ -10,18 +10,26 @@
     "seeAll": "Xem tất cả",
     "pagination": {
       "label": "Phân trang",
-      "range": "Hiển thị {{from}}–{{to}} trên {{total}}",
+      "range": "Hiển thị {from}–{to} trên {total}",
       "previous": "Trước",
       "next": "Sau",
-      "page": "Trang {{page}} / {{pages}}"
-    }
+      "page": "Trang {page} / {pages}"
+    },
+    "breadcrumb": "Đường dẫn",
+    "dataSource": {
+      "live": "Dữ liệu Supabase",
+      "demo": "Dữ liệu mẫu"
+    },
+    "retry": "Thử lại"
   },
   "sidebar": {
     "groups": {
       "menu": "Menu",
       "support": "Hỗ trợ",
       "others": "Khác",
-      "reports": "Báo cáo"
+      "reports": "Báo cáo",
+      "operations": "Nghiệp vụ kho",
+      "catalog": "Dữ liệu gốc"
     },
     "badges": {
       "new": "mới",
@@ -139,31 +147,24 @@
       "stockReceipts": "Phiếu nhập kho",
       "stockIssues": "Phiếu xuất kho",
       "payments": "Thanh toán & công nợ",
-      "reportsLowStock": "Báo cáo hàng sắp hết",
-      "reportsRevenue": "Báo cáo doanh thu",
-      "reportsPurchase": "Báo cáo nhập kho",
-      "reportsSales": "Báo cáo xuất kho",
-      "reportsInventory": "Báo cáo tồn kho",
-      "reportsCustomerDebt": "Báo cáo công nợ khách hàng",
-      "reportsSupplierDebt": "Báo cáo công nợ nhà cung cấp"
+      "reportsLowStock": "Hàng sắp hết",
+      "reportsRevenue": "Doanh thu",
+      "reportsPurchase": "Nhập kho",
+      "reportsSales": "Xuất kho",
+      "reportsInventory": "Tồn kho theo kỳ",
+      "reportsCustomerDebt": "Công nợ khách hàng",
+      "reportsSupplierDebt": "Công nợ nhà cung cấp"
     },
     "widget": {
       "title": "Dashboard Tailwind CSS #1",
       "description": "Mẫu admin Tailwind CSS với hơn 500 component và trang giao diện.",
       "purchasePlan": "Mua gói"
-    }
+    },
+    "navLabel": "Điều hướng chính"
   },
   "header": {
-    "searchPlaceholder": "Tìm kiếm hoặc nhập lệnh...",
     "toggleSidebar": "Ẩn/hiện thanh bên",
-    "notifications": {
-      "title": "Thông báo",
-      "requestsPermission": "yêu cầu quyền thay đổi",
-      "project": "Dự án",
-      "minAgo": "{count} phút trước",
-      "hrAgo": "{count} giờ trước",
-      "viewAll": "Xem tất cả thông báo"
-    }
+    "toggleTheme": "Chuyển chế độ sáng / tối"
   },
   "userDropdown": {
     "editProfile": "Sửa hồ sơ",
@@ -172,28 +173,25 @@
     "language": "Ngôn ngữ",
     "account": "Tài khoản",
     "noEmail": "Chưa có email",
-    "signOut": "Đăng xuất"
+    "signOut": "Đăng xuất",
+    "roles": {
+      "ADMIN": "Quản trị viên",
+      "WAREHOUSE_STAFF": "Nhân viên kho"
+    }
   },
   "auth": {
     "signIn": {
-      "backToDashboard": "Quay lại dashboard",
       "title": "Đăng nhập",
       "subtitle": "Nhập email và mật khẩu để đăng nhập.",
-      "google": "Đăng nhập bằng Google",
-      "x": "Đăng nhập bằng X",
-      "or": "Hoặc",
       "email": "Email",
       "emailPlaceholder": "info@example.com",
       "password": "Mật khẩu",
       "passwordPlaceholder": "Nhập mật khẩu",
       "showPassword": "Hiện mật khẩu",
       "hidePassword": "Ẩn mật khẩu",
-      "keepLoggedIn": "Giữ đăng nhập",
-      "forgotPassword": "Quên mật khẩu?",
       "submit": "Đăng nhập",
       "signingIn": "Đang đăng nhập...",
-      "noAccount": "Chưa có tài khoản?",
-      "signUp": "Đăng ký"
+      "accountHelp": "Chưa có tài khoản hoặc quên mật khẩu? Liên hệ quản trị viên của kho."
     },
     "errors": {
       "configMissing": "Chưa cấu hình xác thực Supabase. Hãy thêm public URL và anon key trước khi đăng nhập.",
@@ -220,9 +218,7 @@
     "toolbar": {
       "searchPlaceholder": "Tìm theo tên hoặc SKU...",
       "allCategories": "Tất cả danh mục",
-      "allStatuses": "Tất cả trạng thái",
-      "liveSource": "Dữ liệu Supabase",
-      "demoSource": "Dữ liệu mẫu"
+      "allStatuses": "Tất cả trạng thái"
     },
     "table": {
       "material": "Vật liệu",
@@ -281,7 +277,8 @@
       "save": "Không thể lưu vật liệu.",
       "deactivate": "Không thể ngưng dùng vật liệu.",
       "duplicateSku": "Đã có vật liệu khác dùng SKU này."
-    }
+    },
+    "description": "Danh sách vật liệu, đơn giá mặc định và mức tồn tối thiểu."
   },
   "inventory": {
     "title": "Tồn kho",
@@ -295,11 +292,7 @@
     },
     "toolbar": {
       "searchLabel": "Tìm tồn kho",
-      "searchPlaceholder": "Tìm theo tên hoặc SKU...",
-      "allCategories": "Tất cả danh mục",
-      "allStatuses": "Tất cả trạng thái",
-      "liveSource": "Dữ liệu Supabase",
-      "demoSource": "Dữ liệu mẫu"
+      "searchPlaceholder": "Tìm theo tên hoặc SKU..."
     },
     "table": {
       "material": "Vật liệu",
@@ -314,19 +307,13 @@
     },
     "errors": {
       "load": "Không thể tải tồn kho."
-    }
+    },
+    "description": "Tồn hiện tại của từng vật liệu so với mức tối thiểu."
   },
   "masterData": {
     "common": {
-      "stats": {
-        "total": "Tổng bản ghi",
-        "active": "Đang dùng",
-        "inactive": "Ngưng dùng"
-      },
       "toolbar": {
-        "allStatuses": "Tất cả trạng thái",
-        "liveSource": "Dữ liệu Supabase",
-        "demoSource": "Dữ liệu mẫu"
+        "allStatuses": "Tất cả trạng thái"
       },
       "table": {
         "record": "Bản ghi",
@@ -394,7 +381,8 @@
         "deactivate": "Không thể ngưng dùng danh mục.",
         "duplicateCode": "Đã có danh mục khác dùng mã này.",
         "protectedRecord": "Danh mục này được hệ thống bảo vệ."
-      }
+      },
+      "description": "Nhóm vật liệu dùng để lọc danh sách và lập báo cáo."
     },
     "units": {
       "title": "Đơn vị",
@@ -436,7 +424,8 @@
         "deactivate": "Không thể ngưng dùng đơn vị.",
         "duplicateCode": "Đã có đơn vị khác dùng mã này.",
         "protectedRecord": "Đơn vị này được hệ thống bảo vệ."
-      }
+      },
+      "description": "Đơn vị tính và số chữ số thập phân cho phép của số lượng."
     },
     "customers": {
       "title": "Khách hàng",
@@ -479,7 +468,8 @@
         "deactivate": "Không thể ngưng dùng khách hàng.",
         "duplicateCode": "Đã có khách hàng khác dùng mã này.",
         "protectedRecord": "Khách lẻ là bản ghi hệ thống được bảo vệ và không thể ngưng dùng."
-      }
+      },
+      "description": "Khách hàng dùng trên phiếu xuất và công nợ phải thu."
     },
     "suppliers": {
       "title": "Nhà cung cấp",
@@ -525,7 +515,8 @@
         "deactivate": "Không thể ngưng dùng nhà cung cấp.",
         "duplicateCode": "Đã có nhà cung cấp khác dùng mã này.",
         "protectedRecord": "Nhà cung cấp này được hệ thống bảo vệ."
-      }
+      },
+      "description": "Nhà cung cấp dùng trên phiếu nhập và công nợ phải trả."
     }
   },
   "ecommerce": {
@@ -1266,9 +1257,7 @@
       "searchLabel": "Tìm phiếu nhập kho",
       "statusLabel": "Lọc phiếu nhập kho theo trạng thái",
       "searchPlaceholder": "Tìm theo phiếu, nhà cung cấp hoặc hóa đơn...",
-      "allStatuses": "Tất cả trạng thái",
-      "liveSource": "Dữ liệu Supabase",
-      "demoSource": "Dữ liệu mẫu"
+      "allStatuses": "Tất cả trạng thái"
     },
     "table": {
       "receipt": "Phiếu",
@@ -1319,7 +1308,8 @@
       "quantity": "Số lượng",
       "unitPrice": "Đơn giá",
       "discount": "Chiết khấu",
-      "remove": "Xóa dòng"
+      "remove": "Xóa dòng",
+      "lineTotal": "Thành tiền"
     },
     "summary": {
       "subtotal": "Tạm tính",
@@ -1335,7 +1325,6 @@
     },
     "errors": {
       "load": "Không thể tải phiếu nhập kho.",
-      "retry": "Thử lại",
       "save": "Không thể lưu phiếu nhập kho.",
       "confirm": "Không thể xác nhận phiếu nhập kho.",
       "requiredHeader": "Bắt buộc chọn nhà cung cấp và ngày nhập.",
@@ -1347,7 +1336,8 @@
       "lineDiscount": "Chiết khấu phải từ 0 trở lên.",
       "lineDiscountTooHigh": "Chiết khấu không được vượt quá thành tiền dòng.",
       "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần trong phiếu."
-    }
+    },
+    "description": "Phiếu nhập hàng từ nhà cung cấp. Xác nhận phiếu để cộng vào tồn kho."
   },
   "stockIssues": {
     "title": "Xuất kho",
@@ -1357,9 +1347,7 @@
       "searchLabel": "Tìm phiếu xuất",
       "statusLabel": "Lọc phiếu xuất theo trạng thái",
       "searchPlaceholder": "Tìm theo mã, khách hàng hoặc địa chỉ giao...",
-      "allStatuses": "Tất cả trạng thái",
-      "liveSource": "Dữ liệu Supabase",
-      "demoSource": "Dữ liệu mẫu"
+      "allStatuses": "Tất cả trạng thái"
     },
     "table": {
       "issue": "Phiếu xuất",
@@ -1411,7 +1399,8 @@
       "unitPrice": "Giá bán",
       "discount": "Giảm giá",
       "remove": "Xóa dòng",
-      "available": "Có thể xuất: {quantity} {unit}"
+      "available": "Có thể xuất: {quantity} {unit}",
+      "lineTotal": "Thành tiền"
     },
     "summary": {
       "subtotal": "Tạm tính",
@@ -1429,7 +1418,6 @@
       "load": "Không thể tải phiếu xuất.",
       "save": "Không thể lưu phiếu xuất.",
       "confirm": "Không thể xác nhận phiếu xuất.",
-      "retry": "Thử lại",
       "requiredHeader": "Khách hàng và ngày xuất là bắt buộc.",
       "requiredLines": "Thêm ít nhất một dòng vật liệu.",
       "invalidLine": "Sửa các dòng vật liệu chưa hợp lệ trước khi lưu.",
@@ -1440,7 +1428,8 @@
       "lineDiscountTooHigh": "Giảm giá không được vượt tạm tính dòng.",
       "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần.",
       "insufficientStock": "Không đủ tồn. Có thể xuất: {available}."
-    }
+    },
+    "description": "Phiếu xuất bán cho khách hàng. Xác nhận phiếu để trừ tồn kho."
   },
   "payments": {
     "title": "Thanh toán & công nợ",
@@ -1454,9 +1443,7 @@
       "searchLabel": "Tìm thanh toán",
       "directionLabel": "Lọc theo loại công nợ",
       "searchPlaceholder": "Tìm theo chứng từ hoặc đối tượng...",
-      "allDirections": "Tất cả loại công nợ",
-      "liveSource": "Dữ liệu Supabase",
-      "demoSource": "Dữ liệu mẫu"
+      "allDirections": "Tất cả loại công nợ"
     },
     "direction": {
       "customer": "Công nợ khách hàng",
@@ -1520,13 +1507,13 @@
     },
     "errors": {
       "load": "Không thể tải dữ liệu thanh toán.",
-      "retry": "Thử lại",
       "save": "Không thể ghi nhận thanh toán.",
       "required": "Bắt buộc chọn chứng từ và ngày thanh toán.",
       "documentNotFound": "Không tìm thấy chứng từ đã chọn.",
       "amountPositive": "Số tiền thanh toán phải lớn hơn 0.",
       "amountTooHigh": "Số tiền thanh toán không được vượt quá công nợ còn lại ({amount})."
-    }
+    },
+    "description": "Ghi nhận tiền thu của khách hàng và tiền trả nhà cung cấp theo từng chứng từ."
   },
   "reports": {
     "loading": "Đang tải báo cáo...",
@@ -1560,9 +1547,9 @@
       "exporting": "Đang xuất...",
       "error": "Không thể xuất file PDF.",
       "page": "Trang",
-      "generatedAt": "Xuất lúc {{time}}",
+      "generatedAt": "Xuất lúc {time}",
       "companyName": "Kho Nam Phong",
-      "items": "Số mặt hàng: {{count}}",
+      "items": "Số mặt hàng: {count}",
       "total": "Tổng"
     },
     "revenue": {
@@ -1571,7 +1558,7 @@
       "from": "Từ ngày",
       "to": "Đến ngày",
       "groupByLabel": "Gom nhóm theo",
-      "pdfPeriod": "Kỳ báo cáo: {{from}} đến {{to}}",
+      "pdfPeriod": "Kỳ báo cáo: {from} đến {to}",
       "note": "Doanh thu thuần = tổng đơn bán đã xác nhận trừ hàng khách trả đã xác nhận. Đây không phải dòng tiền hay công nợ.",
       "groupBy": {
         "day": "Ngày",
@@ -1663,7 +1650,7 @@
       "category": "Nhóm vật liệu",
       "allCategories": "Tất cả nhóm",
       "hideEmpty": "Ẩn vật liệu không có tồn và không phát sinh",
-      "mismatch": "Có {{count}} vật liệu có tồn cuối kỳ khác tồn hiện tại. Hãy kiểm tra lịch sử kho.",
+      "mismatch": "Có {count} vật liệu có tồn cuối kỳ khác tồn hiện tại. Hãy kiểm tra lịch sử kho.",
       "formula": "Tồn cuối = tồn đầu + nhập + khách trả + điều chỉnh tăng − xuất − trả nhà cung cấp − điều chỉnh giảm. Chứng từ bị hủy được trừ vào đúng cột gốc.",
       "table": {
         "material": "Vật liệu",
@@ -1717,5 +1704,9 @@
         "load": "Không thể tải báo cáo công nợ."
       }
     }
+  },
+  "app": {
+    "name": "Nam Phong",
+    "tagline": "Quản lý kho vật liệu"
   }
 }

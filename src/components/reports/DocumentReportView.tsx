@@ -1,11 +1,16 @@
-import ComponentCard from "@/components/common/ComponentCard";
+import AsyncContent from "@/components/common/AsyncContent";
+import EmptyState from "@/components/common/EmptyState";
+import FieldError from "@/components/common/FieldError";
+import InlineAlert from "@/components/common/InlineAlert";
 import StatCard from "@/components/common/StatCard";
 import SegmentedControl from "@/components/common/SegmentedControl";
 import ListPagination from "@/components/common/ListPagination";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { formatQuantity } from "@/components/materials/materialStatus";
+import PageHeader from "@/components/common/PageHeader";
+import { formatQuantity } from "@/utils/formatQuantity";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useEffect, useMemo, useState } from "react";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { usePagedItems } from "@/hooks/usePagination";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DocumentReportFiltersBar from "./DocumentReportFiltersBar";
 import DocumentReportTable from "./DocumentReportTable";
@@ -28,11 +33,13 @@ import type {
   DocumentReportLookups,
   DocumentReportRow,
 } from "./types";
-import LoadingState from "@/components/common/LoadingState";
-import InlineAlert from "@/components/common/InlineAlert";
-import EmptyState from "@/components/common/EmptyState";
 
-const PAGE_SIZE = 20;
+const noRows: DocumentReportRow[] = [];
+const emptyLookups: DocumentReportLookups = {
+  parties: [],
+  materials: [],
+  creators: [],
+};
 
 type ReportMode = "documents" | "materials";
 
@@ -52,73 +59,31 @@ export default function DocumentReportView({
   const { t } = useTranslation();
   const [filters, setFilters] = useState(initialFilters);
   const [mode, setMode] = useState<ReportMode>("documents");
-  const [lookups, setLookups] = useState<DocumentReportLookups>({
-    parties: [],
-    materials: [],
-    creators: [],
-  });
-  const [rows, setRows] = useState<DocumentReportRow[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
 
   const isRangeValid = isDateRangeValid(filters);
 
-  useEffect(() => {
-    let isMounted = true;
+  const loadLookups = useCallback(
+    () => fetchDocumentReportLookups(kind),
+    [kind],
+  );
+  const { data: lookups, error: lookupsError } = useAsyncData(loadLookups, {
+    initialData: emptyLookups,
+    errorMessage: t("reports.documents.errors.load"),
+  });
 
-    const loadLookups = async () => {
-      try {
-        const data = await fetchDocumentReportLookups(kind);
-        if (isMounted) setLookups(data);
-      } catch (loadError) {
-        if (!isMounted) return;
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("reports.documents.errors.load"),
-        );
-      }
-    };
-
-    loadLookups();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [kind, t]);
-
-  useEffect(() => {
-    if (!isRangeValid) return;
-    let isMounted = true;
-
-    const loadReport = async () => {
-      setIsLoading(true);
-      setError("");
-      setPage(1);
-
-      try {
-        const data = await fetchDocumentReport(kind, filters);
-        if (isMounted) setRows(data);
-      } catch (loadError) {
-        if (!isMounted) return;
-        setRows([]);
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("reports.documents.errors.load"),
-        );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadReport();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [filters, isRangeValid, kind, t]);
+  const loadReport = useMemo(
+    () => (isRangeValid ? () => fetchDocumentReport(kind, filters) : null),
+    [filters, isRangeValid, kind],
+  );
+  const {
+    data: rows,
+    isLoading,
+    error,
+    reload,
+  } = useAsyncData(loadReport, {
+    initialData: noRows,
+    errorMessage: t("reports.documents.errors.load"),
+  });
 
   // Never show data of a previous range while the current one is invalid.
   const visibleDocuments = useMemo(
@@ -135,10 +100,7 @@ export default function DocumentReportView({
     ? sumLineTotals(materialRows)
     : sumDocumentTotals(visibleDocuments);
 
-  const pagedDocuments = visibleDocuments.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
+  const paging = usePagedItems(visibleDocuments, JSON.stringify(filters));
 
   const lookupLabel = (list: { id: string; label: string }[], id: string) =>
     list.find((item) => item.id === id)?.label;
@@ -266,50 +228,55 @@ export default function DocumentReportView({
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t(`reports.documents.${kind}.title`)} />
-
-      <ComponentCard title={t(`reports.documents.${kind}.listTitle`)}>
-        <div className="space-y-5">
-          <DocumentReportFiltersBar
-            kind={kind}
-            filters={filters}
-            lookups={lookups}
-            onChange={setFilters}
+      <PageHeader
+        title={t(`reports.documents.${kind}.title`)}
+        description={t(`reports.documents.${kind}.listTitle`)}
+        actions={
+          <ExportPdfButton
+            buildData={buildPdfData}
+            fileName={`${kind}-report-${filters.from}-${filters.to}`}
+            disabled={isLoading || isEmpty}
           />
+        }
+      />
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <SegmentedControl
-              value={mode}
-              onChange={setMode}
-              options={(["documents", "materials"] as const).map((option) => ({
-                value: option,
-                label: t(`reports.documents.mode.${option}`),
-              }))}
-            />
-            <ExportPdfButton
-              buildData={buildPdfData}
-              fileName={`${kind}-report-${filters.from}-${filters.to}`}
-              disabled={isLoading || isEmpty}
-            />
-          </div>
+      <section className="space-y-5">
+        <DocumentReportFiltersBar
+          kind={kind}
+          filters={filters}
+          lookups={lookups}
+          onChange={setFilters}
+        />
 
-          {!isRangeValid && (
-            <p className="text-sm text-error-600 dark:text-error-400">
-              {t("reports.revenue.errors.range")}
-            </p>
-          )}
-          {error && <InlineAlert>{error}</InlineAlert>}
+        <SegmentedControl
+          value={mode}
+          onChange={setMode}
+          options={(["documents", "materials"] as const).map((option) => ({
+            value: option,
+            label: t(`reports.documents.mode.${option}`),
+          }))}
+        />
 
-          {isLoading ? (
-            <LoadingState label={t("reports.loading")} />
-          ) : isEmpty ? (
+        {!isRangeValid && (
+          <FieldError>{t("reports.revenue.errors.range")}</FieldError>
+        )}
+        {lookupsError && <InlineAlert>{lookupsError}</InlineAlert>}
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={error}
+          onRetry={reload}
+          loadingLabel={t("reports.loading")}
+          placeholder="box"
+        >
+          {isEmpty ? (
             <EmptyState
               title={t("reports.documents.empty.title")}
               description={t("reports.documents.empty.description")}
             />
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {summaryCards.map((card) => (
                   <StatCard
                     key={card.label}
@@ -321,27 +288,22 @@ export default function DocumentReportView({
 
               {mode === "documents" ? (
                 <>
-                  <DocumentReportTable kind={kind} rows={pagedDocuments} />
-                  <ListPagination
-                    page={page}
-                    pageSize={PAGE_SIZE}
-                    totalItems={visibleDocuments.length}
-                    onPageChange={setPage}
-                  />
+                  <DocumentReportTable kind={kind} rows={paging.pageItems} />
+                  <ListPagination {...paging.pagination} />
                 </>
               ) : (
                 <MaterialSummaryTable rows={materialRows} />
               )}
 
               {filters.materialId && mode === "documents" && (
-                <p className="text-theme-xs text-gray-500 dark:text-gray-400">
+                <p className="text-theme-xs text-fg-muted">
                   {t("reports.documents.materialFilterNote")}
                 </p>
               )}
             </>
           )}
-        </div>
-      </ComponentCard>
+        </AsyncContent>
+      </section>
     </div>
   );
 }

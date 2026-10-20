@@ -1,4 +1,5 @@
 import Button from "@/components/ui/button/Button";
+import { DownloadIcon } from "@/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { exportReportPdf } from "./pdf/exportReportPdf";
@@ -35,7 +36,8 @@ export default function ExportPdfButton({
   return (
     <div className="flex items-center gap-3">
       <Button
-        size="sm"
+        variant="outline"
+        startIcon={<DownloadIcon className="size-5" />}
         onClick={handleExport}
         disabled={disabled}
         loading={isExporting}

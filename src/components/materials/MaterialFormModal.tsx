@@ -4,7 +4,7 @@ import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import { Modal, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Material, MaterialFormValues, MaterialLookup } from "./types";
@@ -108,16 +108,9 @@ export default function MaterialFormModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-3xl p-6 lg:p-8">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-            {title}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {t("materials.form.subtitle")}
-          </p>
-        </div>
+        <ModalHeader title={title} description={t("materials.form.subtitle")} />
 
         {(error || localError) && (
           <InlineAlert>{error || localError}</InlineAlert>
@@ -143,8 +136,11 @@ export default function MaterialFormModal({
             />
           </div>
           <div>
-            <Label>{t("materials.form.category")}</Label>
+            <Label htmlFor="material-category">
+              {t("materials.form.category")}
+            </Label>
             <Select
+              id="material-category"
               value={values.categoryId}
               placeholder={t("materials.form.categoryPlaceholder")}
               options={categoryOptions}
@@ -152,8 +148,9 @@ export default function MaterialFormModal({
             />
           </div>
           <div>
-            <Label>{t("materials.form.unit")}</Label>
+            <Label htmlFor="material-unit">{t("materials.form.unit")}</Label>
             <Select
+              id="material-unit"
               value={values.unitId}
               placeholder={t("materials.form.unitPlaceholder")}
               options={unitOptions}
@@ -211,8 +208,11 @@ export default function MaterialFormModal({
             />
           </div>
           <div className="md:col-span-2">
-            <Label>{t("materials.form.description")}</Label>
+            <Label htmlFor="material-description">
+              {t("materials.form.description")}
+            </Label>
             <TextArea
+              id="material-description"
               rows={4}
               value={values.description}
               onChange={(value) => updateValue("description", value)}
@@ -221,14 +221,14 @@ export default function MaterialFormModal({
           </div>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button type="button" variant="outline" onClick={onClose}>
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose} disabled={isSaving}>
             {t("common.close")}
           </Button>
-          <Button type="submit" disabled={isSaving}>
+          <Button type="submit" loading={isSaving}>
             {isSaving ? t("materials.form.saving") : t("common.saveChanges")}
           </Button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

@@ -1,18 +1,25 @@
+import EmptyState from "@/components/common/EmptyState";
 import Badge from "@/components/ui/badge/Badge";
 import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatQuantity } from "@/components/materials/materialStatus";
+import { formatQuantity } from "@/utils/formatQuantity";
 import { useTranslation } from "react-i18next";
 import type { LowStockRow } from "./types";
-import EmptyState from "@/components/common/EmptyState";
 
-const headerClass =
-  "px-4 py-3 text-start text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400";
+const columns = [
+  "material",
+  "category",
+  "currentStock",
+  "minimumStock",
+  "shortage",
+  "status",
+] as const;
 
 export default function LowStockTable({ rows }: { rows: LowStockRow[] }) {
   const { t } = useTranslation();
@@ -27,71 +34,47 @@ export default function LowStockTable({ rows }: { rows: LowStockRow[] }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
-      <div className="max-w-full overflow-x-auto">
-        <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/5">
-            <TableRow>
-              <TableCell isHeader className={headerClass}>
-                {t("reports.lowStock.table.material")}
+    <TableContainer>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableCell key={column} isHeader>
+                {t(`reports.lowStock.table.${column}`)}
               </TableCell>
-              <TableCell isHeader className={headerClass}>
-                {t("reports.lowStock.table.category")}
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.id}>
+              <TableCell>
+                <p className="font-medium text-fg">{row.name}</p>
+                <p className="mt-1 text-theme-xs">{row.sku}</p>
               </TableCell>
-              <TableCell isHeader className={headerClass}>
-                {t("reports.lowStock.table.currentStock")}
+              <TableCell>{row.categoryName}</TableCell>
+              <TableCell className="font-medium text-fg">
+                {formatQuantity(row.currentStock)} {row.unitName}
               </TableCell>
-              <TableCell isHeader className={headerClass}>
-                {t("reports.lowStock.table.minimumStock")}
+              <TableCell>
+                {formatQuantity(row.minimumStock)} {row.unitName}
               </TableCell>
-              <TableCell isHeader className={headerClass}>
-                {t("reports.lowStock.table.shortage")}
+              <TableCell className="font-medium text-error-600 dark:text-error-400">
+                {formatQuantity(row.shortageQuantity)} {row.unitName}
               </TableCell>
-              <TableCell isHeader className={headerClass}>
-                {t("reports.lowStock.table.status")}
+              <TableCell>
+                <Badge color={row.isOutOfStock ? "error" : "warning"} size="sm">
+                  {t(
+                    row.isOutOfStock
+                      ? "reports.lowStock.status.outOfStock"
+                      : "reports.lowStock.status.lowStock",
+                  )}
+                </Badge>
               </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
-            {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="px-4 py-4 text-start">
-                  <p className="font-medium text-gray-800 dark:text-white/90">
-                    {row.name}
-                  </p>
-                  <p className="mt-1 text-theme-xs text-gray-500 dark:text-gray-400">
-                    {row.sku}
-                  </p>
-                </TableCell>
-                <TableCell className="px-4 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                  {row.categoryName}
-                </TableCell>
-                <TableCell className="px-4 py-4 text-start text-theme-sm font-medium text-gray-800 dark:text-white/90">
-                  {formatQuantity(row.currentStock)} {row.unitName}
-                </TableCell>
-                <TableCell className="px-4 py-4 text-start text-theme-sm text-gray-500 dark:text-gray-400">
-                  {formatQuantity(row.minimumStock)} {row.unitName}
-                </TableCell>
-                <TableCell className="px-4 py-4 text-start text-theme-sm font-medium text-error-600 dark:text-error-400">
-                  {formatQuantity(row.shortageQuantity)} {row.unitName}
-                </TableCell>
-                <TableCell className="px-4 py-4 text-start">
-                  <Badge
-                    color={row.isOutOfStock ? "error" : "warning"}
-                    size="sm"
-                  >
-                    {t(
-                      row.isOutOfStock
-                        ? "reports.lowStock.status.outOfStock"
-                        : "reports.lowStock.status.lowStock",
-                    )}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

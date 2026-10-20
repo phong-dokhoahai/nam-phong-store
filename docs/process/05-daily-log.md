@@ -25,6 +25,19 @@ Quy tắc viết:
 ## Nhật ký
 
 ```text
+19/10/2026
+Today I worked on:
+[Nam Phong Storage]:
+Write the CLAUDE.md project guide so AI agents know the commands, required docs, architecture rules, and definition of done for this project
+Fix outdated project docs (router version, generated database types path) so they match the code
+Refactor the UI architecture so look-and-feel changes are made in one place: shared color tokens, styled tables, dialogs, list toolbars, and one loading/error/retry pattern used by every inventory, document, payment and report screen, not yet tested interactively in the browser
+Fix pagination and report PDF texts that showed raw "{{from}}" placeholders instead of numbers, and the hardcoded "Home" breadcrumb
+Fix the production build, which was failing on unused sidebar imports
+Redesign the app UI for warehouse staff: Vietnamese-friendly font, Nam Phong branding, navigation grouped by task, page titles with the main action beside them, clickable stock summaries that filter the list, denser readable tables, and a line-item style document editor, checked in screenshots with demo data but not yet with real database data
+Remove fake template parts that confused users: demo sales dashboard on the home page, fake search and notifications in the header, and dead Google/X/forgot-password/sign-up buttons on the sign-in page
+```
+
+```text
 16/10/2026
 Today I worked on:
 [Nam Phong Storage]:

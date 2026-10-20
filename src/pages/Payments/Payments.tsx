@@ -1,10 +1,8 @@
-import StatCard from "@/components/common/StatCard";
-import TableSkeleton from "@/components/common/TableSkeleton";
-import ComponentCard from "@/components/common/ComponentCard";
-import InlineAlert from "@/components/common/InlineAlert";
-import Button from "@/components/ui/button/Button";
+import AsyncContent from "@/components/common/AsyncContent";
+import DataSourceBadge from "@/components/common/DataSourceBadge";
 import ListPagination from "@/components/common/ListPagination";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
+import StatCard from "@/components/common/StatCard";
 import PaymentFormModal from "@/components/payments/PaymentFormModal";
 import PaymentHistoryTable from "@/components/payments/PaymentHistoryTable";
 import PaymentsTable from "@/components/payments/PaymentsTable";
@@ -21,9 +19,14 @@ import type {
   PaymentDraftValues,
   PaymentsPayload,
 } from "@/components/payments/types";
-import { formatCurrency } from "@/utils/formatCurrency";
+import Button from "@/components/ui/button/Button";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import { useModal } from "@/hooks/useModal";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePagedItems } from "@/hooks/usePagination";
+import { PlusIcon } from "@/icons";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const emptyPayload: PaymentsPayload = {
@@ -31,52 +34,26 @@ const emptyPayload: PaymentsPayload = {
   documents: [],
   transactions: [],
 };
-const PAGE_SIZE = 20;
 
 export default function Payments() {
   const { t } = useTranslation();
   const paymentModal = useModal();
-  const [payload, setPayload] = useState<PaymentsPayload>(emptyPayload);
   const [draft, setDraft] = useState<PaymentDraftValues>(getEmptyPaymentDraft);
   const [search, setSearch] = useState("");
   const [direction, setDirection] = useState<"all" | PaymentDirection>("all");
-  const [documentPage, setDocumentPage] = useState(1);
-  const [historyPage, setHistoryPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [loadError, setLoadError] = useState("");
   const [error, setError] = useState("");
 
-  const loadPayments = useCallback(
-    async (isMounted: () => boolean = () => true) => {
-      setIsLoading(true);
-      setLoadError("");
-      setError("");
-
-      try {
-        const nextPayload = await fetchPaymentsPayload();
-        if (isMounted()) setPayload(nextPayload);
-      } catch (loadError) {
-        if (!isMounted()) return;
-        setLoadError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("payments.errors.load"),
-        );
-      } finally {
-        if (isMounted()) setIsLoading(false);
-      }
-    },
-    [t],
-  );
-
-  useEffect(() => {
-    let isMounted = true;
-    void Promise.resolve().then(() => loadPayments(() => isMounted));
-    return () => {
-      isMounted = false;
-    };
-  }, [loadPayments]);
+  const {
+    data: payload,
+    isLoading,
+    error: loadError,
+    reload,
+    setData,
+  } = useAsyncData(fetchPaymentsPayload, {
+    initialData: emptyPayload,
+    errorMessage: t("payments.errors.load"),
+  });
 
   const filteredDocuments = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -92,16 +69,11 @@ export default function Payments() {
       return matchesDirection && matchesSearch;
     });
   }, [direction, payload.documents, search]);
-  const visibleDocuments = filteredDocuments.slice(
-    (documentPage - 1) * PAGE_SIZE,
-    documentPage * PAGE_SIZE,
+  const documentPaging = usePagedItems(
+    filteredDocuments,
+    `${direction}|${search}`,
   );
-  const visibleTransactions = payload.transactions.slice(
-    (historyPage - 1) * PAGE_SIZE,
-    historyPage * PAGE_SIZE,
-  );
-
-  useEffect(() => setDocumentPage(1), [direction, search]);
+  const historyPaging = usePagedItems(payload.transactions, "");
 
   const summary = useMemo(
     () =>
@@ -168,17 +140,14 @@ export default function Payments() {
     try {
       if (payload.source === "supabase") {
         await recordPayment(draft);
-        await loadPayments();
+        // Paid amounts and debt are computed in the database: refetch.
+        reload();
       } else {
-        setPayload((current) => recordDemoPayment(current, draft));
+        setData((current) => recordDemoPayment(current, draft));
       }
       paymentModal.closeModal();
     } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : t("payments.errors.save"),
-      );
+      setError(getErrorMessage(saveError, t("payments.errors.save")));
     } finally {
       setIsSaving(false);
     }
@@ -186,9 +155,21 @@ export default function Payments() {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t("payments.title")} />
+      <PageHeader
+        title={t("payments.title")}
+        description={t("payments.description")}
+        meta={!isLoading && <DataSourceBadge source={payload.source} />}
+        actions={
+          <Button
+            startIcon={<PlusIcon className="size-5" />}
+            onClick={() => openCreatePayment()}
+          >
+            {t("payments.actions.record")}
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard
           label={t("payments.summary.receivable")}
           value={formatCurrency(summary.receivable)}
@@ -199,60 +180,43 @@ export default function Payments() {
         />
       </div>
 
-      <ComponentCard title={t("payments.listTitle")}>
-        <div className="space-y-5">
-          <PaymentsToolbar
-            search={search}
-            direction={direction}
-            source={payload.source}
-            onSearchChange={setSearch}
-            onDirectionChange={setDirection}
-            onCreate={() => openCreatePayment()}
-          />
-
-          {isLoading ? (
-            <TableSkeleton label={t("payments.loading")} />
-          ) : loadError ? (
-            <InlineAlert
-              layout="panel"
-              action={
-                <Button
-                  variant="errorOutline"
-                  size="sm"
-                  onClick={() => loadPayments()}
-                >
-                  {t("payments.errors.retry")}
-                </Button>
-              }
-            >
-              {loadError}
-            </InlineAlert>
-          ) : (
-            <PaymentsTable
-              documents={visibleDocuments}
-              onPay={openCreatePayment}
-            />
-          )}
-          {!isLoading && !loadError && (
-            <ListPagination
-              page={documentPage}
-              pageSize={PAGE_SIZE}
-              totalItems={filteredDocuments.length}
-              onPageChange={setDocumentPage}
-            />
-          )}
-        </div>
-      </ComponentCard>
-
-      <ComponentCard title={t("payments.history.title")}>
-        <PaymentHistoryTable transactions={visibleTransactions} />
-        <ListPagination
-          page={historyPage}
-          pageSize={PAGE_SIZE}
-          totalItems={payload.transactions.length}
-          onPageChange={setHistoryPage}
+      <section aria-label={t("payments.listTitle")} className="space-y-4">
+        <PaymentsToolbar
+          search={search}
+          direction={direction}
+          onSearchChange={setSearch}
+          onDirectionChange={setDirection}
         />
-      </ComponentCard>
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={loadError}
+          onRetry={reload}
+          loadingLabel={t("payments.loading")}
+        >
+          <PaymentsTable
+            documents={documentPaging.pageItems}
+            onPay={openCreatePayment}
+          />
+          <ListPagination {...documentPaging.pagination} />
+        </AsyncContent>
+      </section>
+
+      <section aria-labelledby="payment-history-title" className="space-y-3">
+        <h2
+          id="payment-history-title"
+          className="text-base font-semibold text-fg"
+        >
+          {t("payments.history.title")}
+        </h2>
+        <AsyncContent
+          isLoading={isLoading}
+          loadingLabel={t("payments.loading")}
+        >
+          <PaymentHistoryTable transactions={historyPaging.pageItems} />
+          <ListPagination {...historyPaging.pagination} />
+        </AsyncContent>
+      </section>
 
       <PaymentFormModal
         isOpen={paymentModal.isOpen}

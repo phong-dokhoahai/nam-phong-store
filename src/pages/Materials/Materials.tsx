@@ -1,15 +1,20 @@
-import ComponentCard from "@/components/common/ComponentCard";
+import AsyncContent from "@/components/common/AsyncContent";
+import DataSourceBadge from "@/components/common/DataSourceBadge";
+import InlineAlert from "@/components/common/InlineAlert";
 import ListPagination from "@/components/common/ListPagination";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageHeader from "@/components/common/PageHeader";
+import Button from "@/components/ui/button/Button";
+import { PlusIcon } from "@/icons";
 import DeleteMaterialModal from "@/components/materials/DeleteMaterialModal";
+import { filterMaterials } from "@/components/materials/materialFilters";
 import MaterialFormModal from "@/components/materials/MaterialFormModal";
 import {
   createMaterial,
   deactivateMaterial,
   fetchMaterialsPayload,
+  type MaterialsPayload,
   updateMaterial,
 } from "@/components/materials/materialsRepository";
-import { getMaterialStatus } from "@/components/materials/materialStatus";
 import MaterialsStats from "@/components/materials/MaterialsStats";
 import MaterialsTable from "@/components/materials/MaterialsTable";
 import MaterialsToolbar from "@/components/materials/MaterialsToolbar";
@@ -17,32 +22,31 @@ import type {
   Material,
   MaterialFilterStatus,
   MaterialFormValues,
-  MaterialLookup,
-  MaterialSource,
 } from "@/components/materials/types";
+import { useAsyncData } from "@/hooks/useAsyncData";
 import { useModal } from "@/hooks/useModal";
-import { useEffect, useMemo, useState } from "react";
+import { usePagedItems } from "@/hooks/usePagination";
+import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import LoadingState from "@/components/common/LoadingState";
-import InlineAlert from "@/components/common/InlineAlert";
 
 const newDemoId = () =>
   `demo-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-const PAGE_SIZE = 20;
+
+const emptyPayload: MaterialsPayload = {
+  source: "demo",
+  materials: [],
+  categories: [],
+  units: [],
+};
 
 export default function Materials() {
   const { t } = useTranslation();
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [categories, setCategories] = useState<MaterialLookup[]>([]);
-  const [units, setUnits] = useState<MaterialLookup[]>([]);
-  const [source, setSource] = useState<MaterialSource>("demo");
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
   const [status, setStatus] = useState<MaterialFilterStatus>("all");
-  const [page, setPage] = useState(1);
   const [formVersion, setFormVersion] = useState(0);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
     null,
@@ -51,61 +55,31 @@ export default function Materials() {
   const formModal = useModal();
   const deleteModal = useModal();
 
-  useEffect(() => {
-    let isMounted = true;
+  const {
+    data,
+    isLoading,
+    error: loadError,
+    reload,
+    setData,
+  } = useAsyncData(fetchMaterialsPayload, {
+    initialData: emptyPayload,
+    errorMessage: t("materials.errors.load"),
+  });
+  const { materials, categories, units, source } = data;
+  const setMaterials = (update: (current: Material[]) => Material[]) =>
+    setData((current) => ({
+      ...current,
+      materials: update(current.materials),
+    }));
 
-    const loadMaterials = async () => {
-      setIsLoading(true);
-      setError("");
-
-      try {
-        const payload = await fetchMaterialsPayload();
-        if (!isMounted) return;
-        setMaterials(payload.materials);
-        setCategories(payload.categories);
-        setUnits(payload.units);
-        setSource(payload.source);
-      } catch (loadError) {
-        if (!isMounted) return;
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : t("materials.errors.load"),
-        );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    loadMaterials();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [t]);
-
-  const filteredMaterials = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
-
-    return materials.filter((material) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        material.name.toLowerCase().includes(normalizedSearch) ||
-        material.sku.toLowerCase().includes(normalizedSearch);
-      const matchesCategory =
-        categoryId === "all" || material.categoryId === categoryId;
-      const matchesStatus =
-        status === "all" || getMaterialStatus(material) === status;
-
-      return matchesSearch && matchesCategory && matchesStatus;
-    });
-  }, [categoryId, materials, search, status]);
-  const visibleMaterials = filteredMaterials.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
+  const filteredMaterials = useMemo(
+    () => filterMaterials(materials, { search, categoryId, status }),
+    [categoryId, materials, search, status],
   );
-
-  useEffect(() => setPage(1), [categoryId, search, status]);
+  const paging = usePagedItems(
+    filteredMaterials,
+    `${search}|${categoryId}|${status}`,
+  );
 
   const openCreateModal = () => {
     setSelectedMaterial(null);
@@ -172,40 +146,25 @@ export default function Materials() {
     setIsSaving(true);
 
     try {
-      if (source === "supabase") {
-        const savedMaterial = selectedMaterial
-          ? await updateMaterial(selectedMaterial.id, values)
-          : await createMaterial(values);
+      const savedMaterial =
+        source === "supabase"
+          ? selectedMaterial
+            ? await updateMaterial(selectedMaterial.id, values)
+            : await createMaterial(values)
+          : materialFromDemoValues(values, selectedMaterial || undefined);
 
-        setMaterials((current) =>
-          selectedMaterial
-            ? current.map((material) =>
-                material.id === savedMaterial.id ? savedMaterial : material,
-              )
-            : [savedMaterial, ...current],
-        );
-      } else {
-        const savedMaterial = materialFromDemoValues(
-          values,
-          selectedMaterial || undefined,
-        );
-        setMaterials((current) =>
-          selectedMaterial
-            ? current.map((material) =>
-                material.id === savedMaterial.id ? savedMaterial : material,
-              )
-            : [savedMaterial, ...current],
-        );
-      }
+      setMaterials((current) =>
+        selectedMaterial
+          ? current.map((material) =>
+              material.id === savedMaterial.id ? savedMaterial : material,
+            )
+          : [savedMaterial, ...current],
+      );
 
       formModal.closeModal();
       setSelectedMaterial(null);
     } catch (saveError) {
-      setError(
-        saveError instanceof Error
-          ? saveError.message
-          : t("materials.errors.save"),
-      );
+      setError(getErrorMessage(saveError, t("materials.errors.save")));
     } finally {
       setIsSaving(false);
     }
@@ -218,35 +177,25 @@ export default function Materials() {
     setIsSaving(true);
 
     try {
-      if (source === "supabase") {
-        const savedMaterial = await deactivateMaterial(selectedMaterial.id);
-        setMaterials((current) =>
-          current.map((material) =>
-            material.id === savedMaterial.id ? savedMaterial : material,
-          ),
-        );
-      } else {
-        setMaterials((current) =>
-          current.map((material) =>
-            material.id === selectedMaterial.id
-              ? {
-                  ...material,
-                  isActive: false,
-                  updatedAt: new Date().toISOString(),
-                }
-              : material,
-          ),
-        );
-      }
+      const savedMaterial =
+        source === "supabase"
+          ? await deactivateMaterial(selectedMaterial.id)
+          : {
+              ...selectedMaterial,
+              isActive: false,
+              updatedAt: new Date().toISOString(),
+            };
+
+      setMaterials((current) =>
+        current.map((material) =>
+          material.id === savedMaterial.id ? savedMaterial : material,
+        ),
+      );
 
       deleteModal.closeModal();
       setSelectedMaterial(null);
     } catch (deleteError) {
-      setError(
-        deleteError instanceof Error
-          ? deleteError.message
-          : t("materials.errors.deactivate"),
-      );
+      setError(getErrorMessage(deleteError, t("materials.errors.deactivate")));
     } finally {
       setIsSaving(false);
     }
@@ -254,47 +203,55 @@ export default function Materials() {
 
   return (
     <div className="space-y-6">
-      <PageBreadcrumb pageTitle={t("materials.title")} />
+      <PageHeader
+        title={t("materials.title")}
+        description={t("materials.description")}
+        meta={!isLoading && <DataSourceBadge source={source} />}
+        actions={
+          <Button
+            startIcon={<PlusIcon className="size-5" />}
+            onClick={openCreateModal}
+          >
+            {t("materials.actions.add")}
+          </Button>
+        }
+      />
 
-      <MaterialsStats materials={materials} />
+      <MaterialsStats
+        materials={materials}
+        status={status}
+        onStatusChange={setStatus}
+      />
 
-      <ComponentCard title={t("materials.listTitle")}>
-        <div className="space-y-5">
-          <MaterialsToolbar
-            search={search}
-            categoryId={categoryId}
-            status={status}
-            categories={categories}
-            source={source}
-            onSearchChange={setSearch}
-            onCategoryChange={setCategoryId}
-            onStatusChange={setStatus}
-            onCreate={openCreateModal}
+      <section aria-label={t("materials.listTitle")} className="space-y-4">
+        <MaterialsToolbar
+          search={search}
+          categoryId={categoryId}
+          status={status}
+          categories={categories}
+          onSearchChange={setSearch}
+          onCategoryChange={setCategoryId}
+          onStatusChange={setStatus}
+        />
+
+        {error && !formModal.isOpen && !deleteModal.isOpen && (
+          <InlineAlert>{error}</InlineAlert>
+        )}
+
+        <AsyncContent
+          isLoading={isLoading}
+          error={loadError}
+          onRetry={reload}
+          loadingLabel={t("materials.loading")}
+        >
+          <MaterialsTable
+            materials={paging.pageItems}
+            onEdit={openEditModal}
+            onDeactivate={openDeleteModal}
           />
-
-          {error && !formModal.isOpen && !deleteModal.isOpen && (
-            <InlineAlert>{error}</InlineAlert>
-          )}
-
-          {isLoading ? (
-            <LoadingState label={t("materials.loading")} />
-          ) : (
-            <MaterialsTable
-              materials={visibleMaterials}
-              onEdit={openEditModal}
-              onDeactivate={openDeleteModal}
-            />
-          )}
-          {!isLoading && (
-            <ListPagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              totalItems={filteredMaterials.length}
-              onPageChange={setPage}
-            />
-          )}
-        </div>
-      </ComponentCard>
+          <ListPagination {...paging.pagination} />
+        </AsyncContent>
+      </section>
 
       <MaterialFormModal
         key={`material-form-${formVersion}`}

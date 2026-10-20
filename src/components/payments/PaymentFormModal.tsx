@@ -4,7 +4,7 @@ import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import { Modal, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "react-i18next";
 import type {
@@ -61,15 +61,11 @@ export default function PaymentFormModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl p-6 lg:p-8">
-      <div className="pe-10">
-        <h4 className="text-title-sm font-semibold text-gray-800 dark:text-white/90">
-          {t("payments.form.title")}
-        </h4>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          {t("payments.form.subtitle")}
-        </p>
-      </div>
+    <Modal isOpen={isOpen} onClose={onClose} size="md">
+      <ModalHeader
+        title={t("payments.form.title")}
+        description={t("payments.form.subtitle")}
+      />
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
@@ -165,8 +161,9 @@ export default function PaymentFormModal({
       </div>
 
       <div className="mt-4">
-        <Label>{t("payments.form.note")}</Label>
+        <Label htmlFor="payment-note">{t("payments.form.note")}</Label>
         <TextArea
+          id="payment-note"
           value={draft.note}
           onChange={(value) => updateDraft("note", value)}
           placeholder={t("payments.form.notePlaceholder")}
@@ -176,19 +173,14 @@ export default function PaymentFormModal({
 
       {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
-      <div className="mt-6 flex justify-end gap-3">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onClose}
-          disabled={isSaving}
-        >
+      <ModalFooter className="mt-6">
+        <Button variant="outline" onClick={onClose} disabled={isSaving}>
           {t("common.close")}
         </Button>
-        <Button size="sm" onClick={onSave} disabled={isSaving}>
+        <Button onClick={onSave} loading={isSaving}>
           {isSaving ? t("payments.actions.saving") : t("payments.actions.save")}
         </Button>
-      </div>
+      </ModalFooter>
     </Modal>
   );
 }
