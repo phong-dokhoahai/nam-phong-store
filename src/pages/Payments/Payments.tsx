@@ -48,11 +48,13 @@ export default function Payments() {
     data: payload,
     isLoading,
     error: loadError,
+    cachedAt,
     reload,
     setData,
   } = useAsyncData(fetchPaymentsPayload, {
     initialData: emptyPayload,
     errorMessage: t("payments.errors.load"),
+    offlineKey: "payments",
   });
 
   const filteredDocuments = useMemo(() => {
@@ -158,7 +160,7 @@ export default function Payments() {
       <PageHeader
         title={t("payments.title")}
         description={t("payments.description")}
-        meta={!isLoading && <DataSourceBadge source={payload.source} />}
+        meta={!isLoading && <DataSourceBadge source={payload.source} cachedAt={cachedAt} />}
         actions={
           <Button
             startIcon={<PlusIcon className="size-5" />}

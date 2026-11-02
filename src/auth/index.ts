@@ -1,6 +1,7 @@
 export { AuthContext, useAuth } from "./AuthContext";
 export { AuthProvider } from "./AuthProvider";
 export { AdminRoute } from "./AdminRoute";
+export { authErrorTranslationKeys } from "./authErrorMessages";
 export { ProtectedRoute } from "./ProtectedRoute";
 export {
   getActiveSessionProfile,

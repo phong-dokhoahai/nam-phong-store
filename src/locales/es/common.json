@@ -18,7 +18,8 @@
     "breadcrumb": "Ruta de navegación",
     "dataSource": {
       "live": "Datos de Supabase",
-      "demo": "Datos de demo"
+      "demo": "Datos de demo",
+      "offline": "Copia sin conexión · {{time}}"
     },
     "retry": "Reintentar"
   },
@@ -198,6 +199,9 @@
       "invalidCredentials": "The email or password is incorrect.",
       "inactive": "Your account is inactive or pending approval. Please contact an administrator.",
       "profileMissing": "Your sign-in succeeded, but no application profile was found.",
+      "profileLoadFailed": "No se pudieron cargar los datos de tu cuenta. Revisa la conexión e inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos de inicio de sesión. Espera unos minutos e inténtalo de nuevo.",
+      "network": "No se puede conectar con el servidor. Revisa la conexión e inténtalo de nuevo.",
       "unknown": "Unable to sign in right now. Please try again."
     },
     "protected": {
@@ -265,7 +269,8 @@
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
       "requiredError": "SKU and name are required.",
       "lookupError": "Category and unit are required.",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "inactiveOption": "{name} (inactivo)"
     },
     "delete": {
       "title": "Deactivate material",
@@ -339,7 +344,9 @@
         "saving": "Guardando..."
       },
       "deactivate": {
-        "deactivating": "Desactivando..."
+        "deactivating": "Desactivando...",
+        "blockedTitle": "Después ya no podrás:",
+        "keptTitle": "Se mantiene:"
       }
     },
     "categories": {
@@ -373,7 +380,13 @@
       },
       "deactivate": {
         "title": "Deactivate category",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "¿Desactivar la categoría {name}?",
+        "blocked": [
+          "Seleccionar esta categoría al crear un material o cambiar la categoría de un material."
+        ],
+        "kept": [
+          "Los materiales que ya están en esta categoría, con su stock e historial."
+        ]
       },
       "errors": {
         "load": "Unable to load categories.",
@@ -416,7 +429,13 @@
       },
       "deactivate": {
         "title": "Deactivate unit",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "¿Desactivar la unidad {name}?",
+        "blocked": [
+          "Seleccionar esta unidad al crear un material o cambiar la unidad de un material."
+        ],
+        "kept": [
+          "Los materiales que ya usan esta unidad, con su stock e historial."
+        ]
       },
       "errors": {
         "load": "Unable to load units.",
@@ -440,7 +459,7 @@
       "actions": {
         "add": "Agregar cliente",
         "edit": "Editar cliente",
-        "deactivate": "Desactivar"
+        "deactivate": "Finalizar colaboración"
       },
       "empty": {
         "title": "No se encontraron clientes",
@@ -456,20 +475,34 @@
         "emailPlaceholder": "accounting@example.com",
         "addressPlaceholder": "Billing or delivery address...",
         "taxCodePlaceholder": "0312345678",
-        "notePlaceholder": "Credit terms, contact notes, or delivery preferences..."
+        "notePlaceholder": "Credit terms, contact notes, or delivery preferences...",
+        "active": "Colaboración activa"
       },
       "deactivate": {
-        "title": "Deactivate customer",
-        "description": "Deactivate {name}? Existing sales and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "Finalizar colaboración con el cliente",
+        "description": "¿Finalizar la colaboración con {name}? Puedes reanudarla en cualquier momento editando el cliente y marcando \"Colaboración activa\".",
+        "deactivating": "Finalizando colaboración...",
+        "blocked": [
+          "Seleccionar este cliente en una nueva salida de inventario.",
+          "Guardar o confirmar salidas en borrador de este cliente (cámbialas a otro cliente)."
+        ],
+        "kept": [
+          "Historial de ventas, deudas e informes.",
+          "Cobrar la deuda de las salidas confirmadas."
+        ]
       },
       "errors": {
         "load": "Unable to load customers.",
         "save": "Unable to save customer.",
-        "deactivate": "Unable to deactivate customer.",
+        "deactivate": "No se pudo finalizar la colaboración con el cliente.",
         "duplicateCode": "Another customer already uses this code.",
-        "protectedRecord": "The walk-in customer is a protected system record and cannot be deactivated."
+        "protectedRecord": "El cliente de mostrador es un registro protegido del sistema; no se puede finalizar su colaboración."
       },
-      "description": "Clientes usados en salidas y cuentas por cobrar."
+      "description": "Clientes usados en salidas y cuentas por cobrar.",
+      "status": {
+        "active": "Colaboración activa",
+        "inactive": "Colaboración finalizada"
+      }
     },
     "suppliers": {
       "title": "Proveedores",
@@ -485,7 +518,7 @@
       "actions": {
         "add": "Agregar proveedor",
         "edit": "Editar proveedor",
-        "deactivate": "Desactivar"
+        "deactivate": "Finalizar colaboración"
       },
       "empty": {
         "title": "No se encontraron proveedores",
@@ -503,20 +536,34 @@
         "emailPlaceholder": "sales@example.com",
         "addressPlaceholder": "Supplier address...",
         "taxCodePlaceholder": "0300001111",
-        "notePlaceholder": "Lead time, purchasing notes, or payment terms..."
+        "notePlaceholder": "Lead time, purchasing notes, or payment terms...",
+        "active": "Colaboración activa"
       },
       "deactivate": {
-        "title": "Deactivate supplier",
-        "description": "Deactivate {name}? Existing purchase and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "Finalizar colaboración con el proveedor",
+        "description": "¿Finalizar la colaboración con {name}? Puedes reanudarla en cualquier momento editando el proveedor y marcando \"Colaboración activa\".",
+        "deactivating": "Finalizando colaboración...",
+        "blocked": [
+          "Seleccionar este proveedor en una nueva entrada de inventario.",
+          "Guardar o confirmar entradas en borrador de este proveedor (cámbialas a otro proveedor)."
+        ],
+        "kept": [
+          "Historial de compras, deudas e informes.",
+          "Pagar la deuda de las entradas confirmadas."
+        ]
       },
       "errors": {
         "load": "Unable to load suppliers.",
         "save": "Unable to save supplier.",
-        "deactivate": "Unable to deactivate supplier.",
+        "deactivate": "No se pudo finalizar la colaboración con el proveedor.",
         "duplicateCode": "Another supplier already uses this code.",
         "protectedRecord": "This supplier is protected."
       },
-      "description": "Proveedores usados en entradas y cuentas por pagar."
+      "description": "Proveedores usados en entradas y cuentas por pagar.",
+      "status": {
+        "active": "Colaboración activa",
+        "inactive": "Colaboración finalizada"
+      }
     }
   },
   "ecommerce": {
@@ -1297,7 +1344,8 @@
       "supplierInvoiceNumber": "Supplier invoice",
       "supplierInvoicePlaceholder": "Invoice number",
       "note": "Note",
-      "notePlaceholder": "Internal receiving notes..."
+      "notePlaceholder": "Internal receiving notes...",
+      "inactiveSupplierOption": "{name} (colaboración finalizada)"
     },
     "lines": {
       "title": "Material lines",
@@ -1309,7 +1357,8 @@
       "unitPrice": "Unit price",
       "discount": "Discount",
       "remove": "Remove line",
-      "lineTotal": "Importe"
+      "lineTotal": "Importe",
+      "inactiveMaterialOption": "{label} (inactivo)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1335,7 +1384,10 @@
       "lineUnitPrice": "Unit price must be 0 or higher.",
       "lineDiscount": "Discount must be 0 or higher.",
       "lineDiscountTooHigh": "Discount cannot exceed this line total.",
-      "duplicateMaterial": "Each material can only appear once on a receipt."
+      "duplicateMaterial": "Each material can only appear once on a receipt.",
+      "inactiveSupplier": "La colaboración con el proveedor {name} ha finalizado. Elige otro proveedor y guarda, o reanuda la colaboración en Proveedores.",
+      "inactiveMaterials": "Este documento tiene {count} material(es) inactivo(s). Sustitúyelos o elimina esas líneas y guarda.",
+      "lineInactiveMaterial": "Este material está inactivo. Elige otro material o elimina la línea."
     },
     "description": "Mercancía recibida de proveedores. Confirme la entrada para sumarla al stock."
   },
@@ -1387,7 +1439,8 @@
       "deliveryAddress": "Delivery address",
       "deliveryAddressPlaceholder": "Delivery or jobsite address...",
       "note": "Note",
-      "notePlaceholder": "Delivery, sales, or warehouse notes..."
+      "notePlaceholder": "Delivery, sales, or warehouse notes...",
+      "inactiveCustomerOption": "{name} (colaboración finalizada)"
     },
     "lines": {
       "title": "Issue lines",
@@ -1400,7 +1453,8 @@
       "discount": "Discount",
       "remove": "Remove line",
       "available": "Available: {quantity} {unit}",
-      "lineTotal": "Importe"
+      "lineTotal": "Importe",
+      "inactiveMaterialOption": "{label} (inactivo)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1427,7 +1481,10 @@
       "lineDiscount": "Discount cannot be negative.",
       "lineDiscountTooHigh": "Discount cannot exceed line subtotal.",
       "duplicateMaterial": "Each material can only appear once.",
-      "insufficientStock": "Not enough stock. Available: {available}."
+      "insufficientStock": "Not enough stock. Available: {available}.",
+      "inactiveCustomer": "La colaboración con el cliente {name} ha finalizado. Elige otro cliente y guarda, o reanuda la colaboración en Clientes.",
+      "inactiveMaterials": "Este documento tiene {count} material(es) inactivo(s). Sustitúyelos o elimina esas líneas y guarda.",
+      "lineInactiveMaterial": "Este material está inactivo. Elige otro material o elimina la línea."
     },
     "description": "Mercancía entregada a clientes. Confirme la salida para descontarla del stock."
   },
@@ -1708,5 +1765,11 @@
   "app": {
     "name": "Nam Phong",
     "tagline": "Almacén de materiales"
+  },
+  "pwa": {
+    "install": "Instalar aplicación",
+    "updateAvailable": "Hay una nueva versión de la aplicación.",
+    "reload": "Recargar",
+    "offlineBanner": "Estás sin conexión. Las pantallas muestran datos guardados en este dispositivo (pueden estar desactualizados); guardar, confirmar y pagar requieren conexión."
   }
 }

@@ -15,6 +15,7 @@ import {
   calculateIssueTotal,
   calculateLineTotal,
   calculateSubtotal,
+  findInactiveReferences,
 } from "./StockIssueFormat";
 import { formatQuantity } from "@/utils/formatQuantity";
 import type {
@@ -67,6 +68,16 @@ export default function StockIssueEditor({
     draft.taxAmount,
   );
   const selectedMaterialIds = draft.lines.map((line) => line.materialId);
+  const inactive = findInactiveReferences(
+    draft.customerId,
+    draft.lines,
+    customers,
+    materials,
+  );
+  const inactiveCustomerName =
+    selectedIssue?.customerId === draft.customerId
+      ? selectedIssue.customerName
+      : "";
 
   const getMaterial = (materialId: string) =>
     materials.find((item) => item.id === materialId);
@@ -74,6 +85,7 @@ export default function StockIssueEditor({
   const getLineError = (line: StockIssueLine) => {
     const material = getMaterial(line.materialId);
     if (!line.materialId) return t("stockIssues.errors.lineMaterial");
+    if (!material) return t("stockIssues.errors.lineInactiveMaterial");
     if (line.quantity <= 0) return t("stockIssues.errors.lineQuantity");
     if (line.unitPrice < 0) return t("stockIssues.errors.lineUnitPrice");
     if (line.discountAmount < 0) return t("stockIssues.errors.lineDiscount");
@@ -209,6 +221,26 @@ export default function StockIssueEditor({
 
       {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
+      {isDraftEditable &&
+        (inactive.partner || inactive.materialIds.length > 0) && (
+          <InlineAlert variant="warning" className="mt-5">
+            {inactive.partner && (
+              <p>
+                {t("stockIssues.errors.inactiveCustomer", {
+                  name: inactiveCustomerName,
+                })}
+              </p>
+            )}
+            {inactive.materialIds.length > 0 && (
+              <p>
+                {t("stockIssues.errors.inactiveMaterials", {
+                  count: inactive.materialIds.length,
+                })}
+              </p>
+            )}
+          </InlineAlert>
+        )}
+
       <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div>
           <Label htmlFor="stock-issue-customer">
@@ -218,12 +250,28 @@ export default function StockIssueEditor({
             id="stock-issue-customer"
             value={draft.customerId}
             disabled={!isDraftEditable || isSaving}
+            error={isDraftEditable && inactive.partner}
             onChange={(value) => setDraftField("customerId", value)}
             placeholder={t("stockIssues.form.customerPlaceholder")}
-            options={customers.map((item) => ({
-              value: item.id,
-              label: item.name,
-            }))}
+            options={[
+              ...customers.map((item) => ({
+                value: item.id,
+                label: item.name,
+              })),
+              // Keep a deactivated customer visible (not selectable) so the
+              // draft does not look empty.
+              ...(inactive.partner
+                ? [
+                    {
+                      value: draft.customerId,
+                      label: t("stockIssues.form.inactiveCustomerOption", {
+                        name: inactiveCustomerName,
+                      }),
+                      disabled: true,
+                    },
+                  ]
+                : []),
+            ]}
           />
         </div>
         <div>
@@ -315,13 +363,29 @@ export default function StockIssueEditor({
                       disabled={!isDraftEditable || isSaving}
                       error={Boolean(lineError)}
                       onChange={(value) => updateLineMaterial(line.id, value)}
-                      options={materials.map((material) => ({
-                        value: material.id,
-                        label: `${material.sku} - ${material.name}`,
-                        disabled:
-                          line.materialId !== material.id &&
-                          selectedMaterialIds.includes(material.id),
-                      }))}
+                      options={[
+                        ...materials.map((material) => ({
+                          value: material.id,
+                          label: `${material.sku} - ${material.name}`,
+                          disabled:
+                            line.materialId !== material.id &&
+                            selectedMaterialIds.includes(material.id),
+                        })),
+                        ...(line.materialId && !material
+                          ? [
+                              {
+                                value: line.materialId,
+                                label: t(
+                                  "stockIssues.lines.inactiveMaterialOption",
+                                  {
+                                    label: `${line.materialSku} - ${line.materialName}`,
+                                  },
+                                ),
+                                disabled: true,
+                              },
+                            ]
+                          : []),
+                      ]}
                     />
                     {material && (
                       <p className="mt-1 text-theme-xs text-fg-muted">

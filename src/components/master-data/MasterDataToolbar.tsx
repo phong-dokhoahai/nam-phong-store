@@ -36,8 +36,8 @@ export default function MasterDataToolbar({
         value={status}
         options={[
           { value: "all", label: t("masterData.common.toolbar.allStatuses") },
-          { value: "active", label: t("masterData.common.status.active") },
-          { value: "inactive", label: t("masterData.common.status.inactive") },
+          { value: "active", label: t([`masterData.${kind}.status.active`, "masterData.common.status.active"]) },
+          { value: "inactive", label: t([`masterData.${kind}.status.inactive`, "masterData.common.status.inactive"]) },
         ]}
         onChange={(value) => onStatusChange(value as MasterDataStatus)}
       />

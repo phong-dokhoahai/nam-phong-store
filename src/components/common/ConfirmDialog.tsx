@@ -18,6 +18,8 @@ interface ConfirmDialogProps {
   /** Extra condition that blocks confirming (e.g. nothing selected). */
   confirmDisabled?: boolean;
   error?: string;
+  /** Extra details under the description, e.g. what the action blocks. */
+  children?: ReactNode;
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -33,6 +35,7 @@ export default function ConfirmDialog({
   isBusy,
   confirmDisabled = false,
   error,
+  children,
   onClose,
   onConfirm,
 }: ConfirmDialogProps) {
@@ -42,6 +45,8 @@ export default function ConfirmDialog({
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
       <div className="space-y-5">
         <ModalHeader title={title} description={description} />
+
+        {children}
 
         {error && <InlineAlert>{error}</InlineAlert>}
 

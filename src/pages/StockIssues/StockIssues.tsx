@@ -6,6 +6,7 @@ import Button from "@/components/ui/button/Button";
 import { PlusIcon } from "@/icons";
 import ConfirmStockIssueModal from "@/components/stock-issues/ConfirmStockIssueModal";
 import StockIssueFormModal from "@/components/stock-issues/StockIssueFormModal";
+import { findInactiveReferences } from "@/components/stock-issues/StockIssueFormat";
 import StockIssuesTable from "@/components/stock-issues/StockIssuesTable";
 import StockIssuesToolbar from "@/components/stock-issues/StockIssuesToolbar";
 import {
@@ -83,11 +84,13 @@ export default function StockIssues() {
     data: payload,
     isLoading,
     error: loadError,
+    cachedAt,
     reload,
     setData,
   } = useAsyncData(loadIssues, {
     initialData: emptyPayload,
     errorMessage: t("stockIssues.errors.load"),
+    offlineKey: `stockIssues:${JSON.stringify([page, debouncedSearch, status])}`,
     onSuccess: (loaded) => {
       const firstDraft =
         loaded.issues.find((issue) => issue.status === "DRAFT") ||
@@ -151,6 +154,30 @@ export default function StockIssues() {
     setDraft(getDraftFromIssue(issue));
   };
 
+  // The save/confirm RPCs reject a deactivated customer or material; explain
+  // it before calling them instead of showing the raw database error.
+  const getInactiveError = (
+    customerId: string,
+    customerName: string,
+    lines: StockIssue["lines"],
+  ) => {
+    const inactive = findInactiveReferences(
+      customerId,
+      lines,
+      customers,
+      materials,
+    );
+    if (inactive.partner) {
+      return t("stockIssues.errors.inactiveCustomer", { name: customerName });
+    }
+    if (inactive.materialIds.length > 0) {
+      return t("stockIssues.errors.inactiveMaterials", {
+        count: inactive.materialIds.length,
+      });
+    }
+    return "";
+  };
+
   const validateDraft = () => {
     if (!draft.customerId || !draft.issueDate) {
       return t("stockIssues.errors.requiredHeader");
@@ -159,6 +186,15 @@ export default function StockIssues() {
     if (draft.lines.length === 0) {
       return t("stockIssues.errors.requiredLines");
     }
+
+    const inactiveError = getInactiveError(
+      draft.customerId,
+      selectedIssue?.customerId === draft.customerId
+        ? selectedIssue.customerName
+        : "",
+      draft.lines,
+    );
+    if (inactiveError) return inactiveError;
 
     const hasInvalidLine = draft.lines.some((line) => {
       const material = materials.find((item) => item.id === line.materialId);
@@ -247,7 +283,7 @@ export default function StockIssues() {
       <PageHeader
         title={t("stockIssues.title")}
         description={t("stockIssues.description")}
-        meta={!isLoading && <DataSourceBadge source={source} />}
+        meta={!isLoading && <DataSourceBadge source={source} cachedAt={cachedAt} />}
         actions={
           <Button
             startIcon={<PlusIcon className="size-5" />}
@@ -307,6 +343,15 @@ export default function StockIssues() {
         isOpen={confirmModal.isOpen}
         issue={confirmingIssue}
         isSaving={isSaving}
+        blockedReason={
+          confirmingIssue
+            ? getInactiveError(
+                confirmingIssue.customerId,
+                confirmingIssue.customerName,
+                confirmingIssue.lines,
+              )
+            : ""
+        }
         error={confirmModal.isOpen ? error : ""}
         onClose={confirmModal.closeModal}
         onConfirm={handleConfirm}

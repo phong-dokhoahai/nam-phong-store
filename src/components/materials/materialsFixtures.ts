@@ -1,18 +1,18 @@
 import type { Material, MaterialLookup } from "./types";
 
 export const demoCategories: MaterialLookup[] = [
-  { id: "cat-cement", code: "CEMENT", name: "Cement" },
-  { id: "cat-steel", code: "STEEL", name: "Steel" },
-  { id: "cat-aggregate", code: "AGG", name: "Sand & Stone" },
-  { id: "cat-brick", code: "BRICK", name: "Brick" },
+  { id: "cat-cement", code: "CEMENT", name: "Cement", isActive: true },
+  { id: "cat-steel", code: "STEEL", name: "Steel", isActive: true },
+  { id: "cat-aggregate", code: "AGG", name: "Sand & Stone", isActive: true },
+  { id: "cat-brick", code: "BRICK", name: "Brick", isActive: true },
 ];
 
 export const demoUnits: MaterialLookup[] = [
-  { id: "unit-bag", code: "BAG", name: "Bag" },
-  { id: "unit-kg", code: "KG", name: "Kilogram" },
-  { id: "unit-ton", code: "TON", name: "Ton" },
-  { id: "unit-m3", code: "M3", name: "Cubic meter" },
-  { id: "unit-piece", code: "PCS", name: "Piece" },
+  { id: "unit-bag", code: "BAG", name: "Bag", isActive: true },
+  { id: "unit-kg", code: "KG", name: "Kilogram", isActive: true },
+  { id: "unit-ton", code: "TON", name: "Ton", isActive: true },
+  { id: "unit-m3", code: "M3", name: "Cubic meter", isActive: true },
+  { id: "unit-piece", code: "PCS", name: "Piece", isActive: true },
 ];
 
 export const demoMaterials: Material[] = [

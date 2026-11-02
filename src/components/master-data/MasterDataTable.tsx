@@ -95,8 +95,8 @@ export default function MasterDataTable({
               <TableCell>
                 <Badge color={record.isActive ? "success" : "light"} size="sm">
                   {record.isActive
-                    ? t("masterData.common.status.active")
-                    : t("masterData.common.status.inactive")}
+                    ? t([`masterData.${kind}.status.active`, "masterData.common.status.active"])
+                    : t([`masterData.${kind}.status.inactive`, "masterData.common.status.inactive"])}
                 </Badge>
               </TableCell>
               <TableCell align="end">

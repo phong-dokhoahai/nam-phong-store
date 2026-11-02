@@ -28,9 +28,13 @@ export default function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("all");
   const [status, setStatus] = useState<MaterialFilterStatus>("all");
-  const { data, isLoading, error, reload } = useAsyncData(
+  const { data, isLoading, error, cachedAt, reload } = useAsyncData(
     fetchMaterialsPayload,
-    { initialData: emptyPayload, errorMessage: t("inventory.errors.load") },
+    {
+      initialData: emptyPayload,
+      errorMessage: t("inventory.errors.load"),
+      offlineKey: "materials",
+    },
   );
 
   const filteredMaterials = useMemo(
@@ -47,7 +51,7 @@ export default function Inventory() {
       <PageHeader
         title={t("inventory.title")}
         description={t("inventory.description")}
-        meta={!isLoading && <DataSourceBadge source={data.source} />}
+        meta={!isLoading && <DataSourceBadge source={data.source} cachedAt={cachedAt} />}
       />
 
       <InventoryStats

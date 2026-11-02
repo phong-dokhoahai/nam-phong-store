@@ -19,6 +19,9 @@ export type AuthErrorCode =
   | "AUTH_INVALID_CREDENTIALS"
   | "AUTH_INACTIVE_ACCOUNT"
   | "AUTH_PROFILE_MISSING"
+  | "AUTH_PROFILE_LOAD_FAILED"
+  | "AUTH_RATE_LIMITED"
+  | "AUTH_NETWORK"
   | "AUTH_UNKNOWN";
 
 export class AuthModuleError extends Error {

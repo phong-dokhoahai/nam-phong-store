@@ -18,7 +18,8 @@
     "breadcrumb": "Breadcrumb",
     "dataSource": {
       "live": "Supabase data",
-      "demo": "Demo data"
+      "demo": "Demo data",
+      "offline": "Offline copy · {{time}}"
     },
     "retry": "Try again"
   },
@@ -198,6 +199,9 @@
       "invalidCredentials": "The email or password is incorrect.",
       "inactive": "Your account is inactive or pending approval. Please contact an administrator.",
       "profileMissing": "Your sign-in succeeded, but no application profile was found.",
+      "profileLoadFailed": "Could not load your account details. Check your connection and try again.",
+      "rateLimited": "Too many sign-in attempts. Please wait a few minutes and try again.",
+      "network": "Cannot reach the server. Check your connection and try again.",
       "unknown": "Unable to sign in right now. Please try again."
     },
     "protected": {
@@ -265,7 +269,8 @@
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
       "requiredError": "SKU and name are required.",
       "lookupError": "Category and unit are required.",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "inactiveOption": "{name} (inactive)"
     },
     "delete": {
       "title": "Deactivate material",
@@ -339,7 +344,9 @@
         "saving": "Saving..."
       },
       "deactivate": {
-        "deactivating": "Deactivating..."
+        "deactivating": "Deactivating...",
+        "blockedTitle": "Afterwards you cannot:",
+        "keptTitle": "Unchanged:"
       }
     },
     "categories": {
@@ -373,7 +380,13 @@
       },
       "deactivate": {
         "title": "Deactivate category",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "Deactivate the category {name}?",
+        "blocked": [
+          "Select this category when creating a material or changing the category of a material."
+        ],
+        "kept": [
+          "Materials already in this category, with their stock and history."
+        ]
       },
       "errors": {
         "load": "Unable to load categories.",
@@ -416,7 +429,13 @@
       },
       "deactivate": {
         "title": "Deactivate unit",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "Deactivate the unit {name}?",
+        "blocked": [
+          "Select this unit when creating a material or changing the unit of a material."
+        ],
+        "kept": [
+          "Materials already using this unit, with their stock and history."
+        ]
       },
       "errors": {
         "load": "Unable to load units.",
@@ -440,7 +459,7 @@
       "actions": {
         "add": "Add Customer",
         "edit": "Edit customer",
-        "deactivate": "Deactivate"
+        "deactivate": "End partnership"
       },
       "empty": {
         "title": "No customers found",
@@ -456,20 +475,34 @@
         "emailPlaceholder": "accounting@example.com",
         "addressPlaceholder": "Billing or delivery address...",
         "taxCodePlaceholder": "0312345678",
-        "notePlaceholder": "Credit terms, contact notes, or delivery preferences..."
+        "notePlaceholder": "Credit terms, contact notes, or delivery preferences...",
+        "active": "Active partner"
       },
       "deactivate": {
-        "title": "Deactivate customer",
-        "description": "Deactivate {name}? Existing sales and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "End partnership with customer",
+        "description": "End the partnership with {name}? You can resume it at any time by editing the customer and selecting \"Active partner\".",
+        "deactivating": "Ending partnership...",
+        "blocked": [
+          "Select this customer on a new stock issue.",
+          "Save or confirm draft stock issues for this customer (switch them to another customer)."
+        ],
+        "kept": [
+          "Sales history, debts and reports.",
+          "Collecting debt on confirmed stock issues."
+        ]
       },
       "errors": {
         "load": "Unable to load customers.",
         "save": "Unable to save customer.",
-        "deactivate": "Unable to deactivate customer.",
+        "deactivate": "Unable to end the partnership with this customer.",
         "duplicateCode": "Another customer already uses this code.",
-        "protectedRecord": "The walk-in customer is a protected system record and cannot be deactivated."
+        "protectedRecord": "The walk-in customer is a protected system record; its partnership cannot be ended."
       },
-      "description": "Customers used on stock issues and receivables."
+      "description": "Customers used on stock issues and receivables.",
+      "status": {
+        "active": "Active partner",
+        "inactive": "Partnership ended"
+      }
     },
     "suppliers": {
       "title": "Suppliers",
@@ -485,7 +518,7 @@
       "actions": {
         "add": "Add Supplier",
         "edit": "Edit supplier",
-        "deactivate": "Deactivate"
+        "deactivate": "End partnership"
       },
       "empty": {
         "title": "No suppliers found",
@@ -503,20 +536,34 @@
         "emailPlaceholder": "sales@example.com",
         "addressPlaceholder": "Supplier address...",
         "taxCodePlaceholder": "0300001111",
-        "notePlaceholder": "Lead time, purchasing notes, or payment terms..."
+        "notePlaceholder": "Lead time, purchasing notes, or payment terms...",
+        "active": "Active partner"
       },
       "deactivate": {
-        "title": "Deactivate supplier",
-        "description": "Deactivate {name}? Existing purchase and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "End partnership with supplier",
+        "description": "End the partnership with {name}? You can resume it at any time by editing the supplier and selecting \"Active partner\".",
+        "deactivating": "Ending partnership...",
+        "blocked": [
+          "Select this supplier on a new stock receipt.",
+          "Save or confirm draft stock receipts for this supplier (switch them to another supplier)."
+        ],
+        "kept": [
+          "Purchase history, debts and reports.",
+          "Paying debt on confirmed stock receipts."
+        ]
       },
       "errors": {
         "load": "Unable to load suppliers.",
         "save": "Unable to save supplier.",
-        "deactivate": "Unable to deactivate supplier.",
+        "deactivate": "Unable to end the partnership with this supplier.",
         "duplicateCode": "Another supplier already uses this code.",
         "protectedRecord": "This supplier is protected."
       },
-      "description": "Suppliers used on stock receipts and payables."
+      "description": "Suppliers used on stock receipts and payables.",
+      "status": {
+        "active": "Active partner",
+        "inactive": "Partnership ended"
+      }
     }
   },
   "ecommerce": {
@@ -1297,7 +1344,8 @@
       "supplierInvoiceNumber": "Supplier invoice",
       "supplierInvoicePlaceholder": "Invoice number",
       "note": "Note",
-      "notePlaceholder": "Internal receiving notes..."
+      "notePlaceholder": "Internal receiving notes...",
+      "inactiveSupplierOption": "{name} (partnership ended)"
     },
     "lines": {
       "title": "Material lines",
@@ -1309,7 +1357,8 @@
       "unitPrice": "Unit price",
       "discount": "Discount",
       "remove": "Remove line",
-      "lineTotal": "Line total"
+      "lineTotal": "Line total",
+      "inactiveMaterialOption": "{label} (inactive)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1335,7 +1384,10 @@
       "lineUnitPrice": "Unit price must be 0 or higher.",
       "lineDiscount": "Discount must be 0 or higher.",
       "lineDiscountTooHigh": "Discount cannot exceed this line total.",
-      "duplicateMaterial": "Each material can only appear once on a receipt."
+      "duplicateMaterial": "Each material can only appear once on a receipt.",
+      "inactiveSupplier": "The partnership with supplier {name} has ended. Pick another supplier and save, or resume the partnership in Suppliers.",
+      "inactiveMaterials": "This document has {count} inactive material(s). Replace them or remove those lines, then save.",
+      "lineInactiveMaterial": "This material is inactive. Pick another material or remove the line."
     },
     "description": "Goods received from suppliers. Confirm a receipt to add it to stock."
   },
@@ -1387,7 +1439,8 @@
       "deliveryAddress": "Delivery address",
       "deliveryAddressPlaceholder": "Delivery or jobsite address...",
       "note": "Note",
-      "notePlaceholder": "Delivery, sales, or warehouse notes..."
+      "notePlaceholder": "Delivery, sales, or warehouse notes...",
+      "inactiveCustomerOption": "{name} (partnership ended)"
     },
     "lines": {
       "title": "Issue lines",
@@ -1400,7 +1453,8 @@
       "discount": "Discount",
       "remove": "Remove line",
       "available": "Available: {quantity} {unit}",
-      "lineTotal": "Line total"
+      "lineTotal": "Line total",
+      "inactiveMaterialOption": "{label} (inactive)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1427,7 +1481,10 @@
       "lineDiscount": "Discount cannot be negative.",
       "lineDiscountTooHigh": "Discount cannot exceed line subtotal.",
       "duplicateMaterial": "Each material can only appear once.",
-      "insufficientStock": "Not enough stock. Available: {available}."
+      "insufficientStock": "Not enough stock. Available: {available}.",
+      "inactiveCustomer": "The partnership with customer {name} has ended. Pick another customer and save, or resume the partnership in Customers.",
+      "inactiveMaterials": "This document has {count} inactive material(s). Replace them or remove those lines, then save.",
+      "lineInactiveMaterial": "This material is inactive. Pick another material or remove the line."
     },
     "description": "Goods issued to customers. Confirm an issue to deduct it from stock."
   },
@@ -1708,5 +1765,11 @@
   "app": {
     "name": "Nam Phong",
     "tagline": "Material warehouse"
+  },
+  "pwa": {
+    "install": "Install app",
+    "updateAvailable": "A new version of the app is available.",
+    "reload": "Reload",
+    "offlineBanner": "You are offline. Screens show data saved on this device (may be out of date); saving, confirming and payments need a connection."
   }
 }

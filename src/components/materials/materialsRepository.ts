@@ -98,9 +98,9 @@ export const fetchMaterialsPayload = async (): Promise<MaterialsPayload> => {
   const [categoriesResult, unitsResult, materialsResult] = await Promise.all([
     supabase
       .from("categories")
-      .select("id, code, name")
+      .select("id, code, name, isActive:is_active")
       .order("name", { ascending: true }),
-    supabase.from("units").select("id, code, name").order("name", {
+    supabase.from("units").select("id, code, name, isActive:is_active").order("name", {
       ascending: true,
     }),
     supabase

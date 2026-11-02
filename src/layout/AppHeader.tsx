@@ -1,5 +1,6 @@
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import UserDropdown from "@/components/header/UserDropdown";
+import InstallAppButton from "@/components/pwa/InstallAppButton";
 import { useSidebar } from "@/context/SidebarContext";
 import { HamburgerIcon, XMarkIcon } from "@/icons";
 import { useTranslation } from "react-i18next";
@@ -38,6 +39,7 @@ const AppHeader: React.FC = () => {
       </div>
 
       <div className="ms-auto flex items-center gap-2 sm:gap-3">
+        <InstallAppButton />
         <ThemeToggleButton />
         <UserDropdown />
       </div>

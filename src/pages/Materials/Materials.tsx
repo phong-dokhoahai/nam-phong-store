@@ -59,11 +59,13 @@ export default function Materials() {
     data,
     isLoading,
     error: loadError,
+    cachedAt,
     reload,
     setData,
   } = useAsyncData(fetchMaterialsPayload, {
     initialData: emptyPayload,
     errorMessage: t("materials.errors.load"),
+    offlineKey: "materials",
   });
   const { materials, categories, units, source } = data;
   const setMaterials = (update: (current: Material[]) => Material[]) =>
@@ -206,7 +208,7 @@ export default function Materials() {
       <PageHeader
         title={t("materials.title")}
         description={t("materials.description")}
-        meta={!isLoading && <DataSourceBadge source={source} />}
+        meta={!isLoading && <DataSourceBadge source={source} cachedAt={cachedAt} />}
         actions={
           <Button
             startIcon={<PlusIcon className="size-5" />}

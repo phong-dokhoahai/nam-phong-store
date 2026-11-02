@@ -18,7 +18,8 @@
     "breadcrumb": "مسار التنقل",
     "dataSource": {
       "live": "بيانات Supabase",
-      "demo": "بيانات تجريبية"
+      "demo": "بيانات تجريبية",
+      "offline": "نسخة غير متصلة · {{time}}"
     },
     "retry": "حاول مرة أخرى"
   },
@@ -198,6 +199,9 @@
       "invalidCredentials": "The email or password is incorrect.",
       "inactive": "Your account is inactive or pending approval. Please contact an administrator.",
       "profileMissing": "Your sign-in succeeded, but no application profile was found.",
+      "profileLoadFailed": "تعذر تحميل بيانات حسابك. تحقق من الاتصال وحاول مرة أخرى.",
+      "rateLimited": "محاولات تسجيل دخول كثيرة جدًا. يرجى الانتظار بضع دقائق ثم المحاولة مرة أخرى.",
+      "network": "تعذر الوصول إلى الخادم. تحقق من الاتصال وحاول مرة أخرى.",
       "unknown": "Unable to sign in right now. Please try again."
     },
     "protected": {
@@ -265,7 +269,8 @@
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
       "requiredError": "SKU and name are required.",
       "lookupError": "Category and unit are required.",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "inactiveOption": "{name} (غير نشط)"
     },
     "delete": {
       "title": "Deactivate material",
@@ -339,7 +344,9 @@
         "saving": "جار الحفظ..."
       },
       "deactivate": {
-        "deactivating": "جار التعطيل..."
+        "deactivating": "جار التعطيل...",
+        "blockedTitle": "بعد ذلك لا يمكن:",
+        "keptTitle": "يبقى كما هو:"
       }
     },
     "categories": {
@@ -373,7 +380,13 @@
       },
       "deactivate": {
         "title": "Deactivate category",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "إلغاء تفعيل الفئة {name}؟",
+        "blocked": [
+          "اختيار هذه الفئة عند إنشاء مادة أو تغيير فئة مادة."
+        ],
+        "kept": [
+          "المواد الموجودة في هذه الفئة مع مخزونها وسجلها."
+        ]
       },
       "errors": {
         "load": "Unable to load categories.",
@@ -416,7 +429,13 @@
       },
       "deactivate": {
         "title": "Deactivate unit",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "إلغاء تفعيل الوحدة {name}؟",
+        "blocked": [
+          "اختيار هذه الوحدة عند إنشاء مادة أو تغيير وحدة مادة."
+        ],
+        "kept": [
+          "المواد التي تستخدم هذه الوحدة مع مخزونها وسجلها."
+        ]
       },
       "errors": {
         "load": "Unable to load units.",
@@ -440,7 +459,7 @@
       "actions": {
         "add": "اضافة عميل",
         "edit": "تعديل العميل",
-        "deactivate": "تعطيل"
+        "deactivate": "إنهاء التعاون"
       },
       "empty": {
         "title": "No customers found",
@@ -456,20 +475,34 @@
         "emailPlaceholder": "accounting@example.com",
         "addressPlaceholder": "Billing or delivery address...",
         "taxCodePlaceholder": "0312345678",
-        "notePlaceholder": "Credit terms, contact notes, or delivery preferences..."
+        "notePlaceholder": "Credit terms, contact notes, or delivery preferences...",
+        "active": "تعاون نشط"
       },
       "deactivate": {
-        "title": "Deactivate customer",
-        "description": "Deactivate {name}? Existing sales and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "إنهاء التعاون مع العميل",
+        "description": "إنهاء التعاون مع {name}؟ يمكنك استئنافه في أي وقت بتعديل العميل واختيار \"تعاون نشط\".",
+        "deactivating": "جارٍ إنهاء التعاون...",
+        "blocked": [
+          "اختيار هذا العميل في إذن صرف جديد.",
+          "حفظ أو تأكيد مسودات أذونات الصرف لهذا العميل (غيّرها إلى عميل آخر)."
+        ],
+        "kept": [
+          "سجل المبيعات والديون والتقارير.",
+          "تحصيل الديون على أذونات الصرف المؤكدة."
+        ]
       },
       "errors": {
         "load": "Unable to load customers.",
         "save": "Unable to save customer.",
-        "deactivate": "Unable to deactivate customer.",
+        "deactivate": "تعذر إنهاء التعاون مع العميل.",
         "duplicateCode": "Another customer already uses this code.",
-        "protectedRecord": "The walk-in customer is a protected system record and cannot be deactivated."
+        "protectedRecord": "العميل النقدي سجل نظام محمي ولا يمكن إنهاء التعاون معه."
       },
-      "description": "العملاء المستخدمون في الصرف والذمم المدينة."
+      "description": "العملاء المستخدمون في الصرف والذمم المدينة.",
+      "status": {
+        "active": "تعاون نشط",
+        "inactive": "تم إنهاء التعاون"
+      }
     },
     "suppliers": {
       "title": "الموردون",
@@ -485,7 +518,7 @@
       "actions": {
         "add": "اضافة مورد",
         "edit": "تعديل المورد",
-        "deactivate": "تعطيل"
+        "deactivate": "إنهاء التعاون"
       },
       "empty": {
         "title": "No suppliers found",
@@ -503,20 +536,34 @@
         "emailPlaceholder": "sales@example.com",
         "addressPlaceholder": "Supplier address...",
         "taxCodePlaceholder": "0300001111",
-        "notePlaceholder": "Lead time, purchasing notes, or payment terms..."
+        "notePlaceholder": "Lead time, purchasing notes, or payment terms...",
+        "active": "تعاون نشط"
       },
       "deactivate": {
-        "title": "Deactivate supplier",
-        "description": "Deactivate {name}? Existing purchase and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "إنهاء التعاون مع المورد",
+        "description": "إنهاء التعاون مع {name}؟ يمكنك استئنافه في أي وقت بتعديل المورد واختيار \"تعاون نشط\".",
+        "deactivating": "جارٍ إنهاء التعاون...",
+        "blocked": [
+          "اختيار هذا المورد في إذن استلام جديد.",
+          "حفظ أو تأكيد مسودات أذونات الاستلام لهذا المورد (غيّرها إلى مورد آخر)."
+        ],
+        "kept": [
+          "سجل المشتريات والديون والتقارير.",
+          "سداد الديون على أذونات الاستلام المؤكدة."
+        ]
       },
       "errors": {
         "load": "Unable to load suppliers.",
         "save": "Unable to save supplier.",
-        "deactivate": "Unable to deactivate supplier.",
+        "deactivate": "تعذر إنهاء التعاون مع المورد.",
         "duplicateCode": "Another supplier already uses this code.",
         "protectedRecord": "This supplier is protected."
       },
-      "description": "الموردون المستخدمون في الاستلامات والذمم الدائنة."
+      "description": "الموردون المستخدمون في الاستلامات والذمم الدائنة.",
+      "status": {
+        "active": "تعاون نشط",
+        "inactive": "تم إنهاء التعاون"
+      }
     }
   },
   "ecommerce": {
@@ -1297,7 +1344,8 @@
       "supplierInvoiceNumber": "Supplier invoice",
       "supplierInvoicePlaceholder": "Invoice number",
       "note": "Note",
-      "notePlaceholder": "Internal receiving notes..."
+      "notePlaceholder": "Internal receiving notes...",
+      "inactiveSupplierOption": "{name} (تم إنهاء التعاون)"
     },
     "lines": {
       "title": "Material lines",
@@ -1309,7 +1357,8 @@
       "unitPrice": "Unit price",
       "discount": "Discount",
       "remove": "Remove line",
-      "lineTotal": "إجمالي السطر"
+      "lineTotal": "إجمالي السطر",
+      "inactiveMaterialOption": "{label} (غير نشط)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1335,7 +1384,10 @@
       "lineUnitPrice": "Unit price must be 0 or higher.",
       "lineDiscount": "Discount must be 0 or higher.",
       "lineDiscountTooHigh": "Discount cannot exceed this line total.",
-      "duplicateMaterial": "Each material can only appear once on a receipt."
+      "duplicateMaterial": "Each material can only appear once on a receipt.",
+      "inactiveSupplier": "تم إنهاء التعاون مع المورد {name}. اختر موردًا آخر ثم احفظ، أو استأنف التعاون من صفحة الموردين.",
+      "inactiveMaterials": "يحتوي هذا المستند على {count} من المواد غير النشطة. استبدلها أو احذف تلك الأسطر ثم احفظ.",
+      "lineInactiveMaterial": "هذه المادة غير نشطة. اختر مادة أخرى أو احذف السطر."
     },
     "description": "البضائع المستلمة من الموردين. أكّد الاستلام لإضافته إلى المخزون."
   },
@@ -1387,7 +1439,8 @@
       "deliveryAddress": "Delivery address",
       "deliveryAddressPlaceholder": "Delivery or jobsite address...",
       "note": "Note",
-      "notePlaceholder": "Delivery, sales, or warehouse notes..."
+      "notePlaceholder": "Delivery, sales, or warehouse notes...",
+      "inactiveCustomerOption": "{name} (تم إنهاء التعاون)"
     },
     "lines": {
       "title": "Issue lines",
@@ -1400,7 +1453,8 @@
       "discount": "Discount",
       "remove": "Remove line",
       "available": "Available: {quantity} {unit}",
-      "lineTotal": "إجمالي السطر"
+      "lineTotal": "إجمالي السطر",
+      "inactiveMaterialOption": "{label} (غير نشط)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1427,7 +1481,10 @@
       "lineDiscount": "Discount cannot be negative.",
       "lineDiscountTooHigh": "Discount cannot exceed line subtotal.",
       "duplicateMaterial": "Each material can only appear once.",
-      "insufficientStock": "Not enough stock. Available: {available}."
+      "insufficientStock": "Not enough stock. Available: {available}.",
+      "inactiveCustomer": "تم إنهاء التعاون مع العميل {name}. اختر عميلًا آخر ثم احفظ، أو استأنف التعاون من صفحة العملاء.",
+      "inactiveMaterials": "يحتوي هذا المستند على {count} من المواد غير النشطة. استبدلها أو احذف تلك الأسطر ثم احفظ.",
+      "lineInactiveMaterial": "هذه المادة غير نشطة. اختر مادة أخرى أو احذف السطر."
     },
     "description": "البضائع المصروفة للعملاء. أكّد الصرف لخصمه من المخزون."
   },
@@ -1708,5 +1765,11 @@
   "app": {
     "name": "Nam Phong",
     "tagline": "مستودع المواد"
+  },
+  "pwa": {
+    "install": "تثبيت التطبيق",
+    "updateAvailable": "يتوفر إصدار جديد من التطبيق.",
+    "reload": "إعادة التحميل",
+    "offlineBanner": "أنت غير متصل. تعرض الشاشات البيانات المحفوظة على هذا الجهاز (قد تكون قديمة)؛ يتطلب الحفظ والتأكيد والدفع اتصالاً بالشبكة."
   }
 }

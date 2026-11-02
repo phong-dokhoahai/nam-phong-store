@@ -5,7 +5,7 @@ import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/button/Button";
 import { Modal, ModalFooter, ModalHeader } from "@/components/ui/modal";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Material, MaterialFormValues, MaterialLookup } from "./types";
 import InlineAlert from "@/components/common/InlineAlert";
@@ -64,17 +64,27 @@ export default function MaterialFormModal({
     ? t("materials.form.editTitle")
     : t("materials.form.createTitle");
 
+  // Inactive categories/units cannot be picked, except the one the material
+  // already uses (shown with a label so the existing material stays valid).
+  const toOptions = useCallback(
+    (lookups: MaterialLookup[], currentId: string | undefined) =>
+      lookups
+        .filter((lookup) => lookup.isActive || lookup.id === currentId)
+        .map((lookup) => ({
+          value: lookup.id,
+          label: lookup.isActive
+            ? lookup.name
+            : t("materials.form.inactiveOption", { name: lookup.name }),
+        })),
+    [t],
+  );
   const categoryOptions = useMemo(
-    () =>
-      categories.map((category) => ({
-        value: category.id,
-        label: category.name,
-      })),
-    [categories],
+    () => toOptions(categories, material?.categoryId),
+    [categories, material?.categoryId, toOptions],
   );
   const unitOptions = useMemo(
-    () => units.map((unit) => ({ value: unit.id, label: unit.name })),
-    [units],
+    () => toOptions(units, material?.unitId),
+    [units, material?.unitId, toOptions],
   );
 
   const updateValue = <K extends keyof MaterialFormValues>(
