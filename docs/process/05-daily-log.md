@@ -25,6 +25,26 @@ Quy tắc viết:
 ## Nhật ký
 
 ```text
+22/10/2026
+Today I worked on:
+[Nam Phong Storage]:
+Turn the app into an installable PWA for admins: install button, faster start from cached files, a "new version, reload" prompt, an offline banner, and list screens that show the last saved data with its time when the network is down, checked in headless Chrome without signing in but not yet on a phone or with the real database
+Rename the customer and supplier status to "active partner / partnership ended" and show in the confirmation dialog exactly what stops working and what is kept
+Stop inactive categories and units from being picked for materials, while keeping the current choice of existing materials
+Fix draft stock receipts and issues that got stuck when their customer, supplier or material was deactivated: the editor now shows the deactivated item and explains how to fix the draft instead of a raw database error (checked with demo data and screenshots, not yet with the real database)
+```
+
+```text
+20/10/2026
+Today I worked on:
+[Nam Phong Storage]:
+Review the sign-in and permission system and list the remaining weak points by priority
+Turn off public sign-up on Supabase so only an admin can create accounts, and remove the unused sign-up page (checked: the sign-up API now refuses new accounts)
+Fix a security gap where any signed-in account, even one not yet activated, could use up document numbers; also make the admin check always answer yes/no so the earlier self-promotion bug cannot come back (pushed to the database, 13/13 permission checks and 15/15 draft checks pass inside a rolled-back transaction)
+Fix the sign-in session handling: signing out while the app is still loading no longer brings the user back, a network error shows a "Try again" screen instead of logging the user out, a locked account or changed role takes effect when the user returns to the tab, and sign-in errors now say whether the password is wrong, the network is down or there were too many attempts (checked in 14 browser scenarios with a simulated server, not yet with the real database)
+```
+
+```text
 19/10/2026
 Today I worked on:
 [Nam Phong Storage]:

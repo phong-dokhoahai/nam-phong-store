@@ -3,7 +3,6 @@ import { AdminRoute, ProtectedRoute } from "@/auth";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
-import SignUp from "./pages/AuthPages/SignUp";
 import Calendar from "./pages/Calendar";
 import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
@@ -100,9 +99,9 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* Auth Layout */}
+          {/* Auth Layout. No sign-up page: public sign-ups are disabled in
+              Supabase Auth and accounts are created by an ADMIN. */}
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />

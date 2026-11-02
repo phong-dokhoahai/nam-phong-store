@@ -55,11 +55,13 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
     data: { records, source },
     isLoading,
     error: loadError,
+    cachedAt,
     reload,
     setData,
   } = useAsyncData(loadRecords, {
     initialData: emptyPayload,
     errorMessage: t(`masterData.${kind}.errors.load`),
+    offlineKey: `master-data:${kind}`,
   });
   const setRecords = (
     update: (current: MasterDataRecord[]) => MasterDataRecord[],
@@ -203,7 +205,7 @@ export default function MasterDataPage({ kind }: MasterDataPageProps) {
       <PageHeader
         title={t(`masterData.${kind}.title`)}
         description={t(`masterData.${kind}.description`)}
-        meta={!isLoading && <DataSourceBadge source={source} />}
+        meta={!isLoading && <DataSourceBadge source={source} cachedAt={cachedAt} />}
         actions={
           <Button
             startIcon={<PlusIcon className="size-5" />}

@@ -24,8 +24,8 @@ dist-ssr
 
 /_bmad
 /.agents
-.env
 
 # Local AI observability runs
 .ai/runs/
 .ai/active-run.json
+config.bat

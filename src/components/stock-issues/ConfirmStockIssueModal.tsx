@@ -7,6 +7,8 @@ type ConfirmStockIssueModalProps = {
   isOpen: boolean;
   issue: StockIssue | null;
   isSaving: boolean;
+  /** Why the issue cannot be confirmed yet (e.g. deactivated customer). */
+  blockedReason?: string;
   error: string;
   onClose: () => void;
   onConfirm: () => void;
@@ -16,6 +18,7 @@ export default function ConfirmStockIssueModal({
   isOpen,
   issue,
   isSaving,
+  blockedReason = "",
   error,
   onClose,
   onConfirm,
@@ -37,8 +40,8 @@ export default function ConfirmStockIssueModal({
       confirmLabel={t("stockIssues.actions.confirm")}
       busyLabel={t("stockIssues.confirm.confirming")}
       isBusy={isSaving}
-      confirmDisabled={!issue}
-      error={error}
+      confirmDisabled={!issue || Boolean(blockedReason)}
+      error={blockedReason || error}
       onClose={onClose}
       onConfirm={onConfirm}
     />

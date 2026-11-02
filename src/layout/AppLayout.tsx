@@ -1,3 +1,5 @@
+import OfflineBanner from "@/components/pwa/OfflineBanner";
+import UpdatePrompt from "@/components/pwa/UpdatePrompt";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { cn } from "@/utils";
 import { Outlet } from "react-router";
@@ -22,9 +24,11 @@ const LayoutContent: React.FC = () => {
       >
         <AppHeader />
         <main className="mx-auto max-w-(--breakpoint-2xl) px-4 py-5 md:px-6 md:py-6">
+          <OfflineBanner />
           <Outlet />
         </main>
       </div>
+      <UpdatePrompt />
     </div>
   );
 };

@@ -26,7 +26,7 @@ src/
 ├── index.css                  # Tailwind v4 @theme tokens, @utility classes, third-party overrides
 ├── pages/                     # route-level components (one file or folder per page)
 │   ├── Dashboard/             # dashboard variants: Ecommerce, Analytics, CRM, Sales, Finance…
-│   ├── AuthPages/             # SignIn, SignUp, ResetPassword, TwoStepVerification
+│   ├── AuthPages/             # SignIn + AuthPageLayout (no sign-up: accounts are created by an ADMIN)
 │   ├── Ecommerce/             # ProductList, AddProduct, Billing, Invoices, Transactions…
 │   ├── Forms/                 # FormElements, FormLayout
 │   ├── Tables/                # BasicTables, DataTables
@@ -51,7 +51,7 @@ src/
 ├── layout/                    # AppLayout (sidebar+header shell), AlternativeLayout,
 │                              #   AppSidebar, AppHeader, Backdrop, SidebarWidget
 ├── context/                   # ThemeContext, SidebarContext, LanguageContext
-├── hooks/                     # useModal, useAsyncData, usePagination, useDebouncedValue, useGoBack, useClickOutside
+├── hooks/                     # useModal, useAsyncData, usePagination, useDebouncedValue, useGoBack, useClickOutside, useOnlineStatus, usePwa
 ├── i18n/                      # index.ts — i18next bootstrap (resources, defaultNS, fallbackLng)
 ├── locales/                   # translation files: en/common.json, ar/common.json,
 │                              #   es/common.json, de/common.json, vi/common.json
@@ -76,7 +76,7 @@ src/
 - Three layout groups:
   - **`<AppLayout>`** — standard dashboard shell (sidebar + header). Most pages live here.
   - **`<AlternativeLayout>`** — full-width shell for AI generator pages and AI settings.
-  - **No layout** — standalone pages: auth routes (`/signin`, `/signup`…), error pages, layout demos.
+  - **No layout** — standalone pages: the auth route (`/signin`), error pages, layout demos.
 - **New page** → create a file or folder under `src/pages/<Category>/MyPage.tsx`, then add a `<Route>` in `App.tsx` under the appropriate layout group.
 - Page files are **PascalCase** (`MyPage.tsx`) with a **default export**.
 - Colocate route-only sub-components inside the page folder. Reusable UI goes in `src/components/<feature>/`.
@@ -196,7 +196,8 @@ Shared logic for screens:
 
 | Need | Use |
 | --- | --- |
-| Load data with loading / error / retry | `hooks/useAsyncData(load, { initialData, errorMessage, onSuccess? })` — `load` memoized; `null` skips (invalid filters); `setData` for local updates after a mutation |
+| Load data with loading / error / retry | `hooks/useAsyncData(load, { initialData, errorMessage, onSuccess?, offlineKey? })` — `load` memoized; `null` skips (invalid filters); `setData` for local updates after a mutation; `offlineKey` (must include every request parameter) shows the last saved copy when offline (ADMIN only) and returns `cachedAt` for `DataSourceBadge` |
+| Online / offline state, PWA install & update | `hooks/useOnlineStatus`, `hooks/usePwa` (state lives in `lib/pwa/pwaStore.ts`; service worker is `public/sw.js`) |
 | Client-side paging that resets when filters change | `hooks/usePagination`: `usePagedItems(items, resetKey)` → `pageItems` + `pagination` (spread on `ListPagination`); `useResettablePage(resetKey)` for server paging |
 | Error message from a thrown value | `utils/getErrorMessage(error, t("…"))` |
 | Quantity / money display | `utils/formatQuantity`, `utils/formatCurrency` |

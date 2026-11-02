@@ -1,4 +1,4 @@
-import { useAuth, type AuthErrorCode } from "@/auth";
+import { authErrorTranslationKeys, useAuth } from "@/auth";
 import InlineAlert from "@/components/common/InlineAlert";
 import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
@@ -6,7 +6,7 @@ import Button from "@/components/ui/button/Button";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 
 type SignInLocationState = {
   from?: {
@@ -15,19 +15,18 @@ type SignInLocationState = {
   };
 };
 
-const authErrorTranslationKeys: Record<AuthErrorCode, string> = {
-  AUTH_CONFIG_MISSING: "auth.errors.configMissing",
-  AUTH_INVALID_CREDENTIALS: "auth.errors.invalidCredentials",
-  AUTH_INACTIVE_ACCOUNT: "auth.errors.inactive",
-  AUTH_PROFILE_MISSING: "auth.errors.profileMissing",
-  AUTH_UNKNOWN: "auth.errors.unknown",
-};
-
 export default function SignInForm() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, isLoading, error, isConfigured, clearError } = useAuth();
+  const {
+    signIn,
+    isLoading,
+    error,
+    isConfigured,
+    isAuthenticated,
+    isActive,
+    clearError,
+  } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,6 +38,12 @@ export default function SignInForm() {
     ? t(authErrorTranslationKeys[error.code])
     : null;
 
+  // Signed in with an active profile (just now, or already when opening
+  // /signin): go to the page that sent the user here.
+  if (isAuthenticated && isActive) {
+    return <Navigate to={`${destinationPath}${destinationSearch}`} replace />;
+  }
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     clearError();
@@ -46,10 +51,8 @@ export default function SignInForm() {
     try {
       await signIn({ email: email.trim(), password });
     } catch {
-      return;
+      // The error is shown from the auth context.
     }
-
-    navigate(`${destinationPath}${destinationSearch}`, { replace: true });
   };
 
   return (

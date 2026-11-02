@@ -4,6 +4,8 @@ export type MaterialLookup = {
   id: string;
   code: string;
   name: string;
+  /** Inactive categories/units cannot be picked for a material any more. */
+  isActive: boolean;
 };
 
 export type Material = {

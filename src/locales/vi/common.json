@@ -18,7 +18,8 @@
     "breadcrumb": "Đường dẫn",
     "dataSource": {
       "live": "Dữ liệu Supabase",
-      "demo": "Dữ liệu mẫu"
+      "demo": "Dữ liệu mẫu",
+      "offline": "Bản lưu offline · {{time}}"
     },
     "retry": "Thử lại"
   },
@@ -198,6 +199,9 @@
       "invalidCredentials": "Email hoặc mật khẩu không đúng.",
       "inactive": "Tài khoản của bạn đang bị khóa hoặc chờ duyệt. Vui lòng liên hệ quản trị viên.",
       "profileMissing": "Đăng nhập thành công, nhưng không tìm thấy hồ sơ ứng dụng.",
+      "profileLoadFailed": "Không tải được thông tin tài khoản. Kiểm tra kết nối mạng rồi thử lại.",
+      "rateLimited": "Có quá nhiều lần thử đăng nhập. Vui lòng đợi vài phút rồi thử lại.",
+      "network": "Không kết nối được máy chủ. Kiểm tra kết nối mạng rồi thử lại.",
       "unknown": "Chưa thể đăng nhập lúc này. Vui lòng thử lại."
     },
     "protected": {
@@ -265,7 +269,8 @@
       "descriptionPlaceholder": "Ghi chú mua hàng, lưu kho hoặc sử dụng...",
       "requiredError": "SKU và tên là bắt buộc.",
       "lookupError": "Danh mục và đơn vị là bắt buộc.",
-      "saving": "Đang lưu..."
+      "saving": "Đang lưu...",
+      "inactiveOption": "{name} (ngưng dùng)"
     },
     "delete": {
       "title": "Ngưng dùng vật liệu",
@@ -339,7 +344,9 @@
         "saving": "Đang lưu..."
       },
       "deactivate": {
-        "deactivating": "Đang ngưng dùng..."
+        "deactivating": "Đang ngưng dùng...",
+        "blockedTitle": "Sau khi thực hiện, không thể:",
+        "keptTitle": "Vẫn giữ nguyên:"
       }
     },
     "categories": {
@@ -373,7 +380,13 @@
       },
       "deactivate": {
         "title": "Ngưng dùng danh mục",
-        "description": "Ngưng dùng {name}? Lịch sử vật liệu vẫn được giữ, nhưng danh mục này sẽ không còn dùng cho thiết lập mới."
+        "description": "Ngưng dùng danh mục {name}?",
+        "blocked": [
+          "Chọn danh mục này khi tạo vật liệu mới hoặc khi đổi danh mục của vật liệu."
+        ],
+        "kept": [
+          "Các vật liệu đang thuộc danh mục này cùng tồn kho và lịch sử của chúng."
+        ]
       },
       "errors": {
         "load": "Không thể tải danh mục.",
@@ -416,7 +429,13 @@
       },
       "deactivate": {
         "title": "Ngưng dùng đơn vị",
-        "description": "Ngưng dùng {name}? Lịch sử vật liệu vẫn được giữ, nhưng đơn vị này sẽ không còn dùng cho thiết lập mới."
+        "description": "Ngưng dùng đơn vị {name}?",
+        "blocked": [
+          "Chọn đơn vị này khi tạo vật liệu mới hoặc khi đổi đơn vị của vật liệu."
+        ],
+        "kept": [
+          "Các vật liệu đang dùng đơn vị này cùng tồn kho và lịch sử của chúng."
+        ]
       },
       "errors": {
         "load": "Không thể tải đơn vị.",
@@ -440,7 +459,7 @@
       "actions": {
         "add": "Thêm khách hàng",
         "edit": "Sửa khách hàng",
-        "deactivate": "Ngưng dùng"
+        "deactivate": "Ngừng hợp tác"
       },
       "empty": {
         "title": "Không tìm thấy khách hàng",
@@ -456,20 +475,34 @@
         "emailPlaceholder": "ketoan@example.com",
         "addressPlaceholder": "Địa chỉ xuất hóa đơn hoặc giao hàng...",
         "taxCodePlaceholder": "0312345678",
-        "notePlaceholder": "Điều khoản công nợ, ghi chú liên hệ hoặc yêu cầu giao hàng..."
+        "notePlaceholder": "Điều khoản công nợ, ghi chú liên hệ hoặc yêu cầu giao hàng...",
+        "active": "Đang hợp tác"
       },
       "deactivate": {
-        "title": "Ngưng dùng khách hàng",
-        "description": "Ngưng dùng {name}? Lịch sử bán hàng và công nợ vẫn được giữ, nhưng khách hàng này sẽ không còn dùng cho giao dịch mới."
+        "title": "Ngừng hợp tác với khách hàng",
+        "description": "Ngừng hợp tác với {name}? Có thể hợp tác lại bất cứ lúc nào bằng cách sửa khách hàng và chọn \"Đang hợp tác\".",
+        "deactivating": "Đang ngừng hợp tác...",
+        "blocked": [
+          "Chọn khách hàng này khi lập phiếu xuất mới.",
+          "Lưu hoặc xác nhận phiếu xuất nháp đang ghi khách hàng này (phải đổi sang khách hàng khác)."
+        ],
+        "kept": [
+          "Lịch sử bán hàng, công nợ và các báo cáo.",
+          "Thu tiền công nợ của các phiếu xuất đã xác nhận."
+        ]
       },
       "errors": {
         "load": "Không thể tải khách hàng.",
         "save": "Không thể lưu khách hàng.",
-        "deactivate": "Không thể ngưng dùng khách hàng.",
+        "deactivate": "Không thể ngừng hợp tác với khách hàng.",
         "duplicateCode": "Đã có khách hàng khác dùng mã này.",
-        "protectedRecord": "Khách lẻ là bản ghi hệ thống được bảo vệ và không thể ngưng dùng."
+        "protectedRecord": "Khách lẻ là bản ghi hệ thống được bảo vệ, không thể ngừng hợp tác."
       },
-      "description": "Khách hàng dùng trên phiếu xuất và công nợ phải thu."
+      "description": "Khách hàng dùng trên phiếu xuất và công nợ phải thu.",
+      "status": {
+        "active": "Đang hợp tác",
+        "inactive": "Ngừng hợp tác"
+      }
     },
     "suppliers": {
       "title": "Nhà cung cấp",
@@ -485,7 +518,7 @@
       "actions": {
         "add": "Thêm nhà cung cấp",
         "edit": "Sửa nhà cung cấp",
-        "deactivate": "Ngưng dùng"
+        "deactivate": "Ngừng hợp tác"
       },
       "empty": {
         "title": "Không tìm thấy nhà cung cấp",
@@ -503,20 +536,34 @@
         "emailPlaceholder": "sales@example.com",
         "addressPlaceholder": "Địa chỉ nhà cung cấp...",
         "taxCodePlaceholder": "0300001111",
-        "notePlaceholder": "Thời gian giao hàng, ghi chú mua hàng hoặc điều khoản thanh toán..."
+        "notePlaceholder": "Thời gian giao hàng, ghi chú mua hàng hoặc điều khoản thanh toán...",
+        "active": "Đang hợp tác"
       },
       "deactivate": {
-        "title": "Ngưng dùng nhà cung cấp",
-        "description": "Ngưng dùng {name}? Lịch sử mua hàng và công nợ vẫn được giữ, nhưng nhà cung cấp này sẽ không còn dùng cho giao dịch mới."
+        "title": "Ngừng hợp tác với nhà cung cấp",
+        "description": "Ngừng hợp tác với {name}? Có thể hợp tác lại bất cứ lúc nào bằng cách sửa nhà cung cấp và chọn \"Đang hợp tác\".",
+        "deactivating": "Đang ngừng hợp tác...",
+        "blocked": [
+          "Chọn nhà cung cấp này khi lập phiếu nhập mới.",
+          "Lưu hoặc xác nhận phiếu nhập nháp đang ghi nhà cung cấp này (phải đổi sang nhà cung cấp khác)."
+        ],
+        "kept": [
+          "Lịch sử mua hàng, công nợ và các báo cáo.",
+          "Trả tiền công nợ của các phiếu nhập đã xác nhận."
+        ]
       },
       "errors": {
         "load": "Không thể tải nhà cung cấp.",
         "save": "Không thể lưu nhà cung cấp.",
-        "deactivate": "Không thể ngưng dùng nhà cung cấp.",
+        "deactivate": "Không thể ngừng hợp tác với nhà cung cấp.",
         "duplicateCode": "Đã có nhà cung cấp khác dùng mã này.",
         "protectedRecord": "Nhà cung cấp này được hệ thống bảo vệ."
       },
-      "description": "Nhà cung cấp dùng trên phiếu nhập và công nợ phải trả."
+      "description": "Nhà cung cấp dùng trên phiếu nhập và công nợ phải trả.",
+      "status": {
+        "active": "Đang hợp tác",
+        "inactive": "Ngừng hợp tác"
+      }
     }
   },
   "ecommerce": {
@@ -1297,7 +1344,8 @@
       "supplierInvoiceNumber": "Hóa đơn NCC",
       "supplierInvoicePlaceholder": "Số hóa đơn",
       "note": "Ghi chú",
-      "notePlaceholder": "Ghi chú nội bộ khi nhận hàng..."
+      "notePlaceholder": "Ghi chú nội bộ khi nhận hàng...",
+      "inactiveSupplierOption": "{name} (ngừng hợp tác)"
     },
     "lines": {
       "title": "Dòng vật liệu",
@@ -1309,7 +1357,8 @@
       "unitPrice": "Đơn giá",
       "discount": "Chiết khấu",
       "remove": "Xóa dòng",
-      "lineTotal": "Thành tiền"
+      "lineTotal": "Thành tiền",
+      "inactiveMaterialOption": "{label} (ngưng dùng)"
     },
     "summary": {
       "subtotal": "Tạm tính",
@@ -1335,7 +1384,10 @@
       "lineUnitPrice": "Đơn giá phải từ 0 trở lên.",
       "lineDiscount": "Chiết khấu phải từ 0 trở lên.",
       "lineDiscountTooHigh": "Chiết khấu không được vượt quá thành tiền dòng.",
-      "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần trong phiếu."
+      "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần trong phiếu.",
+      "inactiveSupplier": "Nhà cung cấp {name} đã ngừng hợp tác. Chọn nhà cung cấp khác rồi lưu phiếu, hoặc cho nhà cung cấp hợp tác lại trong danh mục Nhà cung cấp.",
+      "inactiveMaterials": "Phiếu có {count} vật liệu đã ngưng dùng. Đổi sang vật liệu khác hoặc xóa các dòng đó rồi lưu phiếu.",
+      "lineInactiveMaterial": "Vật liệu đã ngưng dùng. Chọn vật liệu khác hoặc xóa dòng này."
     },
     "description": "Phiếu nhập hàng từ nhà cung cấp. Xác nhận phiếu để cộng vào tồn kho."
   },
@@ -1387,7 +1439,8 @@
       "deliveryAddress": "Địa chỉ giao hàng",
       "deliveryAddressPlaceholder": "Địa chỉ giao hàng hoặc công trình...",
       "note": "Ghi chú",
-      "notePlaceholder": "Ghi chú giao hàng, bán hàng hoặc kho..."
+      "notePlaceholder": "Ghi chú giao hàng, bán hàng hoặc kho...",
+      "inactiveCustomerOption": "{name} (ngừng hợp tác)"
     },
     "lines": {
       "title": "Dòng xuất kho",
@@ -1400,7 +1453,8 @@
       "discount": "Giảm giá",
       "remove": "Xóa dòng",
       "available": "Có thể xuất: {quantity} {unit}",
-      "lineTotal": "Thành tiền"
+      "lineTotal": "Thành tiền",
+      "inactiveMaterialOption": "{label} (ngưng dùng)"
     },
     "summary": {
       "subtotal": "Tạm tính",
@@ -1427,7 +1481,10 @@
       "lineDiscount": "Giảm giá không được âm.",
       "lineDiscountTooHigh": "Giảm giá không được vượt tạm tính dòng.",
       "duplicateMaterial": "Mỗi vật liệu chỉ được xuất hiện một lần.",
-      "insufficientStock": "Không đủ tồn. Có thể xuất: {available}."
+      "insufficientStock": "Không đủ tồn. Có thể xuất: {available}.",
+      "inactiveCustomer": "Khách hàng {name} đã ngừng hợp tác. Chọn khách hàng khác rồi lưu phiếu, hoặc cho khách hàng hợp tác lại trong danh mục Khách hàng.",
+      "inactiveMaterials": "Phiếu có {count} vật liệu đã ngưng dùng. Đổi sang vật liệu khác hoặc xóa các dòng đó rồi lưu phiếu.",
+      "lineInactiveMaterial": "Vật liệu đã ngưng dùng. Chọn vật liệu khác hoặc xóa dòng này."
     },
     "description": "Phiếu xuất bán cho khách hàng. Xác nhận phiếu để trừ tồn kho."
   },
@@ -1708,5 +1765,11 @@
   "app": {
     "name": "Nam Phong",
     "tagline": "Quản lý kho vật liệu"
+  },
+  "pwa": {
+    "install": "Cài ứng dụng",
+    "updateAvailable": "Đã có phiên bản mới của ứng dụng.",
+    "reload": "Tải lại",
+    "offlineBanner": "Bạn đang offline. Màn hình hiển thị dữ liệu đã lưu trên máy (có thể chưa cập nhật); lưu, xác nhận và thanh toán cần có mạng."
   }
 }

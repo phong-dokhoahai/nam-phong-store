@@ -6,6 +6,7 @@ import Button from "@/components/ui/button/Button";
 import { PlusIcon } from "@/icons";
 import ConfirmStockReceiptModal from "@/components/stock-receipts/ConfirmStockReceiptModal";
 import StockReceiptFormModal from "@/components/stock-receipts/StockReceiptFormModal";
+import { findInactiveReferences } from "@/components/stock-receipts/stockReceiptFormat";
 import StockReceiptsTable from "@/components/stock-receipts/StockReceiptsTable";
 import StockReceiptsToolbar from "@/components/stock-receipts/StockReceiptsToolbar";
 import {
@@ -86,11 +87,13 @@ export default function StockReceipts() {
     data: payload,
     isLoading,
     error: loadError,
+    cachedAt,
     reload,
     setData,
   } = useAsyncData(loadReceipts, {
     initialData: emptyPayload,
     errorMessage: t("stockReceipts.errors.load"),
+    offlineKey: `stockReceipts:${JSON.stringify([page, debouncedSearch, status])}`,
     onSuccess: (loaded) => {
       const firstDraft =
         loaded.receipts.find((receipt) => receipt.status === "DRAFT") ||
@@ -158,6 +161,30 @@ export default function StockReceipts() {
     setDraft(getDraftFromReceipt(receipt));
   };
 
+  // The save/confirm RPCs reject a deactivated supplier or material; explain
+  // it before calling them instead of showing the raw database error.
+  const getInactiveError = (
+    supplierId: string,
+    supplierName: string,
+    lines: StockReceipt["lines"],
+  ) => {
+    const inactive = findInactiveReferences(
+      supplierId,
+      lines,
+      suppliers,
+      materials,
+    );
+    if (inactive.partner) {
+      return t("stockReceipts.errors.inactiveSupplier", { name: supplierName });
+    }
+    if (inactive.materialIds.length > 0) {
+      return t("stockReceipts.errors.inactiveMaterials", {
+        count: inactive.materialIds.length,
+      });
+    }
+    return "";
+  };
+
   const validateDraft = () => {
     if (!draft.supplierId || !draft.receiptDate) {
       return t("stockReceipts.errors.requiredHeader");
@@ -166,6 +193,15 @@ export default function StockReceipts() {
     if (draft.lines.length === 0) {
       return t("stockReceipts.errors.requiredLines");
     }
+
+    const inactiveError = getInactiveError(
+      draft.supplierId,
+      selectedReceipt?.supplierId === draft.supplierId
+        ? selectedReceipt.supplierName
+        : "",
+      draft.lines,
+    );
+    if (inactiveError) return inactiveError;
 
     const hasInvalidLine = draft.lines.some(
       (line) =>
@@ -255,7 +291,7 @@ export default function StockReceipts() {
       <PageHeader
         title={t("stockReceipts.title")}
         description={t("stockReceipts.description")}
-        meta={!isLoading && <DataSourceBadge source={source} />}
+        meta={!isLoading && <DataSourceBadge source={source} cachedAt={cachedAt} />}
         actions={
           <Button
             startIcon={<PlusIcon className="size-5" />}
@@ -317,6 +353,15 @@ export default function StockReceipts() {
         isOpen={confirmModal.isOpen}
         receipt={confirmingReceipt}
         isSaving={isSaving}
+        blockedReason={
+          confirmingReceipt
+            ? getInactiveError(
+                confirmingReceipt.supplierId,
+                confirmingReceipt.supplierName,
+                confirmingReceipt.lines,
+              )
+            : ""
+        }
         error={confirmModal.isOpen ? error : ""}
         onClose={confirmModal.closeModal}
         onConfirm={handleConfirm}

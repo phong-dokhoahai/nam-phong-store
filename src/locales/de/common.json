@@ -18,7 +18,8 @@
     "breadcrumb": "Brotkrümelnavigation",
     "dataSource": {
       "live": "Supabase-Daten",
-      "demo": "Demodaten"
+      "demo": "Demodaten",
+      "offline": "Offline-Kopie · {{time}}"
     },
     "retry": "Erneut versuchen"
   },
@@ -198,6 +199,9 @@
       "invalidCredentials": "The email or password is incorrect.",
       "inactive": "Your account is inactive or pending approval. Please contact an administrator.",
       "profileMissing": "Your sign-in succeeded, but no application profile was found.",
+      "profileLoadFailed": "Deine Kontodaten konnten nicht geladen werden. Prüfe die Verbindung und versuche es erneut.",
+      "rateLimited": "Zu viele Anmeldeversuche. Bitte warte einige Minuten und versuche es erneut.",
+      "network": "Der Server ist nicht erreichbar. Prüfe die Verbindung und versuche es erneut.",
       "unknown": "Unable to sign in right now. Please try again."
     },
     "protected": {
@@ -265,7 +269,8 @@
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
       "requiredError": "SKU and name are required.",
       "lookupError": "Category and unit are required.",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "inactiveOption": "{name} (inaktiv)"
     },
     "delete": {
       "title": "Deactivate material",
@@ -339,7 +344,9 @@
         "saving": "Speichern..."
       },
       "deactivate": {
-        "deactivating": "Deaktivieren..."
+        "deactivating": "Deaktivieren...",
+        "blockedTitle": "Danach nicht mehr möglich:",
+        "keptTitle": "Bleibt erhalten:"
       }
     },
     "categories": {
@@ -373,7 +380,13 @@
       },
       "deactivate": {
         "title": "Deactivate category",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "Kategorie {name} deaktivieren?",
+        "blocked": [
+          "Diese Kategorie beim Anlegen eines Materials oder beim Ändern der Kategorie auswählen."
+        ],
+        "kept": [
+          "Materialien in dieser Kategorie mit ihrem Bestand und ihrer Historie."
+        ]
       },
       "errors": {
         "load": "Unable to load categories.",
@@ -416,7 +429,13 @@
       },
       "deactivate": {
         "title": "Deactivate unit",
-        "description": "Deactivate {name}? Existing material history remains intact, but it will no longer be available for new setup."
+        "description": "Einheit {name} deaktivieren?",
+        "blocked": [
+          "Diese Einheit beim Anlegen eines Materials oder beim Ändern der Einheit auswählen."
+        ],
+        "kept": [
+          "Materialien mit dieser Einheit mit ihrem Bestand und ihrer Historie."
+        ]
       },
       "errors": {
         "load": "Unable to load units.",
@@ -440,7 +459,7 @@
       "actions": {
         "add": "Kunden hinzufuegen",
         "edit": "Kunden bearbeiten",
-        "deactivate": "Deaktivieren"
+        "deactivate": "Zusammenarbeit beenden"
       },
       "empty": {
         "title": "No customers found",
@@ -456,20 +475,34 @@
         "emailPlaceholder": "accounting@example.com",
         "addressPlaceholder": "Billing or delivery address...",
         "taxCodePlaceholder": "0312345678",
-        "notePlaceholder": "Credit terms, contact notes, or delivery preferences..."
+        "notePlaceholder": "Credit terms, contact notes, or delivery preferences...",
+        "active": "Aktiver Partner"
       },
       "deactivate": {
-        "title": "Deactivate customer",
-        "description": "Deactivate {name}? Existing sales and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "Zusammenarbeit mit Kunde beenden",
+        "description": "Zusammenarbeit mit {name} beenden? Du kannst sie jederzeit wieder aufnehmen, indem du den Kunden bearbeitest und \"Aktiver Partner\" wählst.",
+        "deactivating": "Zusammenarbeit wird beendet...",
+        "blocked": [
+          "Diesen Kunden bei einem neuen Warenausgang auswählen.",
+          "Entwürfe von Warenausgängen für diesen Kunden speichern oder bestätigen (auf einen anderen Kunden umstellen)."
+        ],
+        "kept": [
+          "Verkaufshistorie, Forderungen und Berichte.",
+          "Zahlungseingang für bestätigte Warenausgänge."
+        ]
       },
       "errors": {
         "load": "Unable to load customers.",
         "save": "Unable to save customer.",
-        "deactivate": "Unable to deactivate customer.",
+        "deactivate": "Die Zusammenarbeit mit dem Kunden konnte nicht beendet werden.",
         "duplicateCode": "Another customer already uses this code.",
-        "protectedRecord": "The walk-in customer is a protected system record and cannot be deactivated."
+        "protectedRecord": "Der Laufkunde ist ein geschützter Systemdatensatz; die Zusammenarbeit kann nicht beendet werden."
       },
-      "description": "Kunden für Warenausgänge und Forderungen."
+      "description": "Kunden für Warenausgänge und Forderungen.",
+      "status": {
+        "active": "Aktiver Partner",
+        "inactive": "Zusammenarbeit beendet"
+      }
     },
     "suppliers": {
       "title": "Lieferanten",
@@ -485,7 +518,7 @@
       "actions": {
         "add": "Lieferanten hinzufuegen",
         "edit": "Lieferanten bearbeiten",
-        "deactivate": "Deaktivieren"
+        "deactivate": "Zusammenarbeit beenden"
       },
       "empty": {
         "title": "No suppliers found",
@@ -503,20 +536,34 @@
         "emailPlaceholder": "sales@example.com",
         "addressPlaceholder": "Supplier address...",
         "taxCodePlaceholder": "0300001111",
-        "notePlaceholder": "Lead time, purchasing notes, or payment terms..."
+        "notePlaceholder": "Lead time, purchasing notes, or payment terms...",
+        "active": "Aktiver Partner"
       },
       "deactivate": {
-        "title": "Deactivate supplier",
-        "description": "Deactivate {name}? Existing purchase and debt history remains intact, but it will no longer be available for new transactions."
+        "title": "Zusammenarbeit mit Lieferant beenden",
+        "description": "Zusammenarbeit mit {name} beenden? Du kannst sie jederzeit wieder aufnehmen, indem du den Lieferanten bearbeitest und \"Aktiver Partner\" wählst.",
+        "deactivating": "Zusammenarbeit wird beendet...",
+        "blocked": [
+          "Diesen Lieferanten bei einem neuen Wareneingang auswählen.",
+          "Entwürfe von Wareneingängen für diesen Lieferanten speichern oder bestätigen (auf einen anderen Lieferanten umstellen)."
+        ],
+        "kept": [
+          "Einkaufshistorie, Verbindlichkeiten und Berichte.",
+          "Zahlungen für bestätigte Wareneingänge."
+        ]
       },
       "errors": {
         "load": "Unable to load suppliers.",
         "save": "Unable to save supplier.",
-        "deactivate": "Unable to deactivate supplier.",
+        "deactivate": "Die Zusammenarbeit mit dem Lieferanten konnte nicht beendet werden.",
         "duplicateCode": "Another supplier already uses this code.",
         "protectedRecord": "This supplier is protected."
       },
-      "description": "Lieferanten für Wareneingänge und Verbindlichkeiten."
+      "description": "Lieferanten für Wareneingänge und Verbindlichkeiten.",
+      "status": {
+        "active": "Aktiver Partner",
+        "inactive": "Zusammenarbeit beendet"
+      }
     }
   },
   "ecommerce": {
@@ -1297,7 +1344,8 @@
       "supplierInvoiceNumber": "Supplier invoice",
       "supplierInvoicePlaceholder": "Invoice number",
       "note": "Note",
-      "notePlaceholder": "Internal receiving notes..."
+      "notePlaceholder": "Internal receiving notes...",
+      "inactiveSupplierOption": "{name} (Zusammenarbeit beendet)"
     },
     "lines": {
       "title": "Material lines",
@@ -1309,7 +1357,8 @@
       "unitPrice": "Unit price",
       "discount": "Discount",
       "remove": "Remove line",
-      "lineTotal": "Zeilensumme"
+      "lineTotal": "Zeilensumme",
+      "inactiveMaterialOption": "{label} (inaktiv)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1335,7 +1384,10 @@
       "lineUnitPrice": "Unit price must be 0 or higher.",
       "lineDiscount": "Discount must be 0 or higher.",
       "lineDiscountTooHigh": "Discount cannot exceed this line total.",
-      "duplicateMaterial": "Each material can only appear once on a receipt."
+      "duplicateMaterial": "Each material can only appear once on a receipt.",
+      "inactiveSupplier": "Die Zusammenarbeit mit dem Lieferanten {name} wurde beendet. Wähle einen anderen Lieferanten und speichere, oder nimm die Zusammenarbeit unter Lieferanten wieder auf.",
+      "inactiveMaterials": "Dieser Beleg enthält {count} inaktive(s) Material(ien). Ersetze sie oder entferne diese Zeilen und speichere.",
+      "lineInactiveMaterial": "Dieses Material ist inaktiv. Wähle ein anderes Material oder entferne die Zeile."
     },
     "description": "Wareneingänge von Lieferanten. Bestätigen bucht sie in den Bestand."
   },
@@ -1387,7 +1439,8 @@
       "deliveryAddress": "Delivery address",
       "deliveryAddressPlaceholder": "Delivery or jobsite address...",
       "note": "Note",
-      "notePlaceholder": "Delivery, sales, or warehouse notes..."
+      "notePlaceholder": "Delivery, sales, or warehouse notes...",
+      "inactiveCustomerOption": "{name} (Zusammenarbeit beendet)"
     },
     "lines": {
       "title": "Issue lines",
@@ -1400,7 +1453,8 @@
       "discount": "Discount",
       "remove": "Remove line",
       "available": "Available: {quantity} {unit}",
-      "lineTotal": "Zeilensumme"
+      "lineTotal": "Zeilensumme",
+      "inactiveMaterialOption": "{label} (inaktiv)"
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -1427,7 +1481,10 @@
       "lineDiscount": "Discount cannot be negative.",
       "lineDiscountTooHigh": "Discount cannot exceed line subtotal.",
       "duplicateMaterial": "Each material can only appear once.",
-      "insufficientStock": "Not enough stock. Available: {available}."
+      "insufficientStock": "Not enough stock. Available: {available}.",
+      "inactiveCustomer": "Die Zusammenarbeit mit dem Kunden {name} wurde beendet. Wähle einen anderen Kunden und speichere, oder nimm die Zusammenarbeit unter Kunden wieder auf.",
+      "inactiveMaterials": "Dieser Beleg enthält {count} inaktive(s) Material(ien). Ersetze sie oder entferne diese Zeilen und speichere.",
+      "lineInactiveMaterial": "Dieses Material ist inaktiv. Wähle ein anderes Material oder entferne die Zeile."
     },
     "description": "Warenausgänge an Kunden. Bestätigen bucht sie aus dem Bestand aus."
   },
@@ -1708,5 +1765,11 @@
   "app": {
     "name": "Nam Phong",
     "tagline": "Materiallager"
+  },
+  "pwa": {
+    "install": "App installieren",
+    "updateAvailable": "Eine neue Version der App ist verfügbar.",
+    "reload": "Neu laden",
+    "offlineBanner": "Sie sind offline. Angezeigt werden auf diesem Gerät gespeicherte Daten (eventuell veraltet); Speichern, Bestätigen und Zahlungen erfordern eine Verbindung."
   }
 }

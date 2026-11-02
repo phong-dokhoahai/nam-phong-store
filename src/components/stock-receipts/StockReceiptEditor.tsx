@@ -12,6 +12,7 @@ import {
   calculateLineTotal,
   calculateReceiptTotal,
   calculateSubtotal,
+  findInactiveReferences,
 } from "./stockReceiptFormat";
 import { formatCurrency } from "@/utils/formatCurrency";
 import type {
@@ -67,9 +68,24 @@ export default function StockReceiptEditor({
     draft.taxAmount,
   );
   const selectedMaterialIds = draft.lines.map((line) => line.materialId);
+  const inactive = findInactiveReferences(
+    draft.supplierId,
+    draft.lines,
+    suppliers,
+    materials,
+  );
+  const inactiveSupplierName =
+    selectedReceipt?.supplierId === draft.supplierId
+      ? selectedReceipt.supplierName
+      : "";
+  const isInactiveMaterial = (materialId: string) =>
+    inactive.materialIds.includes(materialId);
 
   const getLineError = (line: StockReceiptLine) => {
     if (!line.materialId) return t("stockReceipts.errors.lineMaterial");
+    if (isInactiveMaterial(line.materialId)) {
+      return t("stockReceipts.errors.lineInactiveMaterial");
+    }
     if (line.quantity <= 0) return t("stockReceipts.errors.lineQuantity");
     if (line.unitPrice < 0) return t("stockReceipts.errors.lineUnitPrice");
     if (line.discountAmount < 0) return t("stockReceipts.errors.lineDiscount");
@@ -197,6 +213,26 @@ export default function StockReceiptEditor({
 
       {error && <InlineAlert className="mt-5">{error}</InlineAlert>}
 
+      {isDraftEditable &&
+        (inactive.partner || inactive.materialIds.length > 0) && (
+          <InlineAlert variant="warning" className="mt-5">
+            {inactive.partner && (
+              <p>
+                {t("stockReceipts.errors.inactiveSupplier", {
+                  name: inactiveSupplierName,
+                })}
+              </p>
+            )}
+            {inactive.materialIds.length > 0 && (
+              <p>
+                {t("stockReceipts.errors.inactiveMaterials", {
+                  count: inactive.materialIds.length,
+                })}
+              </p>
+            )}
+          </InlineAlert>
+        )}
+
       <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div>
           <Label htmlFor="stock-receipt-supplier">
@@ -206,12 +242,28 @@ export default function StockReceiptEditor({
             id="stock-receipt-supplier"
             value={draft.supplierId}
             disabled={!isDraftEditable || isSaving}
+            error={isDraftEditable && inactive.partner}
             onChange={(value) => setDraftField("supplierId", value)}
             placeholder={t("stockReceipts.form.supplierPlaceholder")}
-            options={suppliers.map((supplier) => ({
-              value: supplier.id,
-              label: supplier.name,
-            }))}
+            options={[
+              ...suppliers.map((supplier) => ({
+                value: supplier.id,
+                label: supplier.name,
+              })),
+              // Keep a deactivated supplier visible (not selectable) so the
+              // draft does not look empty.
+              ...(inactive.partner
+                ? [
+                    {
+                      value: draft.supplierId,
+                      label: t("stockReceipts.form.inactiveSupplierOption", {
+                        name: inactiveSupplierName,
+                      }),
+                      disabled: true,
+                    },
+                  ]
+                : []),
+            ]}
           />
         </div>
         <div>
@@ -298,13 +350,29 @@ export default function StockReceiptEditor({
                     disabled={!isDraftEditable || isSaving}
                     error={Boolean(getLineError(line))}
                     onChange={(value) => updateLineMaterial(line.id, value)}
-                    options={materials.map((material) => ({
-                      value: material.id,
-                      label: `${material.sku} - ${material.name}`,
-                      disabled:
-                        line.materialId !== material.id &&
-                        selectedMaterialIds.includes(material.id),
-                    }))}
+                    options={[
+                      ...materials.map((material) => ({
+                        value: material.id,
+                        label: `${material.sku} - ${material.name}`,
+                        disabled:
+                          line.materialId !== material.id &&
+                          selectedMaterialIds.includes(material.id),
+                      })),
+                      ...(isInactiveMaterial(line.materialId)
+                        ? [
+                            {
+                              value: line.materialId,
+                              label: t(
+                                "stockReceipts.lines.inactiveMaterialOption",
+                                {
+                                  label: `${line.materialSku} - ${line.materialName}`,
+                                },
+                              ),
+                              disabled: true,
+                            },
+                          ]
+                        : []),
+                    ]}
                   />
                 </div>
                 <div>

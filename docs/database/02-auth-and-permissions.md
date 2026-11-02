@@ -34,7 +34,8 @@ Mở rộng thông tin người dùng ứng dụng.
 Quy tắc:
 
 - Người dùng mới không tự chọn role.
-- Tài khoản mới mặc định chưa hoạt động hoặc chỉ được tạo qua quy trình mời nội bộ.
+- Không có đăng ký công khai: "Allow new users to sign up" đã tắt trên Supabase Auth (2026-10-20, `enable_signup = false` trong `supabase/config.toml`) và app không có trang `/signup`. Tài khoản do ADMIN tạo qua Auth admin API (`auth.admin.createUser`, như `scripts/bootstrap-admin.mjs`).
+- Lớp phòng thủ thứ hai nếu đăng ký bị bật lại: trigger vẫn tạo profile `WAREHOUSE_STAFF` + `is_active = false`, và RLS/RPC từ chối tài khoản chưa hoạt động.
 - Chỉ ADMIN được đổi `role` và `is_active`.
 - WAREHOUSE_STAFF chỉ xem/sửa thông tin cá nhân được cho phép.
 - Không cho người dùng tự nâng quyền qua update metadata.
@@ -63,6 +64,8 @@ is_active_user() -> boolean
 ```
 
 Các function phải tránh RLS recursion khi đọc `profiles`. Nếu dùng `SECURITY DEFINER`, phải giới hạn `EXECUTE`, cố định `search_path` và chỉ trả thông tin cần thiết.
+
+Các helper boolean luôn trả `true`/`false`, không bao giờ `NULL` (migration `202610200001`): `NOT NULL` là `NULL` và làm guard dạng `if not is_admin()` bị bỏ qua (lỗ hổng tự nâng quyền đã vá ở `202610160005`). Mọi function `SECURITY DEFINER` được gọi trực tiếp từ client phải tự kiểm tra `is_active_user()`, ví dụ `next_document_code`. Test: `supabase/tests/auth-hardening.rollback.sql`.
 
 ### 5.5. First ADMIN bootstrap
 

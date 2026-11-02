@@ -249,7 +249,7 @@ export default function MasterDataFormModal({
             <Checkbox
               checked={values.isActive}
               onChange={(checked) => updateValue("isActive", checked)}
-              label={t("masterData.common.form.active")}
+              label={t([`masterData.${kind}.form.active`, "masterData.common.form.active"])}
               disabled={Boolean(record?.isProtected)}
             />
           </div>

@@ -6,7 +6,7 @@ AI coding agent phải đọc file điều hướng này **trước khi nhận b
 
 > **BẮT BUỘC:** mỗi khi hoàn thành một tính năng hoặc một task có thay đổi repository, AI agent phải cập nhật bộ tài liệu process trong cùng task đó, theo [process/04-update-rules.md](process/04-update-rules.md). Task chưa cập nhật process được coi là **chưa hoàn thành**.
 
-**Cập nhật lần cuối:** 2026-10-19 (sau commit `905d98a`; thêm `CLAUDE.md`; refactor kiến trúc UI đợt 2 + thiết kế lại UI ở working tree chưa commit; migration `202610160005`–`0007` đã push).
+**Cập nhật lần cuối:** 2026-10-22 (sau commit `afb0ce4`; 2026-10-20: review auth, tắt đăng ký công khai, bỏ `/signup`, migration `202610200001` đã push, sửa luồng phiên đăng nhập; 2026-10-22: "ngừng hợp tác" cho khách hàng/NCC, chặn danh mục/đơn vị ngưng dùng trong form vật liệu, xử lý phiếu nháp có đối tượng đã ngừng; PWA phần A: cài app, cache giao diện, báo bản mới, báo offline, xem dữ liệu đã lưu cho ADMIN; thay đổi repo chưa commit).
 
 ## Mục lục
 

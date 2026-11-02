@@ -1,4 +1,5 @@
 import AsyncContent from "@/components/common/AsyncContent";
+import DataSourceBadge from "@/components/common/DataSourceBadge";
 import FilterToolbar from "@/components/common/FilterToolbar";
 import ListPagination from "@/components/common/ListPagination";
 import PageHeader from "@/components/common/PageHeader";
@@ -23,10 +24,12 @@ export default function LowStockReport() {
     data: rows,
     isLoading,
     error,
+    cachedAt,
     reload,
   } = useAsyncData(fetchLowStockReport, {
     initialData: noRows,
     errorMessage: t("reports.lowStock.errors.load"),
+    offlineKey: "reports:low-stock",
   });
 
   const keyword = search.trim().toLowerCase();
@@ -86,6 +89,11 @@ export default function LowStockReport() {
       <PageHeader
         title={t("reports.lowStock.title")}
         description={t("reports.lowStock.listTitle")}
+        meta={
+          cachedAt !== null && (
+            <DataSourceBadge source="supabase" cachedAt={cachedAt} />
+          )
+        }
         actions={
           <ExportPdfButton
             buildData={buildPdfData}
