@@ -20,6 +20,8 @@
 
 Migration mới phải đặt tên `YYYYMMDDNNNN_<mô_tả>.sql`, lớn hơn migration cuối cùng ở trên.
 
+Dữ liệu mẫu (không phải migration): `supabase/sample-data.sql`, **đã chạy lên DB remote ngày 2026-11-02** bằng tài khoản ADMIN qua các RPC thật. Kết quả: 10 danh mục, +10 đơn vị, +10 NCC, 10 khách hàng, 10 vật liệu, 10 phiếu nhập + 10 phiếu xuất (mỗi loại 8 đã xác nhận, 2 nháp), 10 phiếu chi + 10 phiếu thu, 10 phiếu trả hàng bán + 10 trả hàng mua + 10 phiếu kiểm kê (đều nháp), 10 `idempotency_keys` (hết hạn sau 1 ngày); movement, sổ công nợ, audit, `document_sequences` do RPC sinh. Mọi bản ghi gắn nhãn `[Dữ liệu mẫu]` trong note/description. Phiếu đã xác nhận và các dòng append-only không xóa được. Không chạy lại file (trùng mã sẽ lỗi). `profiles` không thêm (cần tạo tài khoản Auth).
+
 ## 3. Route đã đăng ký (`src/App.tsx`)
 
 - `/` chuyển hướng tới `/inventory` (2026-10-19; trước đó là dashboard demo bán hàng của template).

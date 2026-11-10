@@ -25,6 +25,33 @@ Quy tắc viết:
 ## Nhật ký
 
 ```text
+06/11/2026
+Today I worked on:
+[Nam Phong Storage]:
+Fix number fields that showed "0001" or "05" while saving 1 or 5, and that silently turned negative numbers into 0, with a new number box that only accepts valid amounts and quantities and shows thousand separators, checked in headless Chrome on a test page
+Add input checks to the material, category, unit, supplier, customer, payment, stock receipt and stock issue forms (length limits matching the database, email/phone/tax code/code formats, decimals allowed by each unit, whole-amount line totals, document discount not above the total) with the error shown under each field, not yet tried on the app screens with the real database
+Add the counter sale flow to the project scope: pick items by typing, quantity 1 and walk-in customer by default, take full or partial payment and finish in one step, aiming for 3–4 actions per simple sale instead of about 12 today
+Review four open-source project-manager agent kits against this project's needs, nothing installed
+Update the project rules so AI agents always reuse and fix the template's own components instead of replacing them, after finding the template date picker had been dropped without telling the user; fixing the date picker itself is the next task
+```
+
+```text
+04/11/2026
+Today I worked on:
+[Nam Phong Storage]:
+Add the open-source Founder skill pack (board review, competitor scan, simulated buyer panel, pricing, unit economics, marketing, operations, launch and business plan) to the project's Claude tools so the store's business can be pressure-tested before spending money, copied unchanged from the published version after reading every file, not yet run
+Review the app as a product to sell to other building-materials shops with the Founder board and competitor scan: the board voted 2 "fund if" and 1 "pass" (3.7/10), asking for 30–60 days of real daily use at Nam Phong, a one-step counter sale and a closed debt loop first; the scan found Sapo, KiotViet and MISA eShop already selling to these shops at 0–330,000 VND a month with the features Nam Phong still lacks, leaving only a possible hands-on setup and support gap
+```
+
+```text
+02/11/2026
+Today I worked on:
+[Nam Phong Storage]:
+Add sample data to the live database (10 categories, units, suppliers, customers and materials, 20 confirmed and 4 draft stock receipts/issues, 20 payments, plus draft returns and stocktakes) through the app's own database functions so stock and debt add up, checked by matching stock to stock movements and debt to the debt ledger, not yet viewed in the app
+Test every business screen in the browser as admin with the real database (desktop and mobile, light and dark): all 16 screens load without errors and the totals match the data; fix the invisible "view" button on confirmed receipts/issues, pages that scrolled sideways and hid the main button, quantities shown as 17,000 instead of 17.000, and receipt/issue lists that could repeat or skip documents between pages
+```
+
+```text
 22/10/2026
 Today I worked on:
 [Nam Phong Storage]:

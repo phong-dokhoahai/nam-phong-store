@@ -52,6 +52,7 @@ Có thể:
 * Quản lý khách hàng.
 * Nhập kho.
 * Xuất kho.
+* Bán hàng tại quầy.
 * Điều chỉnh kho.
 * Xem lịch sử kho.
 * Xem báo cáo.
@@ -67,6 +68,7 @@ Có thể:
 * Xem tồn kho.
 * Tạo phiếu nhập.
 * Tạo phiếu xuất.
+* Bán hàng tại quầy (gồm thu tiền của đơn đó).
 * Điều chỉnh kho theo quyền được cấp.
 * Xem lịch sử giao dịch kho.
 
@@ -90,6 +92,12 @@ Export
 Inventory History
 ```
 
+Với cửa hàng bán lẻ, luồng dùng nhiều nhất trong ngày là bán tại quầy (xem mục 4, Counter Sale):
+
+```text
+Chọn hàng → Số lượng → Khách → Thu tiền → Hoàn tất
+```
+
 Các module thuộc MVP:
 
 * Authentication.
@@ -101,6 +109,7 @@ Các module thuộc MVP:
 * Customer Management.
 * Stock Receipt / Nhập kho.
 * Stock Issue / Xuất kho.
+* Counter Sale / Bán tại quầy.
 * Inventory Management.
 * Inventory Adjustment.
 * Inventory Transaction History.
@@ -262,6 +271,60 @@ Khi phiếu xuất hoàn thành:
 ```text
 Inventory decreases
 ```
+
+---
+
+### Counter Sale (Bán tại quầy)
+
+Luồng chính của cửa hàng bán lẻ: khách đến quầy, mua vài mặt hàng, trả tiền hoặc ghi nợ, rồi đi.
+
+Đây là luồng dùng nhiều nhất trong ngày. Nó phải nhanh hơn ghi sổ tay, nếu không nhân viên sẽ quay lại dùng sổ.
+
+Người dùng: chủ cửa hàng (ADMIN) và nhân viên quầy (WAREHOUSE_STAFF).
+
+```text
+Chọn hàng (gõ tên hoặc mã)
+    ↓
+Số lượng (mặc định 1)
+    ↓
+Khách (mặc định Khách lẻ)
+    ↓
+Thu tiền (mặc định thu đủ; thu thiếu thì phần còn lại ghi nợ)
+    ↓
+Hoàn tất
+```
+
+Khi hoàn tất, hệ thống làm tất cả trong một nghiệp vụ duy nhất:
+
+```text
+Tạo đơn bán
++ Giảm tồn kho và tạo Inventory Transaction
++ Ghi công nợ phát sinh
++ Ghi phiếu thu cho số tiền khách đã trả
+```
+
+Nếu một bước thất bại thì rollback toàn bộ.
+
+Mục tiêu trải nghiệm:
+
+* Đơn 1 mặt hàng, khách trả đủ: tối đa 3–4 thao tác, trên một màn hình.
+* Không phải lưu nháp, không phải chuyển sang màn khác để thu tiền.
+* Tìm vật liệu bằng cách gõ tên hoặc mã.
+
+Quy tắc:
+
+* Áp dụng toàn bộ nguyên tắc ở mục 6: không tồn âm, mọi thay đổi tồn có lịch sử, atomic, backend kiểm tra.
+* Số tiền thu ngay nằm trong khoảng từ 0 đến tổng đơn. Phần còn lại thành công nợ của khách.
+* Khách lẻ được ghi nợ như mọi khách khác (chủ cửa hàng quyết định ngày 2026-11-06).
+* Đơn đã hoàn tất là đơn bán đã xác nhận. Nếu sai thì hủy đơn hoặc làm phiếu trả hàng, không sửa trực tiếp.
+
+Phân biệt với Stock Issue:
+
+* Bán tại quầy: khách đứng chờ, không có nháp, hoàn tất ngay.
+* Stock Issue (phiếu xuất): đơn giao công trình hoặc đơn lớn, cần lưu nháp, chỉnh sửa rồi xác nhận sau.
+* Hai luồng dùng chung một loại chứng từ đơn bán, cùng quy tắc tồn kho và công nợ.
+
+Chưa quyết định: in hoặc gửi phiếu cho khách sau khi bán.
 
 ---
 
