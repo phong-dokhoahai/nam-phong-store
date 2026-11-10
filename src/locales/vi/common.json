@@ -267,8 +267,6 @@
       "active": "Đang dùng",
       "description": "Mô tả",
       "descriptionPlaceholder": "Ghi chú mua hàng, lưu kho hoặc sử dụng...",
-      "requiredError": "SKU và tên là bắt buộc.",
-      "lookupError": "Danh mục và đơn vị là bắt buộc.",
       "saving": "Đang lưu...",
       "inactiveOption": "{name} (ngưng dùng)"
     },
@@ -340,7 +338,6 @@
         "taxCode": "Mã số thuế",
         "note": "Ghi chú",
         "active": "Đang dùng",
-        "requiredError": "Mã và tên là bắt buộc.",
         "saving": "Đang lưu..."
       },
       "deactivate": {
@@ -424,8 +421,7 @@
         "codePlaceholder": "M3",
         "namePlaceholder": "Mét khối",
         "precision": "Độ chính xác số lượng",
-        "precisionOption": "{value} chữ số thập phân",
-        "precisionError": "Độ chính xác phải từ 0 đến 3."
+        "precisionOption": "{value} chữ số thập phân"
       },
       "deactivate": {
         "title": "Ngưng dùng đơn vị",
@@ -1771,5 +1767,19 @@
     "updateAvailable": "Đã có phiên bản mới của ứng dụng.",
     "reload": "Tải lại",
     "offlineBanner": "Bạn đang offline. Màn hình hiển thị dữ liệu đã lưu trên máy (có thể chưa cập nhật); lưu, xác nhận và thanh toán cần có mạng."
+  },
+  "validation": {
+    "required": "Bắt buộc nhập.",
+    "selectRequired": "Bắt buộc chọn.",
+    "maxLength": "Tối đa {max} ký tự.",
+    "email": "Email không đúng định dạng (ví dụ: ten@congty.vn).",
+    "phone": "Số điện thoại gồm 8–15 chữ số, có thể bắt đầu bằng +.",
+    "taxCode": "Mã số thuế gồm 10 chữ số, 10 chữ số kèm -XXX (chi nhánh) hoặc 12 chữ số.",
+    "code": "Mã chỉ gồm chữ không dấu, số và các ký tự . _ -",
+    "fixFields": "Kiểm tra lại các ô được đánh dấu đỏ.",
+    "quantityWhole": "Đơn vị {unit} chỉ nhận số nguyên.",
+    "quantityDecimals": "Đơn vị {unit} cho phép tối đa {decimals} chữ số thập phân.",
+    "fractionalLineTotal": "Thành tiền phải là số đồng chẵn. Điều chỉnh số lượng hoặc đơn giá.",
+    "documentDiscountTooHigh": "Chiết khấu phiếu không được lớn hơn tiền hàng cộng phí vận chuyển và thuế."
   }
 }

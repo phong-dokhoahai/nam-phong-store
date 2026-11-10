@@ -1,5 +1,6 @@
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
+import NumberInput from "@/components/form/input/NumberInput";
 import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
@@ -9,6 +10,9 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Material, MaterialFormValues, MaterialLookup } from "./types";
 import InlineAlert from "@/components/common/InlineAlert";
+import FieldError from "@/components/common/FieldError";
+import { fieldLimits } from "@/utils/validation";
+import { validateMaterialForm } from "./materialValidation";
 
 type MaterialFormModalProps = {
   isOpen: boolean;
@@ -59,7 +63,10 @@ export default function MaterialFormModal({
   const [values, setValues] = useState<MaterialFormValues>(() =>
     material ? valuesFromMaterial(material) : emptyValues,
   );
-  const [localError, setLocalError] = useState("");
+  // Field errors appear after the first submit, then update while typing.
+  const [showErrors, setShowErrors] = useState(false);
+  const fieldErrors = showErrors ? validateMaterialForm(t, values) : {};
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
   const title = material
     ? t("materials.form.editTitle")
     : t("materials.form.createTitle");
@@ -94,25 +101,11 @@ export default function MaterialFormModal({
     setValues((current) => ({ ...current, [key]: value }));
   };
 
-  const updateNumber = (
-    key: "defaultPurchasePrice" | "defaultSalePrice" | "minimumStock",
-    value: string,
-  ) => {
-    updateValue(key, Math.max(0, Number(value || 0)));
-  };
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!values.sku.trim() || !values.name.trim()) {
-      setLocalError(t("materials.form.requiredError"));
-      return;
-    }
-
-    if (!values.categoryId || !values.unitId) {
-      setLocalError(t("materials.form.lookupError"));
-      return;
-    }
+    setShowErrors(true);
+    if (Object.keys(validateMaterialForm(t, values)).length > 0) return;
 
     onSubmit(values);
   };
@@ -122,8 +115,8 @@ export default function MaterialFormModal({
       <form onSubmit={handleSubmit} className="space-y-6">
         <ModalHeader title={title} description={t("materials.form.subtitle")} />
 
-        {(error || localError) && (
-          <InlineAlert>{error || localError}</InlineAlert>
+        {(error || hasFieldErrors) && (
+          <InlineAlert>{error || t("validation.fixFields")}</InlineAlert>
         )}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -132,6 +125,9 @@ export default function MaterialFormModal({
             <Input
               id="material-sku"
               value={values.sku}
+              maxLength={fieldLimits.materialSku}
+              error={Boolean(fieldErrors.sku)}
+              hint={fieldErrors.sku}
               onChange={(event) => updateValue("sku", event.target.value)}
               placeholder={t("materials.form.skuPlaceholder")}
             />
@@ -141,6 +137,9 @@ export default function MaterialFormModal({
             <Input
               id="material-name"
               value={values.name}
+              maxLength={fieldLimits.materialName}
+              error={Boolean(fieldErrors.name)}
+              hint={fieldErrors.name}
               onChange={(event) => updateValue("name", event.target.value)}
               placeholder={t("materials.form.namePlaceholder")}
             />
@@ -154,8 +153,12 @@ export default function MaterialFormModal({
               value={values.categoryId}
               placeholder={t("materials.form.categoryPlaceholder")}
               options={categoryOptions}
+              error={Boolean(fieldErrors.categoryId)}
               onChange={(value) => updateValue("categoryId", value)}
             />
+            {fieldErrors.categoryId && (
+              <FieldError className="mt-1.5">{fieldErrors.categoryId}</FieldError>
+            )}
           </div>
           <div>
             <Label htmlFor="material-unit">{t("materials.form.unit")}</Label>
@@ -164,20 +167,23 @@ export default function MaterialFormModal({
               value={values.unitId}
               placeholder={t("materials.form.unitPlaceholder")}
               options={unitOptions}
+              error={Boolean(fieldErrors.unitId)}
               onChange={(value) => updateValue("unitId", value)}
             />
+            {fieldErrors.unitId && (
+              <FieldError className="mt-1.5">{fieldErrors.unitId}</FieldError>
+            )}
           </div>
           <div>
             <Label htmlFor="material-purchase-price">
               {t("materials.form.purchasePrice")}
             </Label>
-            <Input
+            <NumberInput
               id="material-purchase-price"
-              type="number"
-              min="0"
+              kind="money"
               value={values.defaultPurchasePrice}
-              onChange={(event) =>
-                updateNumber("defaultPurchasePrice", event.target.value)
+              onValueChange={(value) =>
+                updateValue("defaultPurchasePrice", value)
               }
             />
           </div>
@@ -185,29 +191,22 @@ export default function MaterialFormModal({
             <Label htmlFor="material-sale-price">
               {t("materials.form.salePrice")}
             </Label>
-            <Input
+            <NumberInput
               id="material-sale-price"
-              type="number"
-              min="0"
+              kind="money"
               value={values.defaultSalePrice}
-              onChange={(event) =>
-                updateNumber("defaultSalePrice", event.target.value)
-              }
+              onValueChange={(value) => updateValue("defaultSalePrice", value)}
             />
           </div>
           <div>
             <Label htmlFor="material-minimum-stock">
               {t("materials.form.minimumStock")}
             </Label>
-            <Input
+            <NumberInput
               id="material-minimum-stock"
-              type="number"
-              min="0"
-              step={0.001}
+              kind="quantity"
               value={values.minimumStock}
-              onChange={(event) =>
-                updateNumber("minimumStock", event.target.value)
-              }
+              onValueChange={(value) => updateValue("minimumStock", value)}
             />
           </div>
           <div className="flex items-end pb-3">
@@ -225,6 +224,9 @@ export default function MaterialFormModal({
               id="material-description"
               rows={4}
               value={values.description}
+              maxLength={fieldLimits.longText}
+              error={Boolean(fieldErrors.description)}
+              hint={fieldErrors.description}
               onChange={(value) => updateValue("description", value)}
               placeholder={t("materials.form.descriptionPlaceholder")}
             />

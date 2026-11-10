@@ -1,4 +1,5 @@
 import { demoMaterials } from "@/components/materials/materialsFixtures";
+import { MAX_QUANTITY_DECIMALS } from "@/utils/numberInput";
 import type {
   StockIssue,
   StockIssueCustomerLookup,
@@ -26,6 +27,8 @@ export const demoStockIssueMaterials: StockIssueMaterialLookup[] =
       sku: material.sku,
       name: material.name,
       unitName: material.unitName,
+      // Demo data has no unit precision: allow the database maximum.
+      unitPrecision: MAX_QUANTITY_DECIMALS,
       currentStock: material.currentStock,
       defaultSalePrice: material.defaultSalePrice,
     }));

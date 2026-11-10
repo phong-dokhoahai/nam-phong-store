@@ -1,3 +1,7 @@
+import type { TFunction } from "i18next";
+import { getLineAmountIssue } from "@/utils/documentLines";
+import type { StockReceiptLine, StockReceiptMaterialLookup } from "./types";
+
 export const calculateLineTotal = (
   quantity: number,
   unitPrice: number,
@@ -36,3 +40,43 @@ export const findInactiveReferences = (
         !activeMaterials.some((material) => material.id === materialId),
     ),
 });
+
+/**
+ * Error shown under a line, or "" when the line can be saved. `materials` are
+ * the active lookups: a material missing from them was deactivated.
+ */
+export const getReceiptLineError = (
+  t: TFunction,
+  line: StockReceiptLine,
+  lines: StockReceiptLine[],
+  materials: StockReceiptMaterialLookup[],
+) => {
+  if (!line.materialId) return t("stockReceipts.errors.lineMaterial");
+  const material = materials.find((item) => item.id === line.materialId);
+  if (!material) return t("stockReceipts.errors.lineInactiveMaterial");
+
+  switch (getLineAmountIssue(line, material.unitPrecision)) {
+    case "quantity":
+      return t("stockReceipts.errors.lineQuantity");
+    case "quantityDecimals":
+      return material.unitPrecision === 0
+        ? t("validation.quantityWhole", { unit: material.unitName })
+        : t("validation.quantityDecimals", {
+            unit: material.unitName,
+            decimals: material.unitPrecision,
+          });
+    case "unitPrice":
+      return t("stockReceipts.errors.lineUnitPrice");
+    case "discount":
+      return t("stockReceipts.errors.lineDiscount");
+    case "discountTooHigh":
+      return t("stockReceipts.errors.lineDiscountTooHigh");
+    case "fractionalTotal":
+      return t("validation.fractionalLineTotal");
+  }
+
+  if (lines.filter((item) => item.materialId === line.materialId).length > 1) {
+    return t("stockReceipts.errors.duplicateMaterial");
+  }
+  return "";
+};

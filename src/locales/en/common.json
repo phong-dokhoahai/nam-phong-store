@@ -267,8 +267,6 @@
       "active": "Active",
       "description": "Description",
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
-      "requiredError": "SKU and name are required.",
-      "lookupError": "Category and unit are required.",
       "saving": "Saving...",
       "inactiveOption": "{name} (inactive)"
     },
@@ -340,7 +338,6 @@
         "taxCode": "Tax code",
         "note": "Note",
         "active": "Active",
-        "requiredError": "Code and name are required.",
         "saving": "Saving..."
       },
       "deactivate": {
@@ -424,8 +421,7 @@
         "codePlaceholder": "M3",
         "namePlaceholder": "Cubic meter",
         "precision": "Quantity precision",
-        "precisionOption": "{value} decimal places",
-        "precisionError": "Precision must be between 0 and 3."
+        "precisionOption": "{value} decimal places"
       },
       "deactivate": {
         "title": "Deactivate unit",
@@ -1771,5 +1767,19 @@
     "updateAvailable": "A new version of the app is available.",
     "reload": "Reload",
     "offlineBanner": "You are offline. Screens show data saved on this device (may be out of date); saving, confirming and payments need a connection."
+  },
+  "validation": {
+    "required": "Required.",
+    "selectRequired": "Please select a value.",
+    "maxLength": "At most {max} characters.",
+    "email": "Invalid email (e.g. name@company.com).",
+    "phone": "Phone number must have 8–15 digits and may start with +.",
+    "taxCode": "Tax code must be 10 digits, 10 digits plus -XXX (branch), or 12 digits.",
+    "code": "Codes may only contain unaccented letters, digits and . _ -",
+    "fixFields": "Check the fields marked in red.",
+    "quantityWhole": "Unit {unit} only accepts whole numbers.",
+    "quantityDecimals": "Unit {unit} allows at most {decimals} decimal places.",
+    "fractionalLineTotal": "Line total must be a whole amount. Adjust the quantity or unit price.",
+    "documentDiscountTooHigh": "Document discount cannot exceed goods amount plus shipping and tax."
   }
 }

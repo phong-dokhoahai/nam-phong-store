@@ -1,3 +1,8 @@
+import type { TFunction } from "i18next";
+import { getLineAmountIssue } from "@/utils/documentLines";
+import { formatQuantity } from "@/utils/formatQuantity";
+import type { StockIssueLine, StockIssueMaterialLookup } from "./types";
+
 export const calculateLineTotal = (
   quantity: number,
   unitPrice: number,
@@ -36,3 +41,48 @@ export const findInactiveReferences = (
         !activeMaterials.some((material) => material.id === materialId),
     ),
 });
+
+/**
+ * Error shown under a line, or "" when the line can be saved. `materials` are
+ * the active lookups: a material missing from them was deactivated.
+ */
+export const getIssueLineError = (
+  t: TFunction,
+  line: StockIssueLine,
+  lines: StockIssueLine[],
+  materials: StockIssueMaterialLookup[],
+) => {
+  if (!line.materialId) return t("stockIssues.errors.lineMaterial");
+  const material = materials.find((item) => item.id === line.materialId);
+  if (!material) return t("stockIssues.errors.lineInactiveMaterial");
+
+  switch (getLineAmountIssue(line, material.unitPrecision)) {
+    case "quantity":
+      return t("stockIssues.errors.lineQuantity");
+    case "quantityDecimals":
+      return material.unitPrecision === 0
+        ? t("validation.quantityWhole", { unit: material.unitName })
+        : t("validation.quantityDecimals", {
+            unit: material.unitName,
+            decimals: material.unitPrecision,
+          });
+    case "unitPrice":
+      return t("stockIssues.errors.lineUnitPrice");
+    case "discount":
+      return t("stockIssues.errors.lineDiscount");
+    case "discountTooHigh":
+      return t("stockIssues.errors.lineDiscountTooHigh");
+    case "fractionalTotal":
+      return t("validation.fractionalLineTotal");
+  }
+
+  if (line.quantity > material.currentStock) {
+    return t("stockIssues.errors.insufficientStock", {
+      available: formatQuantity(material.currentStock),
+    });
+  }
+  if (lines.filter((item) => item.materialId === line.materialId).length > 1) {
+    return t("stockIssues.errors.duplicateMaterial");
+  }
+  return "";
+};

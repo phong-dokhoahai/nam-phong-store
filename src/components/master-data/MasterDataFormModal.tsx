@@ -13,6 +13,12 @@ import type {
   MasterDataRecord,
 } from "./types";
 import InlineAlert from "@/components/common/InlineAlert";
+import { fieldLimits } from "@/utils/validation";
+import {
+  isContactKind,
+  masterDataLimits,
+  validateMasterDataForm,
+} from "./masterDataValidation";
 
 type MasterDataFormModalProps = {
   kind: MasterDataKind;
@@ -52,9 +58,6 @@ const valuesFromRecord = (record: MasterDataRecord): MasterDataFormValues => ({
   isActive: record.isActive,
 });
 
-const isContactKind = (kind: MasterDataKind) =>
-  kind === "customers" || kind === "suppliers";
-
 export default function MasterDataFormModal({
   kind,
   isOpen,
@@ -68,7 +71,13 @@ export default function MasterDataFormModal({
   const [values, setValues] = useState<MasterDataFormValues>(() =>
     record ? valuesFromRecord(record) : emptyValues,
   );
-  const [localError, setLocalError] = useState("");
+  // Field errors appear after the first submit, then update while typing.
+  const [showErrors, setShowErrors] = useState(false);
+  const fieldErrors = showErrors
+    ? validateMasterDataForm(t, kind, values)
+    : {};
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+  const limits = masterDataLimits[kind];
   const title = record
     ? t(`masterData.${kind}.form.editTitle`)
     : t(`masterData.${kind}.form.createTitle`);
@@ -83,13 +92,8 @@ export default function MasterDataFormModal({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!values.code.trim() || !values.name.trim()) {
-      setLocalError(t("masterData.common.form.requiredError"));
-      return;
-    }
-
-    if (kind === "units" && (values.precision < 0 || values.precision > 3)) {
-      setLocalError(t("masterData.units.form.precisionError"));
+    setShowErrors(true);
+    if (Object.keys(validateMasterDataForm(t, kind, values)).length > 0) {
       return;
     }
 
@@ -98,14 +102,14 @@ export default function MasterDataFormModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <ModalHeader
           title={title}
           description={t(`masterData.${kind}.form.subtitle`)}
         />
 
-        {(error || localError) && (
-          <InlineAlert>{error || localError}</InlineAlert>
+        {(error || hasFieldErrors) && (
+          <InlineAlert>{error || t("validation.fixFields")}</InlineAlert>
         )}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -116,6 +120,9 @@ export default function MasterDataFormModal({
             <Input
               id={`${kind}-code`}
               value={values.code}
+              maxLength={limits.code}
+              error={Boolean(fieldErrors.code)}
+              hint={fieldErrors.code}
               onChange={(event) => updateValue("code", event.target.value)}
               placeholder={t(`masterData.${kind}.form.codePlaceholder`)}
               disabled={Boolean(record?.isProtected)}
@@ -128,6 +135,9 @@ export default function MasterDataFormModal({
             <Input
               id={`${kind}-name`}
               value={values.name}
+              maxLength={limits.name}
+              error={Boolean(fieldErrors.name)}
+              hint={fieldErrors.name}
               onChange={(event) => updateValue("name", event.target.value)}
               placeholder={t(`masterData.${kind}.form.namePlaceholder`)}
             />
@@ -159,6 +169,9 @@ export default function MasterDataFormModal({
                   <Input
                     id={`${kind}-contact-name`}
                     value={values.contactName}
+                    maxLength={fieldLimits.contactName}
+                    error={Boolean(fieldErrors.contactName)}
+                    hint={fieldErrors.contactName}
                     onChange={(event) =>
                       updateValue("contactName", event.target.value)
                     }
@@ -174,7 +187,12 @@ export default function MasterDataFormModal({
                 </Label>
                 <Input
                   id={`${kind}-phone`}
+                  type="tel"
+                  inputMode="tel"
                   value={values.phone}
+                  maxLength={fieldLimits.phone}
+                  error={Boolean(fieldErrors.phone)}
+                  hint={fieldErrors.phone}
                   onChange={(event) => updateValue("phone", event.target.value)}
                   placeholder={t(`masterData.${kind}.form.phonePlaceholder`)}
                 />
@@ -187,6 +205,9 @@ export default function MasterDataFormModal({
                   id={`${kind}-email`}
                   type="email"
                   value={values.email}
+                  maxLength={fieldLimits.email}
+                  error={Boolean(fieldErrors.email)}
+                  hint={fieldErrors.email}
                   onChange={(event) => updateValue("email", event.target.value)}
                   placeholder={t(`masterData.${kind}.form.emailPlaceholder`)}
                 />
@@ -198,6 +219,9 @@ export default function MasterDataFormModal({
                 <Input
                   id={`${kind}-tax-code`}
                   value={values.taxCode}
+                  maxLength={fieldLimits.taxCode}
+                  error={Boolean(fieldErrors.taxCode)}
+                  hint={fieldErrors.taxCode}
                   onChange={(event) =>
                     updateValue("taxCode", event.target.value)
                   }
@@ -212,6 +236,9 @@ export default function MasterDataFormModal({
                   id={`${kind}-address`}
                   rows={3}
                   value={values.address}
+                  maxLength={fieldLimits.longText}
+                  error={Boolean(fieldErrors.address)}
+                  hint={fieldErrors.address}
                   onChange={(value) => updateValue("address", value)}
                   placeholder={t(`masterData.${kind}.form.addressPlaceholder`)}
                 />
@@ -224,6 +251,9 @@ export default function MasterDataFormModal({
                   id={`${kind}-note`}
                   rows={3}
                   value={values.note}
+                  maxLength={fieldLimits.longText}
+                  error={Boolean(fieldErrors.note)}
+                  hint={fieldErrors.note}
                   onChange={(value) => updateValue("note", value)}
                   placeholder={t(`masterData.${kind}.form.notePlaceholder`)}
                 />
@@ -238,6 +268,9 @@ export default function MasterDataFormModal({
                 id={`${kind}-description`}
                 rows={4}
                 value={values.description}
+                maxLength={fieldLimits.longText}
+                error={Boolean(fieldErrors.description)}
+                hint={fieldErrors.description}
                 onChange={(value) => updateValue("description", value)}
                 placeholder={t(
                   "masterData.categories.form.descriptionPlaceholder",

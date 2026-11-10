@@ -11,6 +11,7 @@ interface TextareaProps {
   disabled?: boolean;
   error?: boolean;
   hint?: string;
+  maxLength?: number;
 }
 
 const TextArea: React.FC<TextareaProps> = ({
@@ -23,6 +24,7 @@ const TextArea: React.FC<TextareaProps> = ({
   disabled = false,
   error = false,
   hint = "",
+  maxLength,
 }) => {
   const hintId = hint && id ? `${id}-hint` : undefined;
 
@@ -35,6 +37,7 @@ const TextArea: React.FC<TextareaProps> = ({
         value={value}
         onChange={(event) => onChange?.(event.target.value)}
         disabled={disabled}
+        maxLength={maxLength}
         aria-invalid={error || undefined}
         aria-describedby={hintId}
         className={controlClassName({ error, disabled }, className)}

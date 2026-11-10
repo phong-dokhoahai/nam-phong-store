@@ -267,8 +267,6 @@
       "active": "Active",
       "description": "Description",
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
-      "requiredError": "SKU and name are required.",
-      "lookupError": "Category and unit are required.",
       "saving": "Saving...",
       "inactiveOption": "{name} (غير نشط)"
     },
@@ -340,7 +338,6 @@
         "taxCode": "الرقم الضريبي",
         "note": "ملاحظة",
         "active": "نشط",
-        "requiredError": "الكود والاسم مطلوبان.",
         "saving": "جار الحفظ..."
       },
       "deactivate": {
@@ -424,8 +421,7 @@
         "codePlaceholder": "M3",
         "namePlaceholder": "Cubic meter",
         "precision": "Quantity precision",
-        "precisionOption": "{value} decimal places",
-        "precisionError": "Precision must be between 0 and 3."
+        "precisionOption": "{value} decimal places"
       },
       "deactivate": {
         "title": "Deactivate unit",
@@ -1771,5 +1767,19 @@
     "updateAvailable": "يتوفر إصدار جديد من التطبيق.",
     "reload": "إعادة التحميل",
     "offlineBanner": "أنت غير متصل. تعرض الشاشات البيانات المحفوظة على هذا الجهاز (قد تكون قديمة)؛ يتطلب الحفظ والتأكيد والدفع اتصالاً بالشبكة."
+  },
+  "validation": {
+    "required": "حقل مطلوب.",
+    "selectRequired": "يرجى اختيار قيمة.",
+    "maxLength": "{max} حرفًا كحد أقصى.",
+    "email": "بريد إلكتروني غير صالح (مثال: name@company.com).",
+    "phone": "يجب أن يتكون رقم الهاتف من 8–15 رقمًا ويمكن أن يبدأ بـ +.",
+    "taxCode": "الرقم الضريبي: 10 أرقام، أو 10 أرقام مع ‎-XXX (فرع)، أو 12 رقمًا.",
+    "code": "يحتوي الرمز على حروف لاتينية بدون علامات وأرقام و . _ - فقط.",
+    "fixFields": "تحقق من الحقول المميزة باللون الأحمر.",
+    "quantityWhole": "الوحدة {unit} تقبل الأعداد الصحيحة فقط.",
+    "quantityDecimals": "الوحدة {unit} تسمح بـ {decimals} منازل عشرية كحد أقصى.",
+    "fractionalLineTotal": "يجب أن يكون إجمالي السطر مبلغًا صحيحًا. عدّل الكمية أو السعر.",
+    "documentDiscountTooHigh": "لا يمكن أن يتجاوز خصم المستند قيمة البضاعة مع الشحن والضريبة."
   }
 }

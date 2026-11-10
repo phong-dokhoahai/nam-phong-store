@@ -1,11 +1,13 @@
 import InlineAlert from "@/components/common/InlineAlert";
 import Input from "@/components/form/input/InputField";
+import NumberInput from "@/components/form/input/NumberInput";
 import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/button/Button";
 import { Modal, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { fieldLimits } from "@/utils/validation";
 import { useTranslation } from "react-i18next";
 import type {
   PaymentDirection,
@@ -101,15 +103,11 @@ export default function PaymentFormModal({
 
         <div>
           <Label htmlFor="payment-amount">{t("payments.form.amount")}</Label>
-          <Input
+          <NumberInput
             id="payment-amount"
-            type="number"
-            min="0"
-            max={selectedDocument?.debtAmount || undefined}
-            value={draft.amount || ""}
-            onChange={(event) =>
-              updateDraft("amount", Number(event.target.value))
-            }
+            kind="money"
+            value={draft.amount}
+            onValueChange={(value) => updateDraft("amount", value)}
             hint={
               selectedDocument
                 ? t("payments.form.remaining", {
@@ -152,6 +150,7 @@ export default function PaymentFormModal({
           <Input
             id="payment-reference"
             value={draft.referenceNumber}
+            maxLength={fieldLimits.referenceNumber}
             onChange={(event) =>
               updateDraft("referenceNumber", event.target.value)
             }
@@ -165,6 +164,7 @@ export default function PaymentFormModal({
         <TextArea
           id="payment-note"
           value={draft.note}
+          maxLength={fieldLimits.longText}
           onChange={(value) => updateDraft("note", value)}
           placeholder={t("payments.form.notePlaceholder")}
           rows={3}

@@ -44,6 +44,7 @@ Không cần đọc cả repo cho task nhỏ. Nếu tài liệu lệch với cod
 - **Phân quyền:** frontend (`ProtectedRoute`, `AdminRoute` trong `src/auth/`) chỉ để cải thiện UX; security boundary thật là RLS + kiểm tra trong RPC. Báo cáo doanh thu/công nợ chỉ dành cho ADMIN.
 - **Cấu trúc:** route trong `src/App.tsx`, page trong `src/pages/<Feature>/`, UI nghiệp vụ trong `src/components/<feature>/`. Không tạo `src/features/`. Shared code không import ngược feature.
 - **Danh mục đơn giản** (categories, units, suppliers, customers) tái dùng `src/components/master-data/MasterDataPage`.
+- **Luôn tái sử dụng component của template TailAdmin** (`src/components/ui/`, `form/`, `common/`). Component thiếu tính năng hoặc có lỗi (ví dụ `form/date-picker` chưa controlled) thì **sửa/mở rộng chính component đó**, giữ tương thích ngược, không cần hỏi. Không thay bằng thẻ HTML gốc, không viết component song song làm cùng việc. Chỉ tạo primitive mới khi template không có component cho nhu cầu đó, và phải dựng trên primitive của template (ví dụ `form/input/NumberInput` dựng trên `InputField`). Báo cáo ghi rõ đã sửa component nào và vì sao.
 
 ## Quy ước riêng của dự án
 

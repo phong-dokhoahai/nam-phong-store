@@ -1,3 +1,4 @@
+import { MAX_QUANTITY_DECIMALS } from "@/utils/numberInput";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase/client";
 import {
   demoStockReceiptMaterials,
@@ -108,7 +109,7 @@ const materialSelect = `
   name,
   current_stock,
   default_purchase_price,
-  units ( name )
+  units ( name, precision )
 `;
 
 const toNumber = (value: number | string | null | undefined) => {
@@ -169,12 +170,16 @@ const toMaterialLookup = (row: {
   name: string;
   current_stock: number | string | null;
   default_purchase_price: number | string | null;
-  units?: { name: string } | { name: string }[] | null;
+  units?:
+    | { name: string; precision: number | null }
+    | { name: string; precision: number | null }[]
+    | null;
 }): StockReceiptMaterialLookup => ({
   id: row.id,
   sku: row.sku,
   name: row.name,
   unitName: readOne(row.units)?.name || "",
+  unitPrecision: readOne(row.units)?.precision ?? MAX_QUANTITY_DECIMALS,
   currentStock: toNumber(row.current_stock),
   defaultPurchasePrice: toNumber(row.default_purchase_price),
 });
@@ -206,6 +211,9 @@ export const fetchStockReceiptsPayload = async (options: {
     .from("purchase_receipts")
     .select(receiptSelect, { count: "exact" })
     .order("updated_at", { ascending: false })
+    // Unique tie-breaker: rows with the same updated_at must not move
+    // between pages.
+    .order("code", { ascending: false })
     .range(offset, offset + options.pageSize - 1);
 
   if (options.status !== "all") {

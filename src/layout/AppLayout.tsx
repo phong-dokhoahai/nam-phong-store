@@ -17,7 +17,9 @@ const LayoutContent: React.FC = () => {
 
       <div
         className={cn(
-          "flex-1 transition-[margin] duration-300 ease-in-out",
+          // min-w-0: a wide table scrolls inside its container instead of
+          // stretching the column (and the whole page) past the viewport.
+          "min-w-0 flex-1 transition-[margin] duration-300 ease-in-out",
           isExpanded || isHovered ? "xl:ms-64" : "xl:ms-20",
           isMobileOpen ? "ms-0" : "",
         )}

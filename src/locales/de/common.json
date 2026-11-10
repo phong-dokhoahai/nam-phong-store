@@ -267,8 +267,6 @@
       "active": "Active",
       "description": "Description",
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
-      "requiredError": "SKU and name are required.",
-      "lookupError": "Category and unit are required.",
       "saving": "Saving...",
       "inactiveOption": "{name} (inaktiv)"
     },
@@ -340,7 +338,6 @@
         "taxCode": "Steuernummer",
         "note": "Notiz",
         "active": "Aktiv",
-        "requiredError": "Code und Name sind erforderlich.",
         "saving": "Speichern..."
       },
       "deactivate": {
@@ -424,8 +421,7 @@
         "codePlaceholder": "M3",
         "namePlaceholder": "Cubic meter",
         "precision": "Quantity precision",
-        "precisionOption": "{value} decimal places",
-        "precisionError": "Precision must be between 0 and 3."
+        "precisionOption": "{value} decimal places"
       },
       "deactivate": {
         "title": "Deactivate unit",
@@ -1771,5 +1767,19 @@
     "updateAvailable": "Eine neue Version der App ist verfügbar.",
     "reload": "Neu laden",
     "offlineBanner": "Sie sind offline. Angezeigt werden auf diesem Gerät gespeicherte Daten (eventuell veraltet); Speichern, Bestätigen und Zahlungen erfordern eine Verbindung."
+  },
+  "validation": {
+    "required": "Pflichtfeld.",
+    "selectRequired": "Bitte einen Wert auswählen.",
+    "maxLength": "Höchstens {max} Zeichen.",
+    "email": "Ungültige E-Mail (z. B. name@firma.de).",
+    "phone": "Telefonnummer muss 8–15 Ziffern haben und darf mit + beginnen.",
+    "taxCode": "Steuernummer: 10 Ziffern, 10 Ziffern plus -XXX (Filiale) oder 12 Ziffern.",
+    "code": "Code darf nur Buchstaben ohne Akzent, Ziffern und . _ - enthalten.",
+    "fixFields": "Bitte die rot markierten Felder prüfen.",
+    "quantityWhole": "Einheit {unit} erlaubt nur ganze Zahlen.",
+    "quantityDecimals": "Einheit {unit} erlaubt höchstens {decimals} Nachkommastellen.",
+    "fractionalLineTotal": "Zeilensumme muss ein ganzer Betrag sein. Menge oder Preis anpassen.",
+    "documentDiscountTooHigh": "Belegrabatt darf Warenwert plus Versand und Steuer nicht übersteigen."
   }
 }

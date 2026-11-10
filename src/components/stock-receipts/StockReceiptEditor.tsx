@@ -1,4 +1,7 @@
 import Input from "@/components/form/input/InputField";
+import NumberInput from "@/components/form/input/NumberInput";
+import { isDocumentDiscountTooHigh } from "@/utils/documentLines";
+import { fieldLimits } from "@/utils/validation";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import IconButton from "@/components/ui/button/IconButton";
@@ -13,6 +16,7 @@ import {
   calculateReceiptTotal,
   calculateSubtotal,
   findInactiveReferences,
+  getReceiptLineError,
 } from "./stockReceiptFormat";
 import { formatCurrency } from "@/utils/formatCurrency";
 import type {
@@ -41,9 +45,6 @@ type StockReceiptEditorProps = {
 const createLineId = () =>
   `line-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-const toMoneyValue = (value: string) =>
-  Math.max(0, Math.round(Number(value) || 0));
-const toQuantityValue = (value: string) => Math.max(0, Number(value) || 0);
 
 export default function StockReceiptEditor({
   draft,
@@ -81,25 +82,14 @@ export default function StockReceiptEditor({
   const isInactiveMaterial = (materialId: string) =>
     inactive.materialIds.includes(materialId);
 
-  const getLineError = (line: StockReceiptLine) => {
-    if (!line.materialId) return t("stockReceipts.errors.lineMaterial");
-    if (isInactiveMaterial(line.materialId)) {
-      return t("stockReceipts.errors.lineInactiveMaterial");
-    }
-    if (line.quantity <= 0) return t("stockReceipts.errors.lineQuantity");
-    if (line.unitPrice < 0) return t("stockReceipts.errors.lineUnitPrice");
-    if (line.discountAmount < 0) return t("stockReceipts.errors.lineDiscount");
-    if (line.discountAmount > line.quantity * line.unitPrice) {
-      return t("stockReceipts.errors.lineDiscountTooHigh");
-    }
-    if (
-      draft.lines.filter((item) => item.materialId === line.materialId).length >
-      1
-    ) {
-      return t("stockReceipts.errors.duplicateMaterial");
-    }
-    return "";
-  };
+  const getLineError = (line: StockReceiptLine) =>
+    getReceiptLineError(t, line, draft.lines, materials);
+  const isDiscountTooHigh = isDocumentDiscountTooHigh(
+    subtotal,
+    draft.discountAmount,
+    draft.shippingFee,
+    draft.taxAmount,
+  );
 
   const setDraftField = <K extends keyof StockReceiptDraftValues>(
     key: K,
@@ -287,6 +277,7 @@ export default function StockReceiptEditor({
           <Input
             id="stock-receipt-invoice"
             value={draft.supplierInvoiceNumber}
+            maxLength={fieldLimits.supplierInvoiceNumber}
             disabled={!isDraftEditable || isSaving}
             placeholder={t("stockReceipts.form.supplierInvoicePlaceholder")}
             onChange={(event) =>
@@ -387,21 +378,15 @@ export default function StockReceiptEditor({
                   <Label htmlFor={`${line.id}-quantity`} className="lg:sr-only">
                     {t("stockReceipts.lines.quantity")}
                   </Label>
-                  <Input
+                  <NumberInput
                     id={`${line.id}-quantity`}
                     className="text-end"
-                    type="number"
-                    min={0.001}
-                    step={0.001}
+                    kind="quantity"
                     value={line.quantity}
                     disabled={!isDraftEditable || isSaving}
                     aria-invalid={Boolean(getLineError(line))}
-                    onChange={(event) =>
-                      updateLineNumber(
-                        line.id,
-                        "quantity",
-                        toQuantityValue(event.target.value),
-                      )
+                    onValueChange={(value) =>
+                      updateLineNumber(line.id, "quantity", value)
                     }
                   />
                 </div>
@@ -412,21 +397,15 @@ export default function StockReceiptEditor({
                   >
                     {t("stockReceipts.lines.unitPrice")}
                   </Label>
-                  <Input
+                  <NumberInput
                     id={`${line.id}-unitPrice`}
                     className="text-end"
-                    type="number"
-                    min={0}
-                    step={1}
+                    kind="money"
                     value={line.unitPrice}
                     disabled={!isDraftEditable || isSaving}
                     aria-invalid={Boolean(getLineError(line))}
-                    onChange={(event) =>
-                      updateLineNumber(
-                        line.id,
-                        "unitPrice",
-                        toMoneyValue(event.target.value),
-                      )
+                    onValueChange={(value) =>
+                      updateLineNumber(line.id, "unitPrice", value)
                     }
                   />
                 </div>
@@ -434,21 +413,15 @@ export default function StockReceiptEditor({
                   <Label htmlFor={`${line.id}-discount`} className="lg:sr-only">
                     {t("stockReceipts.lines.discount")}
                   </Label>
-                  <Input
+                  <NumberInput
                     id={`${line.id}-discount`}
                     className="text-end"
-                    type="number"
-                    min={0}
-                    step={1}
+                    kind="money"
                     value={line.discountAmount}
                     disabled={!isDraftEditable || isSaving}
                     aria-invalid={Boolean(getLineError(line))}
-                    onChange={(event) =>
-                      updateLineNumber(
-                        line.id,
-                        "discountAmount",
-                        toMoneyValue(event.target.value),
-                      )
+                    onValueChange={(value) =>
+                      updateLineNumber(line.id, "discountAmount", value)
                     }
                   />
                 </div>
@@ -489,6 +462,7 @@ export default function StockReceiptEditor({
           <TextArea
             id="stock-receipt-note"
             value={draft.note}
+            maxLength={fieldLimits.longText}
             disabled={!isDraftEditable || isSaving}
             placeholder={t("stockReceipts.form.notePlaceholder")}
             onChange={(value) => setDraftField("note", value)}
@@ -505,6 +479,7 @@ export default function StockReceiptEditor({
               id="stock-receipt-discount"
               label={t("stockReceipts.summary.receiptDiscount")}
               value={draft.discountAmount}
+              error={isDiscountTooHigh}
               disabled={!isDraftEditable || isSaving}
               onChange={(value) => setDraftField("discountAmount", value)}
             />
@@ -522,6 +497,9 @@ export default function StockReceiptEditor({
               disabled={!isDraftEditable || isSaving}
               onChange={(value) => setDraftField("taxAmount", value)}
             />
+            {isDiscountTooHigh && (
+              <FieldError>{t("validation.documentDiscountTooHigh")}</FieldError>
+            )}
             <div className="border-t border-line-subtle pt-3">
               <SummaryRow
                 label={t("stockReceipts.summary.total")}
@@ -583,12 +561,14 @@ function NumberSummaryInput({
   label,
   value,
   disabled,
+  error = false,
   onChange,
 }: {
   id: string;
   label: string;
   value: number;
   disabled: boolean;
+  error?: boolean;
   onChange: (value: number) => void;
 }) {
   return (
@@ -597,14 +577,13 @@ function NumberSummaryInput({
         {label}
       </Label>
       <div className="w-40 shrink-0">
-        <Input
+        <NumberInput
           id={id}
-          type="number"
-          min={0}
-          step={1}
+          kind="money"
           value={value}
           disabled={disabled}
-          onChange={(event) => onChange(toMoneyValue(event.target.value))}
+          error={error}
+          onValueChange={onChange}
           className="h-9 text-end"
         />
       </div>

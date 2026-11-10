@@ -6,7 +6,12 @@ import Button from "@/components/ui/button/Button";
 import { PlusIcon } from "@/icons";
 import ConfirmStockIssueModal from "@/components/stock-issues/ConfirmStockIssueModal";
 import StockIssueFormModal from "@/components/stock-issues/StockIssueFormModal";
-import { findInactiveReferences } from "@/components/stock-issues/StockIssueFormat";
+import {
+  calculateSubtotal,
+  findInactiveReferences,
+  getIssueLineError,
+} from "@/components/stock-issues/StockIssueFormat";
+import { isDocumentDiscountTooHigh } from "@/utils/documentLines";
 import StockIssuesTable from "@/components/stock-issues/StockIssuesTable";
 import StockIssuesToolbar from "@/components/stock-issues/StockIssuesToolbar";
 import {
@@ -196,20 +201,6 @@ export default function StockIssues() {
     );
     if (inactiveError) return inactiveError;
 
-    const hasInvalidLine = draft.lines.some((line) => {
-      const material = materials.find((item) => item.id === line.materialId);
-      return (
-        !line.materialId ||
-        line.quantity <= 0 ||
-        line.unitPrice < 0 ||
-        line.discountAmount < 0 ||
-        line.discountAmount > line.quantity * line.unitPrice ||
-        (material ? line.quantity > material.currentStock : false)
-      );
-    });
-
-    if (hasInvalidLine) return t("stockIssues.errors.invalidLine");
-
     const materialIds = draft.lines.map((line) => line.materialId);
     const hasDuplicateMaterial = materialIds.some(
       (materialId, index) => materialIds.indexOf(materialId) !== index,
@@ -217,6 +208,24 @@ export default function StockIssues() {
 
     if (hasDuplicateMaterial) {
       return t("stockIssues.errors.duplicateMaterial");
+    }
+
+    // Same rules as the message under each line in the editor.
+    const hasInvalidLine = draft.lines.some((line) =>
+      Boolean(getIssueLineError(t, line, draft.lines, materials)),
+    );
+
+    if (hasInvalidLine) return t("stockIssues.errors.invalidLine");
+
+    if (
+      isDocumentDiscountTooHigh(
+        calculateSubtotal(draft.lines),
+        draft.discountAmount,
+        draft.shippingFee,
+        draft.taxAmount,
+      )
+    ) {
+      return t("validation.documentDiscountTooHigh");
     }
 
     return "";

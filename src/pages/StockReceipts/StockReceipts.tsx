@@ -6,7 +6,12 @@ import Button from "@/components/ui/button/Button";
 import { PlusIcon } from "@/icons";
 import ConfirmStockReceiptModal from "@/components/stock-receipts/ConfirmStockReceiptModal";
 import StockReceiptFormModal from "@/components/stock-receipts/StockReceiptFormModal";
-import { findInactiveReferences } from "@/components/stock-receipts/stockReceiptFormat";
+import {
+  calculateSubtotal,
+  findInactiveReferences,
+  getReceiptLineError,
+} from "@/components/stock-receipts/stockReceiptFormat";
+import { isDocumentDiscountTooHigh } from "@/utils/documentLines";
 import StockReceiptsTable from "@/components/stock-receipts/StockReceiptsTable";
 import StockReceiptsToolbar from "@/components/stock-receipts/StockReceiptsToolbar";
 import {
@@ -203,17 +208,6 @@ export default function StockReceipts() {
     );
     if (inactiveError) return inactiveError;
 
-    const hasInvalidLine = draft.lines.some(
-      (line) =>
-        !line.materialId ||
-        line.quantity <= 0 ||
-        line.unitPrice < 0 ||
-        line.discountAmount < 0 ||
-        line.discountAmount > line.quantity * line.unitPrice,
-    );
-
-    if (hasInvalidLine) return t("stockReceipts.errors.invalidLine");
-
     const materialIds = draft.lines.map((line) => line.materialId);
     const hasDuplicateMaterial = materialIds.some(
       (materialId, index) => materialIds.indexOf(materialId) !== index,
@@ -221,6 +215,24 @@ export default function StockReceipts() {
 
     if (hasDuplicateMaterial) {
       return t("stockReceipts.errors.duplicateMaterial");
+    }
+
+    // Same rules as the message under each line in the editor.
+    const hasInvalidLine = draft.lines.some((line) =>
+      Boolean(getReceiptLineError(t, line, draft.lines, materials)),
+    );
+
+    if (hasInvalidLine) return t("stockReceipts.errors.invalidLine");
+
+    if (
+      isDocumentDiscountTooHigh(
+        calculateSubtotal(draft.lines),
+        draft.discountAmount,
+        draft.shippingFee,
+        draft.taxAmount,
+      )
+    ) {
+      return t("validation.documentDiscountTooHigh");
     }
 
     return "";

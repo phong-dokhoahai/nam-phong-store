@@ -1,4 +1,7 @@
 import Input from "@/components/form/input/InputField";
+import NumberInput from "@/components/form/input/NumberInput";
+import { isDocumentDiscountTooHigh } from "@/utils/documentLines";
+import { fieldLimits } from "@/utils/validation";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import IconButton from "@/components/ui/button/IconButton";
@@ -16,6 +19,7 @@ import {
   calculateLineTotal,
   calculateSubtotal,
   findInactiveReferences,
+  getIssueLineError,
 } from "./StockIssueFormat";
 import { formatQuantity } from "@/utils/formatQuantity";
 import type {
@@ -42,9 +46,6 @@ type StockIssueEditorProps = {
 const createLineId = () =>
   `line-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-const toMoneyValue = (value: string) =>
-  Math.max(0, Math.round(Number(value) || 0));
-const toQuantityValue = (value: string) => Math.max(0, Number(value) || 0);
 
 export default function StockIssueEditor({
   draft,
@@ -82,29 +83,14 @@ export default function StockIssueEditor({
   const getMaterial = (materialId: string) =>
     materials.find((item) => item.id === materialId);
 
-  const getLineError = (line: StockIssueLine) => {
-    const material = getMaterial(line.materialId);
-    if (!line.materialId) return t("stockIssues.errors.lineMaterial");
-    if (!material) return t("stockIssues.errors.lineInactiveMaterial");
-    if (line.quantity <= 0) return t("stockIssues.errors.lineQuantity");
-    if (line.unitPrice < 0) return t("stockIssues.errors.lineUnitPrice");
-    if (line.discountAmount < 0) return t("stockIssues.errors.lineDiscount");
-    if (line.discountAmount > line.quantity * line.unitPrice) {
-      return t("stockIssues.errors.lineDiscountTooHigh");
-    }
-    if (material && line.quantity > material.currentStock) {
-      return t("stockIssues.errors.insufficientStock", {
-        available: formatQuantity(material.currentStock),
-      });
-    }
-    if (
-      draft.lines.filter((item) => item.materialId === line.materialId).length >
-      1
-    ) {
-      return t("stockIssues.errors.duplicateMaterial");
-    }
-    return "";
-  };
+  const getLineError = (line: StockIssueLine) =>
+    getIssueLineError(t, line, draft.lines, materials);
+  const isDiscountTooHigh = isDocumentDiscountTooHigh(
+    subtotal,
+    draft.discountAmount,
+    draft.shippingFee,
+    draft.taxAmount,
+  );
 
   const setDraftField = <K extends keyof StockIssueDraftValues>(
     key: K,
@@ -293,6 +279,7 @@ export default function StockIssueEditor({
           <Input
             id="stock-issue-address"
             value={draft.deliveryAddress}
+            maxLength={fieldLimits.longText}
             disabled={!isDraftEditable || isSaving}
             placeholder={t("stockIssues.form.deliveryAddressPlaceholder")}
             onChange={(event) =>
@@ -411,21 +398,15 @@ export default function StockIssueEditor({
                     >
                       {t("stockIssues.lines.quantity")}
                     </Label>
-                    <Input
+                    <NumberInput
                       id={`${line.id}-quantity`}
                       className="text-end"
-                      type="number"
-                      min={0.001}
-                      step={0.001}
+                      kind="quantity"
                       value={line.quantity}
                       disabled={!isDraftEditable || isSaving}
                       aria-invalid={Boolean(lineError)}
-                      onChange={(event) =>
-                        updateLineNumber(
-                          line.id,
-                          "quantity",
-                          toQuantityValue(event.target.value),
-                        )
+                      onValueChange={(value) =>
+                        updateLineNumber(line.id, "quantity", value)
                       }
                     />
                   </div>
@@ -436,21 +417,15 @@ export default function StockIssueEditor({
                     >
                       {t("stockIssues.lines.unitPrice")}
                     </Label>
-                    <Input
+                    <NumberInput
                       id={`${line.id}-unitPrice`}
                       className="text-end"
-                      type="number"
-                      min={0}
-                      step={1}
+                      kind="money"
                       value={line.unitPrice}
                       disabled={!isDraftEditable || isSaving}
                       aria-invalid={Boolean(lineError)}
-                      onChange={(event) =>
-                        updateLineNumber(
-                          line.id,
-                          "unitPrice",
-                          toMoneyValue(event.target.value),
-                        )
+                      onValueChange={(value) =>
+                        updateLineNumber(line.id, "unitPrice", value)
                       }
                     />
                   </div>
@@ -461,21 +436,15 @@ export default function StockIssueEditor({
                     >
                       {t("stockIssues.lines.discount")}
                     </Label>
-                    <Input
+                    <NumberInput
                       id={`${line.id}-discount`}
                       className="text-end"
-                      type="number"
-                      min={0}
-                      step={1}
+                      kind="money"
                       value={line.discountAmount}
                       disabled={!isDraftEditable || isSaving}
                       aria-invalid={Boolean(lineError)}
-                      onChange={(event) =>
-                        updateLineNumber(
-                          line.id,
-                          "discountAmount",
-                          toMoneyValue(event.target.value),
-                        )
+                      onValueChange={(value) =>
+                        updateLineNumber(line.id, "discountAmount", value)
                       }
                     />
                   </div>
@@ -515,6 +484,7 @@ export default function StockIssueEditor({
           <TextArea
             id="stock-issue-note"
             value={draft.note}
+            maxLength={fieldLimits.longText}
             disabled={!isDraftEditable || isSaving}
             placeholder={t("stockIssues.form.notePlaceholder")}
             onChange={(value) => setDraftField("note", value)}
@@ -531,6 +501,7 @@ export default function StockIssueEditor({
               id="stock-issue-discount"
               label={t("stockIssues.summary.issueDiscount")}
               value={draft.discountAmount}
+              error={isDiscountTooHigh}
               disabled={!isDraftEditable || isSaving}
               onChange={(value) => setDraftField("discountAmount", value)}
             />
@@ -548,6 +519,9 @@ export default function StockIssueEditor({
               disabled={!isDraftEditable || isSaving}
               onChange={(value) => setDraftField("taxAmount", value)}
             />
+            {isDiscountTooHigh && (
+              <FieldError>{t("validation.documentDiscountTooHigh")}</FieldError>
+            )}
             <div className="border-t border-line-subtle pt-3">
               <SummaryRow
                 label={t("stockIssues.summary.total")}
@@ -609,12 +583,14 @@ function NumberSummaryInput({
   label,
   value,
   disabled,
+  error = false,
   onChange,
 }: {
   id: string;
   label: string;
   value: number;
   disabled: boolean;
+  error?: boolean;
   onChange: (value: number) => void;
 }) {
   return (
@@ -623,14 +599,13 @@ function NumberSummaryInput({
         {label}
       </Label>
       <div className="w-40 shrink-0">
-        <Input
+        <NumberInput
           id={id}
-          type="number"
-          min={0}
-          step={1}
+          kind="money"
           value={value}
           disabled={disabled}
-          onChange={(event) => onChange(toMoneyValue(event.target.value))}
+          error={error}
+          onValueChange={onChange}
           className="h-9 text-end"
         />
       </div>

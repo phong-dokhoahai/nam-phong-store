@@ -267,8 +267,6 @@
       "active": "Active",
       "description": "Description",
       "descriptionPlaceholder": "Notes for purchasing, storage, or usage...",
-      "requiredError": "SKU and name are required.",
-      "lookupError": "Category and unit are required.",
       "saving": "Saving...",
       "inactiveOption": "{name} (inactivo)"
     },
@@ -340,7 +338,6 @@
         "taxCode": "Codigo fiscal",
         "note": "Nota",
         "active": "Activo",
-        "requiredError": "Codigo y nombre son obligatorios.",
         "saving": "Guardando..."
       },
       "deactivate": {
@@ -424,8 +421,7 @@
         "codePlaceholder": "M3",
         "namePlaceholder": "Cubic meter",
         "precision": "Quantity precision",
-        "precisionOption": "{value} decimal places",
-        "precisionError": "Precision must be between 0 and 3."
+        "precisionOption": "{value} decimal places"
       },
       "deactivate": {
         "title": "Deactivate unit",
@@ -1771,5 +1767,19 @@
     "updateAvailable": "Hay una nueva versión de la aplicación.",
     "reload": "Recargar",
     "offlineBanner": "Estás sin conexión. Las pantallas muestran datos guardados en este dispositivo (pueden estar desactualizados); guardar, confirmar y pagar requieren conexión."
+  },
+  "validation": {
+    "required": "Obligatorio.",
+    "selectRequired": "Seleccione un valor.",
+    "maxLength": "Máximo {max} caracteres.",
+    "email": "Correo no válido (p. ej. nombre@empresa.com).",
+    "phone": "El teléfono debe tener 8–15 dígitos y puede empezar por +.",
+    "taxCode": "El código fiscal debe tener 10 dígitos, 10 dígitos más -XXX (sucursal) o 12 dígitos.",
+    "code": "El código solo admite letras sin acentos, dígitos y . _ -",
+    "fixFields": "Revise los campos marcados en rojo.",
+    "quantityWhole": "La unidad {unit} solo admite números enteros.",
+    "quantityDecimals": "La unidad {unit} admite como máximo {decimals} decimales.",
+    "fractionalLineTotal": "El total de la línea debe ser un importe entero. Ajuste la cantidad o el precio.",
+    "documentDiscountTooHigh": "El descuento del documento no puede superar el importe de mercancía más envío e impuestos."
   }
 }

@@ -164,11 +164,13 @@ src/
 
 ### Primitive map — use these, never raw HTML
 
-Before writing any raw `<button>`, `<input>`, `<select>`, `<textarea>`, `<label>` or a hand-styled box, pick the primitive below. If a primitive lacks a feature, extend the primitive (backward compatible) instead of copying its markup.
+Before writing any raw `<button>`, `<input>`, `<select>`, `<textarea>`, `<label>` or a hand-styled box, pick the primitive below. **Always reuse the template component:** if it lacks a feature or is buggy, fix or extend that component (backward compatible) — never replace it with raw HTML, a native fallback or a parallel component, and never copy its markup. Create a new primitive only when the template has nothing for the need, and build it on template primitives. Say in the report which component was fixed and why.
 
 | Need | Use | Notes |
 | --- | --- | --- |
-| Text / number / date / search input | `form/input/InputField` | Dates use `type="date"`; `form/date-picker` (flatpickr) is uncontrolled, demo only |
+| Text / search input | `form/input/InputField` | Pass `maxLength` from `utils/validation` `fieldLimits`; show a field error with `error` + `hint` |
+| Date input | `form/date-picker` (flatpickr) | **Must be fixed before app use** (uncontrolled: no `value`, no `disabled`/`error`, `#id` selector breaks with `useId()`). The app's current `InputField type="date"` fields are legacy, to be migrated (see `docs/process/03-patterns-and-next-steps.md`); a new date field fixes `form/date-picker` first |
+| Money / quantity input | `form/input/NumberInput` | `kind="money"` (whole VND) or `"quantity"` (≤ 3 decimals). Never `<Input type="number">`: it shows "0001", lets "e"/"-" through and changes on scroll |
 | Search box with magnifier | `common/SearchInput` | |
 | Dropdown value picker | `form/Select` | Pass `value` (controlled); never remount with `key`. Per-option `disabled`, `error`, `placeholder` supported |
 | Multi-line text | `form/input/TextArea` | |
@@ -201,12 +203,15 @@ Shared logic for screens:
 | Client-side paging that resets when filters change | `hooks/usePagination`: `usePagedItems(items, resetKey)` → `pageItems` + `pagination` (spread on `ListPagination`); `useResettablePage(resetKey)` for server paging |
 | Error message from a thrown value | `utils/getErrorMessage(error, t("…"))` |
 | Quantity / money display | `utils/formatQuantity`, `utils/formatCurrency` |
+| Form field checks (required, length, email/phone/tax code/code) | `utils/validation` (`validateText`, `fieldLimits`, `collectErrors`); one `<feature>Validation.ts` per form returning errors per field |
+| Document line rules (same as the `parse_draft_items` RPC) | `utils/documentLines` (`getLineAmountIssue`, `isDocumentDiscountTooHigh`) |
 
 Exception: libraries that only accept HTML strings (flatpickr `prevArrow`/`nextArrow`) may keep inline SVG strings.
 
 ## Don'ts
 
 - Don't install new packages without asking the user.
+- Don't bypass a template component (raw HTML, native fallback, parallel component) — fix or extend the template component instead.
 - Don't create a `tailwind.config.js` or `tailwind.config.ts` — Tailwind v4 is fully configured through `src/index.css`.
 - Don't hardcode hex colors or pixel values in `className` — always use `@theme` tokens.
 - Don't hardcode user-facing text — add keys to all five `src/locales/<locale>/common.json` files and use `t()`.

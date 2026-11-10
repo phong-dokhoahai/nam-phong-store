@@ -19,6 +19,8 @@ export type StockIssueMaterialLookup = {
   sku: string;
   name: string;
   unitName: string;
+  /** Max decimals for a quantity of this material (`units.precision`). */
+  unitPrecision: number;
   currentStock: number;
   defaultSalePrice: number;
 };

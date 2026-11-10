@@ -1,4 +1,5 @@
-const quantityFormatter = new Intl.NumberFormat("en-US", {
+// Same locale as formatCurrency: 17.000 viên, 1,5 m³.
+const quantityFormatter = new Intl.NumberFormat("vi-VN", {
   maximumFractionDigits: 3,
 });
 
